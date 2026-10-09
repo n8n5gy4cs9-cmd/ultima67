@@ -361,7 +361,9 @@ dependencies = [
 name = "u67_mapgen"
 version = "0.1.0"
 dependencies = [
+ "image",
  "u67_core",
+ "u67_world",
 ]
 
 [[package]]

@@ -18,7 +18,7 @@
   "done",
   "blocked"
  ],
- "next_action": "T4.4 u67_mapgen (procedural Midgard + planets), then T2.2 Bevy game crate (window, renderer, input), T2.5-T2.7.",
+ "next_action": "T2.2 Bevy game crate: window + tile renderer + player walk on generated Midgard (u67_game). Then T2.5-2.7, P5.",
  "phases": [
   {
    "id": "P0",
@@ -222,7 +222,7 @@
     {
      "id": "T4.4",
      "title": "Fallback: procedural Midgard map generator with same macro-layout (works w/o U7 data; ships in repo)",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T4.5",
@@ -237,12 +237,12 @@
     {
      "id": "T4.7",
      "title": "Interiors/dungeons as separate z/instance maps",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T4.8",
      "title": "Towns: Uppsala-ish Kaupang, Birka, Hedeby, Kuusamo, Rovaniemi-like Pohjola, Hel gate, 10+ more",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T4.9",
@@ -349,12 +349,12 @@
     },
     {
      "id": "T6.2",
-     "title": "Each body: hand-seeded planetary map + biome + hazards (cold, heat, vacuum suit)",
+     "title": "Each body: hand-seeded planetary map + biome + hazards (cold, heat, vacuum suit) [maps generated for all 15 bodies; hazards pending]",
      "status": "todo"
     },
     {
      "id": "T6.3",
-     "title": "Second system 'Kalevala' with 5 planets (Vainola, Pohjola, Tuonela, Ilma, Sampola) behind the Bifrost-Sampo gate",
+     "title": "Second system 'Kalevala' with 5 planets (Vainola, Pohjola, Tuonela, Ilma, Sampola) behind the Bifrost-Sampo gate [5 planet maps generated; gate/travel pending]",
      "status": "todo"
     },
     {
@@ -364,7 +364,7 @@
     },
     {
      "id": "T6.5",
-     "title": "10+ hotspots per system (ruins, wrecks, rune-sites, boss lairs, secret caches)",
+     "title": "10+ hotspots per system (ruins, wrecks, rune-sites, boss lairs, secret caches) [places+sites generated: 40+ Sol, 11 Kalevala, 30+ Midgard; missions pending]",
      "status": "todo"
     },
     {

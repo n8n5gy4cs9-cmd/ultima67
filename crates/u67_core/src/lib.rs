@@ -168,3 +168,34 @@ mod tests {
         assert!(c.is_night() && c.daylight() < 0.3);
     }
 }
+
+pub mod noise {
+    //! Deterministic value noise used by map generation.
+    pub fn hash(x: i32, y: i32, seed: u64) -> f32 {
+        let mut h = (x as i64 as u64).wrapping_mul(0x9E37_79B9_7F4A_7C15) ^ (y as i64 as u64).wrapping_mul(0xC2B2_AE3D_27D4_EB4F) ^ seed.wrapping_mul(0x1656_67B1_9E37_79F9);
+        h ^= h >> 33;
+        h = h.wrapping_mul(0xFF51_AFD7_ED55_8CCD);
+        h ^= h >> 29;
+        (h >> 40) as f32 / (1u64 << 24) as f32
+    }
+    pub fn value(x: f32, y: f32, seed: u64) -> f32 {
+        let (x0, y0) = (x.floor(), y.floor());
+        let (fx, fy) = (x - x0, y - y0);
+        let (fx, fy) = (fx * fx * (3.0 - 2.0 * fx), fy * fy * (3.0 - 2.0 * fy));
+        let n = |dx: i32, dy: i32| hash(x0 as i32 + dx, y0 as i32 + dy, seed);
+        let a = n(0, 0) + (n(1, 0) - n(0, 0)) * fx;
+        let b = n(0, 1) + (n(1, 1) - n(0, 1)) * fx;
+        a + (b - a) * fy
+    }
+    /// Fractal Brownian motion in roughly [0,1].
+    pub fn fbm(x: f32, y: f32, seed: u64, octaves: u32) -> f32 {
+        let (mut sum, mut amp, mut freq, mut norm) = (0.0, 1.0, 1.0, 0.0);
+        for o in 0..octaves {
+            sum += value(x * freq, y * freq, seed.wrapping_add(o as u64 * 101)) * amp;
+            norm += amp;
+            amp *= 0.5;
+            freq *= 2.0;
+        }
+        sum / norm
+    }
+}

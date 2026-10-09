@@ -1,5 +1,5 @@
 //! A map is a tile grid + objects + portals. Interiors/planets are separate maps.
-use crate::objects::{self, Portal, WorldObject};
+use crate::objects::{self, Building, Portal, WorldObject};
 use crate::tiles::{self, TileId};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -13,6 +13,8 @@ pub struct Map {
     pub tiles: Vec<TileId>,
     pub objects: Vec<WorldObject>,
     pub portals: Vec<Portal>,
+    #[serde(default)]
+    pub buildings: Vec<Building>,
     /// Named places for `tp <name>`.
     pub places: BTreeMap<String, TilePos>,
 }
@@ -26,6 +28,7 @@ impl Map {
             tiles: vec![fill; (width * height) as usize],
             objects: vec![],
             portals: vec![],
+            buildings: vec![],
             places: BTreeMap::new(),
         }
     }
@@ -46,7 +49,14 @@ impl Map {
     }
     pub fn add_object(&mut self, kind: &str, p: TilePos) {
         debug_assert!(objects::def(kind).is_some(), "unknown object {kind}");
-        self.objects.push(WorldObject { kind: kind.into(), pos: p, frame: 0, locked: false });
+        self.objects.push(WorldObject { kind: kind.into(), pos: p, frame: 0, locked: false, group: 0 });
+    }
+    pub fn add_object_in(&mut self, kind: &str, p: TilePos, group: u16) {
+        debug_assert!(objects::def(kind).is_some(), "unknown object {kind}");
+        self.objects.push(WorldObject { kind: kind.into(), pos: p, frame: 0, locked: false, group });
+    }
+    pub fn building_at(&self, p: TilePos) -> Option<&Building> {
+        self.buildings.iter().find(|b| b.contains(p))
     }
     pub fn objects_at(&self, p: TilePos) -> impl Iterator<Item = &WorldObject> {
         self.objects.iter().filter(move |o| o.pos == p)

@@ -50,6 +50,25 @@ pub struct WorldObject {
     pub frame: u8,
     #[serde(default)]
     pub locked: bool,
+    /// Building id (roofs with the same group hide when the player is inside that building). 0 = none.
+    #[serde(default)]
+    pub group: u16,
+}
+
+/// Axis-aligned building footprint (including walls).
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Building {
+    pub id: u16,
+    pub x: i32,
+    pub y: i32,
+    pub w: i32,
+    pub h: i32,
+}
+
+impl Building {
+    pub fn contains(&self, p: TilePos) -> bool {
+        p.x >= self.x && p.y >= self.y && p.x < self.x + self.w && p.y < self.y + self.h
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

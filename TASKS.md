@@ -3,8 +3,8 @@
 > Generated from `PRD.json` by `python3 tools/sync_tasks.py`. **Edit PRD.json, then re-run.**
 > Legend: `[x]` done, `[ ]` todo, `[~]` in progress, `[!]` blocked.
 
-**Progress: 25/78 done.**  
-**Next action:** T4.4 u67_mapgen (procedural Midgard + planets), then T2.2 Bevy game crate (window, renderer, input), T2.5-T2.7.
+**Progress: 28/78 done.**  
+**Next action:** T2.2 Bevy game crate: window + tile renderer + player walk on generated Midgard (u67_game). Then T2.5-2.7, P5.
 
 ## P0 - Planning & docs
 
@@ -54,11 +54,11 @@
 - [x] **T4.1** World model: map grid, 16x16 chunks, interiors as separate maps (z via portals)
 - [ ] **T4.2** U7 importer: read the USER-OWNED Ultima 7 data from assets/original/ (port ideas/format readers from exult); output Midgard-remapped map. Never commit data.
 - [ ] **T4.3** Midgard transformer: remap U7 terrain/objects to Norse equivalents (towns -> Norse/Finnish villages, Britannia coast -> fjords)
-- [ ] **T4.4** Fallback: procedural Midgard map generator with same macro-layout (works w/o U7 data; ships in repo)
+- [x] **T4.4** Fallback: procedural Midgard map generator with same macro-layout (works w/o U7 data; ships in repo)
 - [ ] **T4.5** Map renderer: layered isometric-ish/top-down tile rendering w/ object depth sorting, roofs hide on entry
 - [ ] **T4.6** Day/night cycle, weather, lighting
-- [ ] **T4.7** Interiors/dungeons as separate z/instance maps
-- [ ] **T4.8** Towns: Uppsala-ish Kaupang, Birka, Hedeby, Kuusamo, Rovaniemi-like Pohjola, Hel gate, 10+ more
+- [x] **T4.7** Interiors/dungeons as separate z/instance maps
+- [x] **T4.8** Towns: Uppsala-ish Kaupang, Birka, Hedeby, Kuusamo, Rovaniemi-like Pohjola, Hel gate, 10+ more
 - [ ] **T4.9** Map editor mode (in-game dev tool) to hand-edit tiles/objects _(optional)_
 
 ## P5 - Core gameplay (U7 feel, modern controls)
@@ -83,10 +83,10 @@
 ## P6 - Solar system, travel & content
 
 - [ ] **T6.1** Star map UI + ship travel between bodies (Sol system: Sol, Mani, Midgard, Muspel, Asgard, Jotun, Nifl, Hel, belt Svartalf)
-- [ ] **T6.2** Each body: hand-seeded planetary map + biome + hazards (cold, heat, vacuum suit)
-- [ ] **T6.3** Second system 'Kalevala' with 5 planets (Vainola, Pohjola, Tuonela, Ilma, Sampola) behind the Bifrost-Sampo gate
+- [ ] **T6.2** Each body: hand-seeded planetary map + biome + hazards (cold, heat, vacuum suit) [maps generated for all 15 bodies; hazards pending]
+- [ ] **T6.3** Second system 'Kalevala' with 5 planets (Vainola, Pohjola, Tuonela, Ilma, Sampola) behind the Bifrost-Sampo gate [5 planet maps generated; gate/travel pending]
 - [ ] **T6.4** Main quest line (see docs/LORE.md) end to end
-- [ ] **T6.5** 10+ hotspots per system (ruins, wrecks, rune-sites, boss lairs, secret caches)
+- [ ] **T6.5** 10+ hotspots per system (ruins, wrecks, rune-sites, boss lairs, secret caches) [places+sites generated: 40+ Sol, 11 Kalevala, 30+ Midgard; missions pending]
 - [ ] **T6.6** 20+ side missions and 10+ optional tasks
 - [ ] **T6.7** Bosses: Fenrir-Prime, Jormungandr (sea), Louhi, Surma, Hel-Queen, Nidhogg
 - [ ] **T6.8** Unique gun: vainamoinen_gun (Kantele-rifle) + other legendary relics
