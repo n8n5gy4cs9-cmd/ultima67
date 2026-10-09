@@ -40,7 +40,7 @@ See `docs/LORE.md`. Sol system with Norse names is the main play area. A second 
 - 60 fps on M1 Max at 1080p+; load < 5 s.
 - Deterministic simulation tick (fixed timestep) to allow replays / netcode later.
 - `cargo fmt`, `clippy -D warnings`, and tests pass in CI.
-- Licence hygiene: see `docs/REFERENCES.md`.
+- Licence: GPL-3.0-or-later; see `docs/REFERENCES.md`.
 
 ## 7. Out of scope (for now)
 Online matchmaking, voice acting, mobile, mod workshop.

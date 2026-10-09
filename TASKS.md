@@ -18,10 +18,10 @@
 
 ## P1 - Reference study
 
-- [ ] **T1.0** Clone exult, nuvie, opennox into ../refs (NOT into repo) and write notes per subsystem in docs/REFERENCES.md
-- [ ] **T1.0a** Study exult: shape/chunk/map format, usecode VM, schedules, party/NPC AI
-- [ ] **T1.0b** Study nuvie: U6 mechanics (cannons, ships, combat, UI) for Ultima 6 features
-- [ ] **T1.0c** Study opennox: Nox classes, spells, netcode, map format, arena modes
+- [ ] **T1.0** Study upstream in ../refs (exult, nuvie, opennox); fill docs/REFERENCES.md map + notes
+- [ ] **T1.0a** Study exult: world/chunk model, schedules, party AI, inventory -> own notes
+- [ ] **T1.0b** Study nuvie: cannons, ships, combat, UI -> own notes
+- [ ] **T1.0c** Study opennox: classes, spells, arena modes, netcode -> own notes
 
 ## P2 - Workspace & engine skeleton
 
@@ -35,7 +35,7 @@
 
 ## P3 - Asset pipeline & placeholder generation
 
-- [ ] **T3.1** assets/manifest.ron: every asset id -> path, kind, source, status (placeholder/final)
+- [ ] **T3.1** assets/manifest.json: every asset id -> path, kind, source, status
 - [ ] **T3.2** u67_assetgen: procedural Starbound-style Norse pixel sprite generator (seeded, deterministic)
 - [ ] **T3.3** Generate terrain tileset (grass, snow, rock, water, lava, ice, void, regolith, gas, floors, walls)
 - [ ] **T3.4** Generate object sprites (trees, runestones, longhouses, chests, doors, cannons, ships, furniture)
@@ -47,12 +47,12 @@
 - [ ] **T3.10** Placeholder music generator (procedural MIDI-like -> OGG/WAV, one loop per region + combat + menu)
 - [ ] **T3.11** Auto-generate ASSETS.md from manifest (top: clean table use|name|path|source; below: detailed notes)
 - [ ] **T3.12** Hot-reload assets in dev builds so replacing a file shows instantly
-- [ ] **T3.13** Optional: import reference sfx/music ONLY if license-clean; else keep generated _(optional)_
+- [ ] **T3.13** Use user-supplied original sfx/music from assets/original/ as optional upgrades (never committed) _(optional)_
 
 ## P4 - World: Midgard map (U7 layout remake)
 
-- [ ] **T4.1** World model: 3072x3072 tile grid, chunks (16x16), z-levels, superchunks like U7
-- [ ] **T4.2** Map importer: read a user-supplied legal U7 install (via exult-compatible reader) into intermediate RON/PNG layout map. Never commit original data.
+- [ ] **T4.1** World model: map grid, 16x16 chunks, interiors as separate maps (z via portals)
+- [ ] **T4.2** U7 importer: read the USER-OWNED Ultima 7 data from assets/original/ (port ideas/format readers from exult); output Midgard-remapped map. Never commit data.
 - [ ] **T4.3** Midgard transformer: remap U7 terrain/objects to Norse equivalents (towns -> Norse/Finnish villages, Britannia coast -> fjords)
 - [ ] **T4.4** Fallback: procedural Midgard map generator with same macro-layout (works w/o U7 data; ships in repo)
 - [ ] **T4.5** Map renderer: layered isometric-ish/top-down tile rendering w/ object depth sorting, roofs hide on entry

@@ -10,7 +10,7 @@ Work may stop at any time (token limit ~5h windows). Resume procedure:
 
 ## Rules
 - Branch: `claude/ecstatic-meitner-cfmv5a`. Commit small and often.
-- Do **not** commit original Ultima 7 / Nox game data. Do not copy GPL code verbatim without keeping the GPL licence (see `docs/REFERENCES.md`).
+- Do **not** commit original Ultima 7 / Nox game data. Exult/Nuvie/OpenNox code may be ported (project is GPL-3.0-or-later; add attribution header + list in REFERENCES.md). Never commit original game data (see `docs/REFERENCES.md`).
 - Keep everything cross-platform; macOS Apple Silicon is the primary target.
 - Content is data-driven (RON/JSON/script files) so it can be edited without recompiling.
 

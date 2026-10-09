@@ -3,7 +3,7 @@
 ## Tech choices
 - **Rust + Bevy** (wgpu -> Metal on Apple Silicon, DX12/Vulkan elsewhere). ECS suits many NPCs/objects; multiple cameras give splitscreen. Pin one Bevy version and do not upgrade mid-project.
 - Scripting: **Lua via `mlua`** (vendored feature, works on all platforms) for quests/dialogue/object use, mirroring U7 "usecode". Fallback: RON-only data if mlua is troublesome.
-- Data formats: RON for content/config, PNG for sprites, OGG/WAV for audio, serde+bincode/RON for saves.
+- Data formats: RON for config, JSON for manifest/content, PNG for sprites, OGG/WAV for audio, serde+bincode/RON for saves.
 - Audio: Bevy audio (rodio). Music loops generated as WAV/OGG.
 - Rendering: 2D tile renderer, Ultima 7-style 3/4 view (top-down tiles with tall objects, z-order by y + z). Optional isometric later; do not start there.
 
@@ -52,4 +52,4 @@ P1 study -> P2 skeleton -> P3 assets (needed by everything visual) -> P4 world -
 ## Risks
 - Bevy compile times: use `opt-level=1` dev profile with deps at 3, dynamic linking in dev.
 - Scope: build vertical slice first (one town, one dungeon, one planet) before widening.
-- Licence: see REFERENCES.md.
+- Licence: GPL-3.0-or-later (ports from Exult/Nuvie/OpenNox allowed).
