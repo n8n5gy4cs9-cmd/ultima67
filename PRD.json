@@ -1,0 +1,112 @@
+{
+  "game": "Ultima67",
+  "credit": "By Crowelian 2026 + Sonnet",
+  "version": "0.0.0-planning",
+  "language": "Rust",
+  "engine": "Bevy (pin exact version in Cargo.toml at T1.1)",
+  "targets": {"primary": "macOS Apple Silicon (M1 Max)", "later": ["Windows x86_64", "Linux x86_64"]},
+  "premise": "Nordic/Viking/Finnish Kalevala mythology in the modern day, with modern guns. Playable area is our Solar System with Norse names; a second 5-planet Kalevala system is reachable later. Map is a Midgard remake of the Ultima 7 world.",
+  "status_values": ["todo", "doing", "done", "blocked"],
+  "next_action": "T1.1 - create Cargo workspace. See HANDOFF.md.",
+  "phases": [
+    {"id": "P0", "name": "Planning & docs", "tasks": [
+      {"id": "T0.1", "title": "PRD.md, PRD.json, TASKS.md, HANDOFF.md", "status": "done"},
+      {"id": "T0.2", "title": "docs/PLAN.md architecture + roadmap", "status": "done"},
+      {"id": "T0.3", "title": "docs/LORE.md story, planets, factions, missions", "status": "done"},
+      {"id": "T0.4", "title": "docs/CHEATS.md + commands.txt (planned command set)", "status": "done"},
+      {"id": "T0.5", "title": "ASSETS.md skeleton + assets manifest format", "status": "done"},
+      {"id": "T0.6", "title": "docs/REFERENCES.md (exult/nuvie/opennox study notes + licensing)", "status": "done"},
+      {"id": "T0.7", "title": "tools/sync_tasks.py (PRD.json -> TASKS.md)", "status": "done"}
+    ]},
+    {"id": "P1", "name": "Reference study", "tasks": [
+      {"id": "T1.0", "title": "Clone exult, nuvie, opennox into ../refs (NOT into repo) and write notes per subsystem in docs/REFERENCES.md", "status": "todo"},
+      {"id": "T1.0a", "title": "Study exult: shape/chunk/map format, usecode VM, schedules, party/NPC AI", "status": "todo"},
+      {"id": "T1.0b", "title": "Study nuvie: U6 mechanics (cannons, ships, combat, UI) for Ultima 6 features", "status": "todo"},
+      {"id": "T1.0c", "title": "Study opennox: Nox classes, spells, netcode, map format, arena modes", "status": "todo"}
+    ]},
+    {"id": "P2", "name": "Workspace & engine skeleton", "tasks": [
+      {"id": "T2.1", "title": "Cargo workspace: u67_core, u67_world, u67_game, u67_assetgen, u67_console, u67_net", "status": "todo"},
+      {"id": "T2.2", "title": "Bevy app boots window on macOS arm64, 60fps, fixed-timestep sim", "status": "todo"},
+      {"id": "T2.3", "title": "GitHub Actions CI: fmt, clippy, test on macOS+Linux; Windows build job", "status": "todo"},
+      {"id": "T2.4", "title": "Platform abstraction: paths via `directories`, no mac-only APIs", "status": "todo"},
+      {"id": "T2.5", "title": "Config/settings file (RON), keybinding + gamepad remap", "status": "todo"},
+      {"id": "T2.6", "title": "Game state machine: Boot, MainMenu, Playing, Paused, Inventory, Dialogue, Console", "status": "todo"},
+      {"id": "T2.7", "title": "Save/load (serde + versioned), 10 slots + quicksave", "status": "todo"}
+    ]},
+    {"id": "P3", "name": "Asset pipeline & placeholder generation", "tasks": [
+      {"id": "T3.1", "title": "assets/manifest.ron: every asset id -> path, kind, source, status (placeholder/final)", "status": "todo"},
+      {"id": "T3.2", "title": "u67_assetgen: procedural Starbound-style Norse pixel sprite generator (seeded, deterministic)", "status": "todo"},
+      {"id": "T3.3", "title": "Generate terrain tileset (grass, snow, rock, water, lava, ice, void, regolith, gas, floors, walls)", "status": "todo"},
+      {"id": "T3.4", "title": "Generate object sprites (trees, runestones, longhouses, chests, doors, cannons, ships, furniture)", "status": "todo"},
+      {"id": "T3.5", "title": "Generate character sprites 4-dir x walk/idle/attack/die (player, party, NPC archetypes, creatures, bosses)", "status": "todo"},
+      {"id": "T3.6", "title": "Generate weapon/item/inventory icons (modern guns + Norse relics)", "status": "todo"},
+      {"id": "T3.7", "title": "Generate UI art (paperdoll frame, backpack, containers, dialogue box, HUD, runic font)", "status": "todo"},
+      {"id": "T3.8", "title": "Generate planet/space art (star map, planet surfaces, ship, Bifrost gate)", "status": "todo"},
+      {"id": "T3.9", "title": "Placeholder SFX generator (WAV synth: steps, gun, cannon, hit, door, UI, spell, ambient)", "status": "todo"},
+      {"id": "T3.10", "title": "Placeholder music generator (procedural MIDI-like -> OGG/WAV, one loop per region + combat + menu)", "status": "todo"},
+      {"id": "T3.11", "title": "Auto-generate ASSETS.md from manifest (top: clean table use|name|path|source; below: detailed notes)", "status": "todo"},
+      {"id": "T3.12", "title": "Hot-reload assets in dev builds so replacing a file shows instantly", "status": "todo"},
+      {"id": "T3.13", "title": "Optional: import reference sfx/music ONLY if license-clean; else keep generated", "status": "todo", "optional": true}
+    ]},
+    {"id": "P4", "name": "World: Midgard map (U7 layout remake)", "tasks": [
+      {"id": "T4.1", "title": "World model: 3072x3072 tile grid, chunks (16x16), z-levels, superchunks like U7", "status": "todo"},
+      {"id": "T4.2", "title": "Map importer: read a user-supplied legal U7 install (via exult-compatible reader) into intermediate RON/PNG layout map. Never commit original data.", "status": "todo"},
+      {"id": "T4.3", "title": "Midgard transformer: remap U7 terrain/objects to Norse equivalents (towns -> Norse/Finnish villages, Britannia coast -> fjords)", "status": "todo"},
+      {"id": "T4.4", "title": "Fallback: procedural Midgard map generator with same macro-layout (works w/o U7 data; ships in repo)", "status": "todo"},
+      {"id": "T4.5", "title": "Map renderer: layered isometric-ish/top-down tile rendering w/ object depth sorting, roofs hide on entry", "status": "todo"},
+      {"id": "T4.6", "title": "Day/night cycle, weather, lighting", "status": "todo"},
+      {"id": "T4.7", "title": "Interiors/dungeons as separate z/instance maps", "status": "todo"},
+      {"id": "T4.8", "title": "Towns: Uppsala-ish Kaupang, Birka, Hedeby, Kuusamo, Rovaniemi-like Pohjola, Hel gate, 10+ more", "status": "todo"},
+      {"id": "T4.9", "title": "Map editor mode (in-game dev tool) to hand-edit tiles/objects", "status": "todo", "optional": true}
+    ]},
+    {"id": "P5", "name": "Core gameplay (U7 feel, modern controls)", "tasks": [
+      {"id": "T5.1", "title": "Modern controls: WASD/gamepad move, mouse aim, click-to-interact, hotkeys; keep U7 click-drag item handling", "status": "todo"},
+      {"id": "T5.2", "title": "U7 inventory: paperdoll, backpack, nested containers, drag&drop, weight/volume, ground items", "status": "todo"},
+      {"id": "T5.3", "title": "Object interaction: use/open/get/talk/look, locks, keys, traps", "status": "todo"},
+      {"id": "T5.4", "title": "Dialogue system U7 style (keyword topics, portraits, flags) with RON/Ink-like scripts", "status": "todo"},
+      {"id": "T5.5", "title": "Party system (up to 6), follow AI, party panel, commands", "status": "todo"},
+      {"id": "T5.6", "title": "NPC schedules (sleep/work/eat/pub) driven by time of day", "status": "todo"},
+      {"id": "T5.7", "title": "Stats/skills/levels (STR DEX INT, HP, mana/seidr), XP, loot tables", "status": "todo"},
+      {"id": "T5.8", "title": "Real-time combat: melee, ranged, modern guns (ammo, reload, recoil, aim), cover, stealth", "status": "todo"},
+      {"id": "T5.9", "title": "Shootable cannons (U6): placeable/fixed cannons, load powder+ball, aim, fire, damage ships/walls/enemies", "status": "todo"},
+      {"id": "T5.10", "title": "Ships & vehicles (U6/U7): longships, sleds, skiffs, space-longship; boarding, cannons on ships", "status": "todo"},
+      {"id": "T5.11", "title": "Magic: runes/seidr spells in U7 reagent+circle style with Kalevala singing-magic (laulu)", "status": "todo"},
+      {"id": "T5.12", "title": "Crafting, cooking, forging (Sampo-forge), alchemy", "status": "todo"},
+      {"id": "T5.13", "title": "Shops/barter, currency (silver/hacksilver + krediitti)", "status": "todo"},
+      {"id": "T5.14", "title": "Journal/quest log, map screen, automap, fast travel via Bifrost nodes", "status": "todo"},
+      {"id": "T5.15", "title": "Usecode-like scripting VM or Lua (mlua) for quests/objects; data-driven content", "status": "todo"},
+      {"id": "T5.16", "title": "Enemy AI: wolves, draugr, trolls, Fenrir spawn, Louhi's forces, corporate mercs w/ modern guns", "status": "todo"}
+    ]},
+    {"id": "P6", "name": "Solar system, travel & content", "tasks": [
+      {"id": "T6.1", "title": "Star map UI + ship travel between bodies (Sol system: Sol, Mani, Midgard, Muspel, Asgard, Jotun, Nifl, Hel, belt Svartalf)", "status": "todo"},
+      {"id": "T6.2", "title": "Each body: hand-seeded planetary map + biome + hazards (cold, heat, vacuum suit)", "status": "todo"},
+      {"id": "T6.3", "title": "Second system 'Kalevala' with 5 planets (Vainola, Pohjola, Tuonela, Ilma, Sampola) behind the Bifrost-Sampo gate", "status": "todo"},
+      {"id": "T6.4", "title": "Main quest line (see docs/LORE.md) end to end", "status": "todo"},
+      {"id": "T6.5", "title": "10+ hotspots per system (ruins, wrecks, rune-sites, boss lairs, secret caches)", "status": "todo"},
+      {"id": "T6.6", "title": "20+ side missions and 10+ optional tasks", "status": "todo"},
+      {"id": "T6.7", "title": "Bosses: Fenrir-Prime, Jormungandr (sea), Louhi, Surma, Hel-Queen, Nidhogg", "status": "todo"},
+      {"id": "T6.8", "title": "Unique gun: vainamoinen_gun (Kantele-rifle) + other legendary relics", "status": "todo"}
+    ]},
+    {"id": "P7", "name": "Cheats & developer console", "tasks": [
+      {"id": "T7.1", "title": "Console (backtick/F1): input, history, autocomplete, scrollback, command registry", "status": "todo"},
+      {"id": "T7.2", "title": "Implement commands from commands.txt (give, tp, god, noclip, spawn, set, flag, time, weather, quest, heal, xp, ...)", "status": "todo"},
+      {"id": "T7.3", "title": "Cheats menu (F2) with toggles: god, infinite ammo, noclip, fast, all spells, reveal map", "status": "todo"},
+      {"id": "T7.4", "title": "Dev tools: show colliders, entity inspector, FPS, reload assets, run script", "status": "todo"},
+      {"id": "T7.5", "title": "commands.txt auto-generated from registry (test fails if out of sync)", "status": "todo"}
+    ]},
+    {"id": "P8", "name": "Multiplayer", "tasks": [
+      {"id": "T8.1", "title": "Local splitscreen co-op (2-4 players): per-player camera, controller/keyboard assignment, shared world", "status": "todo"},
+      {"id": "T8.2", "title": "Splitscreen per-player inventory UI + shared/separate party modes", "status": "todo"},
+      {"id": "T8.3", "title": "OpenNox-style Arena mode: classes Warrior/Conjurer/Wizard -> Berserker/Volva/Skald, deathmatch, CTF, on splitscreen", "status": "todo"},
+      {"id": "T8.4", "title": "Optional: LAN/online netcode (lockstep or rollback) via u67_net", "status": "todo", "optional": true}
+    ]},
+    {"id": "P9", "name": "Polish, packaging, platforms", "tasks": [
+      {"id": "T9.1", "title": "Main menu, options, credits ('By Crowelian 2026 + Sonnet'), intro cinematic (slides)", "status": "todo"},
+      {"id": "T9.2", "title": "macOS .app bundle + dmg, codesign notes; verify Apple Silicon native", "status": "todo"},
+      {"id": "T9.3", "title": "Windows build + installer zip", "status": "todo"},
+      {"id": "T9.4", "title": "Linux build + AppImage", "status": "todo", "optional": true},
+      {"id": "T9.5", "title": "Balance pass, bug bash, performance profile (target 60fps on M1 Max)", "status": "todo"},
+      {"id": "T9.6", "title": "Accessibility: rebinding, text size, colorblind palettes", "status": "todo", "optional": true}
+    ]}
+  ]
+}
