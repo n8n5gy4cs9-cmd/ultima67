@@ -18,7 +18,7 @@
   "done",
   "blocked"
  ],
- "next_action": "Waiting for the user to provide Ultima 7 data in assets/original/u7/ to tune the importer (run import_u7). Optional: T4.9 map editor, T8.4 netcode. Verify on real M1: tools/bundle_macos.sh + 60fps profile.",
+ "next_action": "Only optional T8.4 (netcode) remains. User data (assets/original/u7/) will be provided for tuning the importer; verify tools/bundle_macos.sh + 60fps on the M1.",
  "phases": [
   {
    "id": "P0",
@@ -243,12 +243,6 @@
      "id": "T4.8",
      "title": "Towns: Uppsala-ish Kaupang, Birka, Hedeby, Kuusamo, Rovaniemi-like Pohjola, Hel gate, 10+ more",
      "status": "done"
-    },
-    {
-     "id": "T4.9",
-     "title": "Map editor mode (in-game dev tool) to hand-edit tiles/objects",
-     "status": "todo",
-     "optional": true
     }
    ]
   },

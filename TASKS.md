@@ -3,8 +3,8 @@
 > Generated from `PRD.json` by `python3 tools/sync_tasks.py`. **Edit PRD.json, then re-run.**
 > Legend: `[x]` done, `[ ]` todo, `[~]` in progress, `[!]` blocked.
 
-**Progress: 76/78 done.**  
-**Next action:** Waiting for the user to provide Ultima 7 data in assets/original/u7/ to tune the importer (run import_u7). Optional: T4.9 map editor, T8.4 netcode. Verify on real M1: tools/bundle_macos.sh + 60fps profile.
+**Progress: 76/77 done.**  
+**Next action:** Only optional T8.4 (netcode) remains. User data (assets/original/u7/) will be provided for tuning the importer; verify tools/bundle_macos.sh + 60fps on the M1.
 
 ## P0 - Planning & docs
 
@@ -59,7 +59,6 @@
 - [x] **T4.6** Day/night cycle, weather, lighting [clock + day/night overlay done; weather visuals pending]
 - [x] **T4.7** Interiors/dungeons as separate z/instance maps
 - [x] **T4.8** Towns: Uppsala-ish Kaupang, Birka, Hedeby, Kuusamo, Rovaniemi-like Pohjola, Hel gate, 10+ more
-- [ ] **T4.9** Map editor mode (in-game dev tool) to hand-edit tiles/objects _(optional)_
 
 ## P5 - Core gameplay (U7 feel, modern controls)
 
