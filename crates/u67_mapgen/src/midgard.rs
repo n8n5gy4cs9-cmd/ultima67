@@ -138,7 +138,7 @@ fn build_town(m: &mut Map, id: &str, c: TilePos, coastal: bool, seed: u64) {
         }
         let (w, h) = (6 + rng.range(0, 2), 5 + rng.range(0, 2));
         let (x, y) = (c.x + dx, c.y + dy);
-        let bid = sites::house(m, x, y, w, h, tiles::WALL_WOOD, tiles::FLOOR_WOOD, &mut rng);
+        let bid = sites::house(m, (x, y, w, h), tiles::WALL_WOOD, tiles::FLOOR_WOOD, &mut rng);
         n += 1;
         m.places.insert(format!("{id}_house_{n}"), TilePos::new(x + w / 2, y + h));
         let _ = bid;

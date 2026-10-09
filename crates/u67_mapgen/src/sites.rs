@@ -9,7 +9,7 @@ fn p(x: i32, y: i32) -> TilePos {
 }
 
 /// Build a wooden house with footprint (x,y,w,h). Door in the south wall. Returns the building id.
-pub fn house(m: &mut Map, x: i32, y: i32, w: i32, h: i32, wall: TileId, floor: TileId, furnish: &mut Rng) -> u16 {
+pub fn house(m: &mut Map, (x, y, w, h): (i32, i32, i32, i32), wall: TileId, floor: TileId, furnish: &mut Rng) -> u16 {
     let id = m.buildings.len() as u16 + 1;
     for j in 0..h {
         for i in 0..w {
@@ -55,7 +55,7 @@ pub fn rune_ring(m: &mut Map, c: TilePos, r: i32, stones: i32) {
 
 /// Small stone bunker with a chest and forge.
 pub fn bunker(m: &mut Map, x: i32, y: i32, rng: &mut Rng) {
-    house(m, x, y, 9, 7, tiles::WALL_STONE, tiles::FLOOR_STONE, rng);
+    house(m, (x, y, 9, 7), tiles::WALL_STONE, tiles::FLOOR_STONE, rng);
     m.add_object("forge", p(x + 2, y + 2));
     m.add_object("chest", p(x + 6, y + 2));
 }
