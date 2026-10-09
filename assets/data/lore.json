@@ -1,0 +1,28 @@
+[
+ ["runestone",[
+  "ᚠᚢᚦ — 'The gate hums where the Norns once spun. Heed the three threads.'",
+  "'Here Ragnvald raised this stone for his son, who walked into the humming light and did not return.'",
+  "'Fenrir strains at Gleipnir. When the chain thins, the Moon will weep.'",
+  "'Väinämöinen sang the world from a tiny egg. Sing, and the world will answer.'",
+  "'Aesir Dynamics took the stone from the hill. May their engines freeze.'",
+  "'Beware the dead that walk at night — they remember the old oaths.'",
+  "'Seek Mimir's Well in the heart of Midgård; the price of wisdom is an eye.'",
+  "'The Sampo was broken into five. Whoever mends it holds the sun's light.'"]],
+ ["signpost",[
+  "Welcome to a free Norse town. Weapons loud, tempers quieter. — The Jarl",
+  "No dragons in the harbour. Longships to the left, rowing boats to the right.",
+  "Smithy west, tavern south, well in the middle. Keep your guns pointed down.",
+  "Wolves north of the road at night. Take a torch. Take a friend."]],
+ ["wreck",[
+  "A scorched hull. Whatever crashed here was not built in Midgård.",
+  "Salvageable plates and a half-melted Aesir Dynamics logo."]],
+ ["well",["The water is cold and tastes of iron and old stone.","You see your reflection — and for a moment, something behind it."]],
+ ["bed",["It looks comfortable. (Use at night to rest.)"]],
+ ["forge",["An anvil and a hungry fire. You can craft here."]],
+ ["campfire",["Embers glow. You can cook here."]],
+ ["table",["A sturdy workbench. You can craft here."]],
+ ["boulder",["A big rock. Not much to say about it."]],
+ ["bifrost_node",["The air shimmers in seven colours. Stepping in will take you across the Nine Realms."]],
+ ["cannon",["A black-iron cannon on a wooden carriage."]],
+ ["longship",["A sleek longship with a dragon prow and a quiet engine glowing under the keel."]]
+]

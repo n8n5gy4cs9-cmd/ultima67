@@ -22,3 +22,6 @@ Work may stop at any time (token limit ~5h windows). Resume procedure:
 ## Last session log
 - 2026-10-09: Planning phase (P0) completed. No code yet. Next: P1 reference study, then P2 workspace.
 - 2026-10-09 (later): P1 notes done; u67_core/world/console/assetgen implemented + tested; assets generated. Arena mode dropped. Next: u67_mapgen, then Bevy game crate.
+- 2026-10-09 (P5-P7): Gameplay implemented and verified in the headless renderer: combat (guns, melee, roll), creatures + bosses + spawns, NPC schedules + party, dialogue, quests (46 in assets/data/quests.json), inventory UI, shops, crafting, magic (spellbook + laulu), cannons, ships, star map travel, hazards, console + F2 cheats, saves. All content is JSON in `assets/data/` (embedded fallback via include_str!).
+  - Test screenshots: `./target/debug/ultima67 --screenshot out.png --frames 120 --tp kaupang --time 22:30 --cmd "god;spawn wolf 3" --ui inventory|journal|cheats|map|travel|spells|laulu|dialogue|shop:<id>|craft:<station>`.
+  - Next: P8 splitscreen, leftovers in P4 (U7 importer T4.2 - user will supply U7 data in assets/original/; transformer T4.3; weather T4.6), T3.12 hot reload, P9 packaging.

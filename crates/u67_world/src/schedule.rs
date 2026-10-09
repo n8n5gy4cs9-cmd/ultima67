@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use u67_core::TilePos;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Activity {
     Sleep,
     Eat,

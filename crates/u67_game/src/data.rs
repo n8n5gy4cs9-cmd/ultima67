@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 use u67_console::Cheat;
 use u67_core::{Dir, GameClock};
-use u67_world::inventory::Inventory;
+use u67_world::inventory::{Inventory, Item};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Stats {
@@ -50,6 +50,14 @@ impl Stats {
         let before = self.level;
         self.xp += xp;
         self.level = level_for_xp(self.xp);
+        for l in before + 1..=self.level {
+            self.str_ += 1;
+            self.dex += 1;
+            if l % 2 == 0 {
+                self.int += 1;
+                self.vaki += 1;
+            }
+        }
         if self.level > before {
             self.hp = self.max_hp();
             self.mana = self.max_mana();
@@ -67,6 +75,11 @@ pub struct PlayerData {
     pub stats: Stats,
     pub inventory: Inventory,
     pub skills: BTreeMap<String, u32>,
+    /// Rounds currently loaded per gun id.
+    #[serde(default)]
+    pub loaded: BTreeMap<String, u16>,
+    #[serde(default)]
+    pub spell_slots: Vec<String>,
 }
 
 impl PlayerData {
@@ -77,7 +90,12 @@ impl PlayerData {
         for (id, n) in [("rune_pistol", 1), ("ammo_9mm", 30), ("rye_bread", 3), ("torch", 1), ("silver", 25)] {
             inventory.add(id, n).ok();
         }
-        Self { name: name.into(), pos, facing: Dir::S, stats, inventory, skills: BTreeMap::new() }
+        if let Some(i) = inventory.pack.iter().position(|it| it.id == "rune_pistol") {
+            inventory.equip(&[i]).ok();
+        }
+        let mut loaded = BTreeMap::new();
+        loaded.insert("rune_pistol".to_string(), 12u16);
+        Self { name: name.into(), pos, facing: Dir::S, stats, inventory, skills: BTreeMap::new(), loaded, spell_slots: vec!["parane".into(), "ukon_nuoli".into(), "valo".into()] }
     }
 }
 
@@ -129,6 +147,41 @@ pub enum QuestState {
     Done,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct QuestProgress {
+    pub state: QuestState,
+    pub step: u32,
+}
+
+/// Persistent changes to a world object (door open, chest looted...). Key: "map:x:y:original_kind".
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct ObjState {
+    pub kind: Option<String>,
+    pub frame: Option<u8>,
+    pub contents: Option<Vec<Item>>,
+    pub loaded: bool,
+    pub removed: bool,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct GroundItem {
+    pub map: String,
+    pub pos: [f32; 2],
+    pub item: Item,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Vehicle {
+    pub kind: String,
+    pub pos: [f32; 2],
+    pub facing: Dir,
+    pub hull: i32,
+}
+
+pub fn obj_key(map: &str, x: i32, y: i32, kind: &str) -> String {
+    format!("{map}:{x}:{y}:{kind}")
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct GameData {
     pub seed: u64,
@@ -136,7 +189,17 @@ pub struct GameData {
     pub clock: GameClock,
     pub players: Vec<PlayerData>,
     pub flags: BTreeSet<String>,
-    pub quests: BTreeMap<String, QuestState>,
+    pub quests: BTreeMap<String, QuestProgress>,
+    pub counters: BTreeMap<String, u32>,
+    pub explored: BTreeSet<String>,
+    pub obj_state: BTreeMap<String, ObjState>,
+    pub tile_edits: Vec<(String, i32, i32, u16)>,
+    pub ground: Vec<GroundItem>,
+    pub spells_known: BTreeSet<String>,
+    pub vehicle: Option<Vehicle>,
+    /// Objects the player placed (docked ships, dropped cannons): (map, x, y, kind).
+    #[serde(default)]
+    pub placed: Vec<(String, i32, i32, String)>,
     pub cheats: CheatState,
     pub weather: String,
     pub map_revealed: bool,
@@ -151,13 +214,21 @@ pub struct GameData {
 
 impl GameData {
     pub fn new(seed: u64, start_map: &str, start: [f32; 2]) -> Self {
-        Self {
+        let mut d = Self {
             seed,
             current_map: start_map.into(),
             clock: GameClock::default(),
             players: vec![PlayerData::new("Rune-Warden", start)],
             flags: BTreeSet::new(),
             quests: BTreeMap::new(),
+            counters: BTreeMap::new(),
+            explored: BTreeSet::new(),
+            obj_state: BTreeMap::new(),
+            tile_edits: vec![],
+            ground: vec![],
+            spells_known: BTreeSet::new(),
+            vehicle: None,
+            placed: vec![],
             cheats: CheatState::default(),
             weather: "clear".into(),
             map_revealed: false,
@@ -166,7 +237,9 @@ impl GameData {
             spells_all: false,
             cvars: BTreeMap::new(),
             map_dirty: true,
-        }
+        };
+        d.flags.insert("game_started".into());
+        d
     }
 }
 

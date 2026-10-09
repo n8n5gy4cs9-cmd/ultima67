@@ -45,5 +45,6 @@ pub fn generate_all(root: &Path) -> Result<Manifest, String> {
         std::fs::write(root.join(format!("music/{}.wav", t.id)), w).map_err(|e| e.to_string())?;
         m.add(&format!("music_{}", t.id), "music", &format!("music/{}.wav", t.id), t.use_, "16000 Hz mono WAV, 20 s loop");
     }
+    m.entries.push(manifest::Entry { id: "font_ui".into(), kind: "font".into(), path: "fonts/UI.ttf".into(), use_: "all in-game text (embedded as the default font)".into(), source: "DejaVu Sans (free licence, see fonts/LICENSE-DejaVu.txt)".into(), status: "final".into(), notes: "TTF with Latin Extended + runic glyphs; replace with any TTF that has ä ö å and keep the filename (rebuild required: it is embedded with include_bytes!)".into() });
     Ok(m)
 }

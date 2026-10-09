@@ -272,6 +272,20 @@ pub fn generate(seed: u64, world: &mut World) -> Map {
             m.places.insert(format!("spawn_wolf_{}", k + 1), c);
         }
     }
+    // the Kaupang gate (main quest) and the world-serpent's nest
+    if let Some(c) = find_site(&m, 0.51, 0.69, 8) {
+        sites::rune_ring(&mut m, c, 5, 8);
+        m.places.insert("kaupang_gate".into(), c);
+    }
+    'nest: for gy in (0..SIZE - 12).step_by(6).rev() {
+        for gx in (SIZE / 3..SIZE * 2 / 3).step_by(6) {
+            let ok = (0..9).all(|k| m.tile(TilePos::new(gx + k, gy + k)) == tiles::WATER_DEEP && m.tile(TilePos::new(gx + k, gy)) == tiles::WATER_DEEP);
+            if ok {
+                m.places.insert("jormungandr_nest".into(), TilePos::new(gx + 4, gy + 4));
+                break 'nest;
+            }
+        }
+    }
     // dungeon entrances (portals) -> cave maps
     let caves = [
         ("mimir_depths", 0.46f32, 0.46f32, tiles::ROCK, tiles::MOUNTAIN, 120),

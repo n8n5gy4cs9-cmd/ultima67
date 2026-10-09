@@ -17,6 +17,8 @@ pub enum AppState {
     Inventory,
     Dialogue,
     Console,
+    Menu,
+    Dead,
 }
 
 #[derive(Resource)]
@@ -41,6 +43,10 @@ pub struct Cli {
     pub time: Option<(u32, u32)>,
     pub frames: u32,
     pub zoom: Option<f32>,
+    /// console commands (separated by ';') to run once the game starts
+    pub cmds: Vec<String>,
+    /// open a screen at startup for visual checks: inventory|journal|cheats|map|travel|spells|laulu|dialogue|shop:<id>|craft:<station>|chest
+    pub ui: Option<String>,
 }
 
 impl Cli {
@@ -67,6 +73,14 @@ impl Cli {
                 }
                 "--frames" => {
                     c.frames = next.and_then(|n| n.parse().ok()).unwrap_or(90);
+                    i += 1;
+                }
+                "--ui" => {
+                    c.ui = next;
+                    i += 1;
+                }
+                "--cmd" => {
+                    c.cmds = next.map(|s| s.split(';').map(|x| x.trim().to_string()).filter(|x| !x.is_empty()).collect()).unwrap_or_default();
                     i += 1;
                 }
                 "--zoom" => {
@@ -129,6 +143,13 @@ struct BootText;
 #[derive(Resource, Default)]
 struct BootFrames(u32);
 
+/// Fresh world from the seed with all of `data`'s saved changes applied (used after loading a save).
+pub fn reset_world(paths: &Paths, data: &GameData) -> World {
+    let mut w = build_world(&paths.assets, data.seed);
+    crate::persist::apply_overrides(&mut w, data);
+    w
+}
+
 fn boot_start(mut commands: Commands) {
     commands.spawn(Camera2d);
     commands.spawn((BootText, Text::new("Generating Midgård..."), TextFont { font_size: 32.0, ..default() }, Node { position_type: PositionType::Absolute, left: Val::Px(40.0), top: Val::Px(40.0), ..default() }));
@@ -157,6 +178,18 @@ fn boot_work(mut frames: ResMut<BootFrames>, mut commands: Commands, paths: Res<
     }
     if let Some((h, m)) = cli.time {
         data.clock.set_hm(h, m);
+    }
+    let mut world = world;
+    crate::persist::apply_overrides(&mut world, &data);
+    match u67_world::db::Db::load(&paths.assets) {
+        Ok(db) => {
+            let problems = db.validate(&|p| world.find_place(p).is_some());
+            for p in &problems {
+                warn!("content: {p}");
+            }
+            commands.insert_resource(crate::db_res::DbRes(db));
+        }
+        Err(e) => panic!("content database failed to load: {e}"),
     }
     commands.insert_resource(WorldRes(world));
     commands.insert_resource(Game(data));
@@ -187,8 +220,9 @@ fn state_hotkeys(kb: Res<ButtonInput<KeyCode>>, keys: Res<KeyMap>, state: Res<St
         }
         Paused if pause => next.set(Playing),
         Inventory if inv || pause => next.set(Playing),
-        Console if pause => next.set(Playing),
+        Console if pause || con => next.set(Playing),
         Dialogue if pause => next.set(Playing),
+        Menu if pause => next.set(Playing),
         _ => {}
     }
 }
@@ -197,6 +231,12 @@ pub struct U67Plugin;
 
 impl Plugin for U67Plugin {
     fn build(&self, app: &mut App) {
+        // Latin-Extended capable default font (Väinämöinen, Jörmungandr, runes...)
+        if let Some(mut fonts) = app.world_mut().get_resource_mut::<Assets<Font>>() {
+            if let Ok(f) = Font::try_from_bytes(include_bytes!("../../../assets/fonts/UI.ttf").to_vec()) {
+                fonts.insert(&Handle::<Font>::default(), f);
+            }
+        }
         let paths = app.world().resource::<Paths>().clone();
         let settings = Settings::load_or_create(&paths.config);
         app.insert_resource(KeyMap::from_settings(&settings))
@@ -208,7 +248,7 @@ impl Plugin for U67Plugin {
             .add_systems(OnEnter(AppState::Boot), boot_start)
             .add_systems(Update, boot_work.run_if(in_state(AppState::Boot)))
             .add_systems(Update, (input::read_intent, state_hotkeys).run_if(not(in_state(AppState::Boot))))
-            .add_plugins((crate::render::RenderPlugin, crate::player::PlayerPlugin, crate::ui::UiPlugin, crate::debug::DebugPlugin));
+            .add_plugins((crate::render::RenderPlugin, crate::player::PlayerPlugin, crate::ui::UiPlugin, crate::debug::DebugPlugin, crate::npc::NpcPlugin, crate::creatures::CreaturePlugin, crate::combat::CombatPlugin, crate::interact::InteractPlugin, crate::magic::MagicPlugin, crate::audio::AudioPlugin, crate::gui::GuiPlugin, crate::hazards::HazardPlugin));
     }
 }
 

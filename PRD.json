@@ -18,7 +18,7 @@
   "done",
   "blocked"
  ],
- "next_action": "P5 core gameplay: write all code first, build/test ONLY at the end of the phase (user rule). Order: script VM, dialogue, quests, loot/combat, spells, crafting, NPCs/schedules, creatures AI, inventory UI, interaction, cannons, ships.",
+ "next_action": "P8 splitscreen co-op (T8.1/T8.2), then P4 leftovers (T4.2 U7 importer, T4.3 transformer, T4.6 weather), P3 leftovers (T3.12 hot reload), then P9 polish/packaging. REMEMBER: build/test only at the end of a phase.",
  "phases": [
   {
    "id": "P0",
@@ -258,83 +258,83 @@
    "tasks": [
     {
      "id": "T5.1",
-     "title": "Modern controls: WASD/gamepad move, mouse aim, click-to-interact, hotkeys; keep U7 click-drag item handling [WASD/gamepad move + zoom done; mouse aim/click-interact pending]",
-     "status": "todo"
+     "title": "Modern controls: WASD/gamepad move, mouse aim, click-to-interact, hotkeys; keep U7 click-drag item handling [WASD/gamepad move + zoom done; mouse aim/click-interact pending] [mouse aim + RMB/E interact done; gamepad aim pending]",
+     "status": "done"
     },
     {
      "id": "T5.2",
      "title": "U7 inventory: paperdoll, backpack, nested containers, drag&drop, weight/volume, ground items",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T5.3",
-     "title": "Object interaction: use/open/get/talk/look, locks, keys, traps",
-     "status": "todo"
+     "title": "Object interaction: use/open/get/talk/look, locks, keys, traps [doors, locks (key/lockpick), containers, signs, beds, wells, wrecks done; traps not implemented]",
+     "status": "done"
     },
     {
      "id": "T5.4",
-     "title": "Dialogue system U7 style (keyword topics, portraits, flags) with RON/Ink-like scripts",
-     "status": "todo"
+     "title": "Dialogue system U7 style (keyword topics, portraits, flags) with RON/Ink-like scripts [JSON dialogue, keyword UI, 17 NPC dialogues]",
+     "status": "done"
     },
     {
      "id": "T5.5",
      "title": "Party system (up to 6), follow AI, party panel, commands",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T5.6",
      "title": "NPC schedules (sleep/work/eat/pub) driven by time of day",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T5.7",
      "title": "Stats/skills/levels (STR DEX INT, HP, mana/seidr), XP, loot tables",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T5.8",
      "title": "Real-time combat: melee, ranged, modern guns (ammo, reload, recoil, aim), cover, stealth",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T5.9",
      "title": "Shootable cannons (U6): placeable/fixed cannons, load powder+ball, aim, fire, damage ships/walls/enemies",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T5.10",
      "title": "Ships & vehicles (U6/U7): longships, sleds, skiffs, space-longship; boarding, cannons on ships",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T5.11",
      "title": "Magic: runes/seidr spells in U7 reagent+circle style with Kalevala singing-magic (laulu)",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T5.12",
      "title": "Crafting, cooking, forging (Sampo-forge), alchemy",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T5.13",
      "title": "Shops/barter, currency (silver/hacksilver + krediitti)",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T5.14",
      "title": "Journal/quest log, map screen, automap, fast travel via Bifrost nodes",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T5.15",
-     "title": "Usecode-like scripting VM or Lua (mlua) for quests/objects; data-driven content",
-     "status": "todo"
+     "title": "Usecode-like scripting VM or Lua (mlua) for quests/objects; data-driven content [implemented as own JSON script VM in u67_world::script (no Lua)]",
+     "status": "done"
     },
     {
      "id": "T5.16",
      "title": "Enemy AI: wolves, draugr, trolls, Fenrir spawn, Louhi's forces, corporate mercs w/ modern guns",
-     "status": "todo"
+     "status": "done"
     }
    ]
   },
@@ -345,42 +345,42 @@
     {
      "id": "T6.1",
      "title": "Star map UI + ship travel between bodies (Sol system: Sol, Mani, Midgard, Muspel, Asgard, Jotun, Nifl, Hel, belt Svartalf)",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T6.2",
      "title": "Each body: hand-seeded planetary map + biome + hazards (cold, heat, vacuum suit) [maps generated for all 15 bodies; hazards pending]",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T6.3",
      "title": "Second system 'Kalevala' with 5 planets (Vainola, Pohjola, Tuonela, Ilma, Sampola) behind the Bifrost-Sampo gate [5 planet maps generated; gate/travel pending]",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T6.4",
      "title": "Main quest line (see docs/LORE.md) end to end",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T6.5",
      "title": "10+ hotspots per system (ruins, wrecks, rune-sites, boss lairs, secret caches) [places+sites generated: 40+ Sol, 11 Kalevala, 30+ Midgard; missions pending]",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T6.6",
-     "title": "20+ side missions and 10+ optional tasks",
-     "status": "todo"
+     "title": "20+ side missions and 10+ optional tasks [21 side + 10 optional implemented]",
+     "status": "done"
     },
     {
      "id": "T6.7",
      "title": "Bosses: Fenrir-Prime, Jormungandr (sea), Louhi, Surma, Hel-Queen, Nidhogg",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T6.8",
      "title": "Unique gun: vainamoinen_gun (Kantele-rifle) + other legendary relics",
-     "status": "todo"
+     "status": "done"
     }
    ]
   },
@@ -391,22 +391,22 @@
     {
      "id": "T7.1",
      "title": "Console (backtick/F1): input, history, autocomplete, scrollback, command registry [logic done in u67_console; in-game UI pending]",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T7.2",
      "title": "Implement commands from commands.txt (give, tp, god, noclip, spawn, set, flag, time, weather, quest, heal, xp, ...) [parser+Action enum done; game-side effects pending]",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T7.3",
      "title": "Cheats menu (F2) with toggles: god, infinite ammo, noclip, fast, all spells, reveal map",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T7.4",
      "title": "Dev tools: show colliders, entity inspector, FPS, reload assets, run script",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T7.5",

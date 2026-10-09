@@ -29,10 +29,6 @@ struct PauseRoot;
 struct ConsoleRoot;
 #[derive(Component)]
 struct ConsoleText;
-#[derive(Component)]
-struct InvRoot;
-#[derive(Component)]
-struct InvText;
 
 fn text_node(left: f32, top: f32) -> Node {
     Node { position_type: PositionType::Absolute, left: Val::Px(left), top: Val::Px(top), ..default() }
@@ -54,12 +50,13 @@ fn spawn_menu(mut commands: Commands, quick: Option<Res<HasQuicksave>>) {
     });
 }
 
-fn menu_input(kb: Res<ButtonInput<KeyCode>>, mut next: ResMut<NextState<AppState>>, mut exit: EventWriter<AppExit>, paths: Res<Paths>, mut game: ResMut<Game>, mut toast: ResMut<Toast>) {
+fn menu_input(kb: Res<ButtonInput<KeyCode>>, mut next: ResMut<NextState<AppState>>, mut exit: EventWriter<AppExit>, paths: Res<Paths>, mut game: ResMut<Game>, mut world: ResMut<WorldRes>, mut toast: ResMut<Toast>) {
     if kb.just_pressed(KeyCode::Enter) || kb.just_pressed(KeyCode::Space) {
         next.set(AppState::Playing);
     } else if kb.just_pressed(KeyCode::KeyC) {
         match crate::save::read(&paths.saves, None) {
             Ok(d) => {
+                world.0 = crate::app::reset_world(&paths, &d);
                 game.0 = d;
                 next.set(AppState::Playing);
             }
@@ -167,33 +164,6 @@ fn console_view(con: Res<ConsoleRes>, time: Res<Time>, mut q: Query<&mut Text, W
     t.0 = s;
 }
 
-fn spawn_inventory(mut commands: Commands) {
-    commands.spawn((InvRoot, overlay(0.8))).with_children(|p| {
-        p.spawn((Text::new("INVENTORY"), TextFont { font_size: 40.0, ..default() }));
-        p.spawn((InvText, Text::new(""), TextFont { font_size: 20.0, ..default() }));
-        p.spawn((Text::new("[I] close"), TextFont { font_size: 18.0, ..default() }));
-    });
-}
-
-fn inventory_view(game: Res<Game>, mut q: Query<&mut Text, With<InvText>>) {
-    let Ok(mut t) = q.single_mut() else { return };
-    let inv = &game.0.players[0].inventory;
-    let mut s = String::new();
-    for (slot, it) in &inv.equipped {
-        s += &format!("{slot:?}: {}\n", u67_world::items::get(&it.id).map_or(it.id.as_str(), |d| d.name));
-    }
-    fn walk(v: &[u67_world::inventory::Item], depth: usize, s: &mut String) {
-        for it in v {
-            let name = u67_world::items::get(&it.id).map_or(it.id.as_str(), |d| d.name);
-            *s += &format!("{}{}{}\n", "  ".repeat(depth), name, if it.qty > 1 { format!(" x{}", it.qty) } else { String::new() });
-            walk(&it.contents, depth + 1, s);
-        }
-    }
-    walk(&inv.pack, 0, &mut s);
-    s += &format!("\nweight {:.1}/{:.1}", inv.total_weight(), inv.max_weight);
-    t.0 = s;
-}
-
 fn quick_keys(kb: Res<ButtonInput<KeyCode>>, keys: Res<crate::input::KeyMap>, mut fx: EventWriter<EffectEvent>) {
     use crate::settings::Action;
     if keys.just_pressed(Action::QuickSave, &kb) {
@@ -224,9 +194,7 @@ impl Plugin for UiPlugin {
             .add_systems(OnEnter(Console), spawn_console)
             .add_systems(OnExit(Console), despawn_all::<ConsoleRoot>)
             .add_systems(Update, (console_input, console_view).chain().run_if(in_state(Console)))
-            .add_systems(OnEnter(Inventory), spawn_inventory)
-            .add_systems(OnExit(Inventory), despawn_all::<InvRoot>)
-            .add_systems(Update, inventory_view.run_if(in_state(Inventory)));
+;
         let _ = Cli::default;
     }
 }

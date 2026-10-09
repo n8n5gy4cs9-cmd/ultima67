@@ -92,7 +92,7 @@ fn spawn_camera_and_player(mut commands: Commands, game: Res<Game>, sheets: Res<
 }
 
 #[allow(clippy::too_many_arguments)]
-fn move_players(time: Res<Time>, mut game: ResMut<Game>, world: Res<WorldRes>, intent: Res<Intent>, mut q: Query<(&Player, &mut Motion)>, state: Res<State<AppState>>) {
+fn move_players(time: Res<Time>, mut game: ResMut<Game>, world: Res<WorldRes>, intent: Res<Intent>, mut q: Query<(&Player, &mut Motion)>, state: Res<State<AppState>>, rt: Res<crate::combat::PlayerRt>) {
     let dt = time.delta_secs();
     if *state.get() == AppState::Playing {
         game.0.clock.advance(dt);
@@ -104,19 +104,45 @@ fn move_players(time: Res<Time>, mut game: ResMut<Game>, world: Res<WorldRes>, i
         if *state.get() != AppState::Playing {
             continue;
         }
+        // sailing
+        if let Some(mut v) = game.0.vehicle.clone() {
+            let mv = intent.movement;
+            if mv.length() > 0.01 {
+                let speed = if intent.run { 8.0 } else { 5.5 };
+                let np = crate::interact::boat_step(map, Vec2::from(v.pos), mv * speed * dt);
+                m.moving = (np - Vec2::from(v.pos)).length() > 1e-4;
+                v.pos = np.into();
+                v.facing = dir_of(mv);
+            }
+            m.cur = Vec2::from(v.pos);
+            game.0.players[pl.0].pos = v.pos;
+            game.0.players[pl.0].facing = v.facing;
+            game.0.vehicle = Some(v);
+            continue;
+        }
+        if rt.roll_t > 0.0 {
+            // dodge roll moves the player (see combat::roll_move)
+            m.cur = Vec2::from(game.0.players[pl.0].pos);
+            m.moving = true;
+            continue;
+        }
         let cheats = game.0.cheats.clone();
         let mut v = if pl.0 == 0 { intent.movement } else { Vec2::ZERO };
         let mut speed = if intent.run { RUN } else { WALK };
         if cheats.fast {
             speed *= 3.0;
         }
+        if rt.haste > 0.0 {
+            speed *= 1.5;
+        }
         if v.length() > 0.01 {
             v = v.normalize_or_zero() * intent.movement.length() * speed * dt;
             let np = step(map, m.cur, v, cheats.noclip);
             m.moving = (np - m.cur).length() > 1e-4;
             m.cur = np;
-            let d = dir_of(intent.movement);
-            game.0.players[pl.0].facing = d;
+            if !rt.reload.is_some() || true {
+                game.0.players[pl.0].facing = dir_of(intent.movement);
+            }
         }
         game.0.players[pl.0].pos = m.cur.into();
         // portals
@@ -135,6 +161,13 @@ fn move_players(time: Res<Time>, mut game: ResMut<Game>, world: Res<WorldRes>, i
 /// After a teleport/load, snap player entities to the saved positions.
 fn sync_after_teleport(mut game: ResMut<Game>, mut q: Query<(&Player, &mut Motion)>) {
     if !game.0.map_dirty {
+        // external movement (roll, knockback) writes game positions; keep the entity in step
+        for (pl, mut m) in &mut q {
+            let p = Vec2::from(game.0.players[pl.0].pos);
+            if (p - m.cur).length() > 1e-4 && m.moving {
+                m.cur = p;
+            }
+        }
         return;
     }
     game.0.map_dirty = false;
@@ -161,12 +194,13 @@ fn render_players(time: Res<Time<Fixed>>, game: Res<Game>, mut q: Query<(&Player
     }
 }
 
-fn camera_follow(game: Res<Game>, zoom: Res<Zoom>, players: Query<&Transform, (With<Player>, Without<MainCamera>)>, mut cam: Query<&mut Transform, With<MainCamera>>) {
+fn camera_follow(game: Res<Game>, rt: Res<crate::combat::PlayerRt>, time: Res<Time>, zoom: Res<Zoom>, players: Query<&Transform, (With<Player>, Without<MainCamera>)>, mut cam: Query<&mut Transform, With<MainCamera>>) {
     let (Ok(mut c), Some(p)) = (cam.single_mut(), players.iter().next()) else { return };
     let _ = &game;
     let snap = |v: f32| (v * zoom.0).round() / zoom.0;
-    c.translation.x = snap(p.translation.x);
-    c.translation.y = snap(p.translation.y + 8.0);
+    let shake = if rt.shake > 0.0 { Vec2::new((time.elapsed_secs() * 90.0).sin(), (time.elapsed_secs() * 70.0).cos()) * rt.shake * 10.0 } else { Vec2::ZERO };
+    c.translation.x = snap(p.translation.x + shake.x);
+    c.translation.y = snap(p.translation.y + 8.0 + shake.y);
 }
 
 fn zoom_keys(kb: Res<ButtonInput<KeyCode>>, keys: Res<KeyMap>, mut zoom: ResMut<Zoom>, mut proj: Query<&mut Projection, With<MainCamera>>, cli: Res<crate::app::Cli>) {
@@ -189,10 +223,18 @@ fn zoom_keys(kb: Res<ButtonInput<KeyCode>>, keys: Res<KeyMap>, mut zoom: ResMut<
     }
 }
 
-fn daylight(game: Res<Game>, mut q: Query<&mut Sprite, With<Daylight>>) {
-    let a = (1.0 - game.0.clock.daylight()) * 0.62;
+fn daylight(game: Res<Game>, rt: Res<crate::combat::PlayerRt>, mut q: Query<&mut Sprite, With<Daylight>>) {
+    let underground = matches!(game.0.current_map.as_str(), "mimir_depths" | "barrow_1" | "barrow_2" | "fenrir_den" | "troll_cave" | "hel_gate_crypt");
+    let mut a = (1.0 - game.0.clock.daylight()) * 0.62;
+    if underground {
+        let lit = rt.light > 0.0 || game.0.players[0].inventory.count("torch") > 0;
+        a = if lit { 0.36 } else { 0.62 };
+    } else if rt.light > 0.0 {
+        a *= 0.6;
+    }
+    let hurt = rt.hurt_flash;
     for mut s in &mut q {
-        s.color = Color::srgba(0.04, 0.06, 0.22, a);
+        s.color = if hurt > 0.0 { Color::srgba(0.7, 0.0, 0.0, 0.35 * (hurt / 0.25)) } else { Color::srgba(0.04, 0.06, 0.22, a) };
     }
 }
 

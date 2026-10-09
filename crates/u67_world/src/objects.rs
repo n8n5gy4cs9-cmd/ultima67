@@ -21,7 +21,7 @@ pub const OBJECTS: &[ObjectDef] = &[
     o("birch_tree", true, false, false, 1),
     o("runestone", true, false, false, 2),
     o("longhouse_roof", false, true, false, 1),
-    o("door_wood", false, false, false, 2),
+    o("door_wood", true, false, false, 2),
     o("chest", true, false, true, 2),
     o("bed", false, false, false, 1),
     o("table", true, false, false, 1),
@@ -37,6 +37,7 @@ pub const OBJECTS: &[ObjectDef] = &[
     o("crate", true, false, true, 1),
     o("signpost", true, false, false, 1),
     o("wreck", true, false, false, 1),
+    o("door_open", false, false, false, 1),
 ];
 
 pub fn def(id: &str) -> Option<&'static ObjectDef> {
@@ -53,6 +54,9 @@ pub struct WorldObject {
     /// Building id (roofs with the same group hide when the player is inside that building). 0 = none.
     #[serde(default)]
     pub group: u16,
+    /// Container contents (chests, barrels, crates). `None` = never opened (loot is rolled on first open).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub contents: Option<Vec<crate::inventory::Item>>,
 }
 
 /// Axis-aligned building footprint (including walls).

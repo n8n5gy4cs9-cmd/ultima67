@@ -63,13 +63,31 @@ impl Map {
     pub fn add_object_in(&mut self, kind: &str, p: TilePos, group: u16) {
         debug_assert!(objects::def(kind).is_some(), "unknown object {kind}");
         let in_sync = self.index.built_len == self.objects.len();
-        self.objects.push(WorldObject { kind: kind.into(), pos: p, frame: 0, locked: false, group });
+        self.objects.push(WorldObject { kind: kind.into(), pos: p, frame: 0, locked: false, group, contents: None });
         if in_sync {
             if objects::def(kind).is_some_and(|d| d.blocking) {
                 self.index.blocked.insert(p);
             }
             self.index.built_len = self.objects.len();
         }
+    }
+    /// Change an object's kind (e.g. door open/close) and refresh the blocking cache.
+    pub fn set_object_kind(&mut self, idx: usize, kind: &str) {
+        if let Some(o) = self.objects.get_mut(idx) {
+            o.kind = kind.into();
+        }
+        self.reindex();
+    }
+    /// Remove an object. It becomes a tombstone (kind "removed") so other object indices stay valid.
+    pub fn remove_object(&mut self, idx: usize) -> Option<WorldObject> {
+        let o = self.objects.get(idx)?.clone();
+        if o.kind == "removed" {
+            return None;
+        }
+        self.objects[idx].kind = "removed".into();
+        self.objects[idx].contents = None;
+        self.reindex();
+        Some(o)
     }
     /// Rebuild the blocking-object cache. Call after loading or after editing `objects` directly.
     pub fn reindex(&mut self) {

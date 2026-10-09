@@ -142,9 +142,16 @@
       "h": 32
     },
     {
-      "name": "pine_tree_snow",
+      "name": "door_open",
       "x": 0,
       "y": 640,
+      "w": 32,
+      "h": 32
+    },
+    {
+      "name": "pine_tree_snow",
+      "x": 0,
+      "y": 672,
       "w": 32,
       "h": 32
     }

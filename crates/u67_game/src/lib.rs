@@ -1,11 +1,24 @@
-//! Ultima67 game library: pure logic (data, console actions, saves, settings) + Bevy app.
+//! Ultima67 game library: pure logic (data, console actions, saves, settings, rules) + Bevy app.
 pub mod app;
 pub mod apply;
+pub mod audio;
+pub mod combat;
+pub mod creatures;
 pub mod data;
+pub mod db_res;
 pub mod debug;
+pub mod gui;
+pub mod hazards;
 pub mod input;
+pub mod interact;
+pub mod invops;
+pub mod magic;
+pub mod menus;
+pub mod npc;
+pub mod persist;
 pub mod player;
 pub mod render;
 pub mod save;
+pub mod script;
 pub mod settings;
 pub mod ui;

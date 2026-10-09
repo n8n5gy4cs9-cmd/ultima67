@@ -118,6 +118,15 @@ pub const ITEMS: &[ItemDef] = &[
     it("gleipnir_chain", "Gleipnir Chain", Kind::Relic, 3.0),
     it("odin_eye", "Odin's Eye", Kind::Relic, 0.3),
     it("skidbladnir_ship", "Skíðblaðnir (folded)", Kind::Relic, 2.0),
+    // materials & misc
+    stack("scrap_iron", "Scrap Iron", Kind::Misc, 0.4),
+    stack("iron_ingot", "Iron Ingot", Kind::Misc, 0.8),
+    stack("leather", "Leather", Kind::Misc, 0.3),
+    stack("herb", "Healing Herb", Kind::Reagent, 0.05),
+    stack("raw_fish", "Raw Fish", Kind::Food, 0.4),
+    stack("rye_flour", "Rye Flour", Kind::Misc, 0.3),
+    stack("krediitti", "Krediitti", Kind::Misc, 0.01),
+    it("sampo", "The Sampo", Kind::Relic, 8.0),
     // reagents
     stack("reagent_birch_ash", "Birch Ash", Kind::Reagent, 0.1),
     stack("reagent_raven_feather", "Raven Feather", Kind::Reagent, 0.05),

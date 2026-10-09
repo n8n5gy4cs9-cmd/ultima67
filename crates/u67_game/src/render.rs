@@ -30,8 +30,14 @@ pub struct Sheets {
     pub objects_layout: Handle<TextureAtlasLayout>,
     pub chars_img: Handle<Image>,
     pub chars_layout: Handle<TextureAtlasLayout>,
+    pub items_img: Handle<Image>,
+    pub items_layout: Handle<TextureAtlasLayout>,
     pub terrain: TerrainPx,
 }
+
+/// Chunks whose terrain/objects changed (door opened, wall destroyed...) and must be rebuilt.
+#[derive(Resource, Default)]
+pub struct DirtyChunks(pub HashSet<(i32, i32)>);
 
 #[derive(Resource, Default)]
 struct Loaded {
@@ -40,9 +46,9 @@ struct Loaded {
 }
 
 #[derive(Resource, Default)]
-struct ChunkIndex {
-    map: String,
-    by_chunk: HashMap<(i32, i32), Vec<usize>>,
+pub struct ChunkIndex {
+    pub map: String,
+    pub by_chunk: HashMap<(i32, i32), Vec<usize>>,
 }
 
 #[derive(Component)]
@@ -64,12 +70,16 @@ pub fn load_sheets(mut commands: Commands, assets: Res<AssetServer>, paths: Res<
     let objects_layout = layouts.add(TextureAtlasLayout::from_grid(UVec2::splat(OBJ_CELL), 4, rows, None, None));
     let nchars = u67_assetgen::characters::names().len() as u32;
     let chars_layout = layouts.add(TextureAtlasLayout::from_grid(UVec2::splat(CHAR_CELL), CHAR_COLS, nchars * 4, None, None));
+    let nitems = u67_world::items::ITEMS.len() as u32;
+    let items_layout = layouts.add(TextureAtlasLayout::from_grid(UVec2::splat(16), 8, nitems.div_ceil(8), None, None));
     let img = image::open(paths.assets.join("gfx/terrain.png")).expect("assets/gfx/terrain.png missing - run: cargo run -p u67_assetgen").to_rgba8();
     commands.insert_resource(Sheets {
         objects_img: assets.load("gfx/objects.png"),
         objects_layout,
         chars_img: assets.load("gfx/characters.png"),
         chars_layout,
+        items_img: assets.load("gfx/items.png"),
+        items_layout,
         terrain: TerrainPx { w: img.width(), data: img.into_raw() },
     });
 }
@@ -136,6 +146,7 @@ fn stream_chunks(
     windows: Query<&Window>,
     settings: Res<SettingsRes>,
     zoom: Res<crate::player::Zoom>,
+    mut dirty: ResMut<DirtyChunks>,
 ) {
     let Some(map) = world.0.maps.get(&game.0.current_map) else { return };
     if loaded.map != game.0.current_map {
@@ -152,6 +163,17 @@ fn stream_chunks(
         }
     }
     let _ = &settings;
+    if !dirty.0.is_empty() {
+        for k in dirty.0.drain().collect::<Vec<_>>() {
+            if let Some(es) = loaded.chunks.remove(&k) {
+                for e in es {
+                    commands.entity(e).despawn();
+                }
+            }
+            let list: Vec<usize> = map.objects.iter().enumerate().filter(|(_, o)| o.pos.chunk() == k).map(|(i, _)| i).collect();
+            index.by_chunk.insert(k, list);
+        }
+    }
     let win = windows.single().map(|w| w.width().max(w.height())).unwrap_or(1280.0);
     let half_tiles = win / 2.0 / (zoom.0 * T);
     let r = (half_tiles / CHUNK as f32).ceil() as i32 + 1;
@@ -217,7 +239,7 @@ fn animate_objects(time: Res<Time>, mut q: Query<(&Flicker, &mut Sprite)>) {
 pub struct RenderPlugin;
 impl Plugin for RenderPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<Loaded>().init_resource::<ChunkIndex>().add_systems(Startup, load_sheets).add_systems(Update, (stream_chunks, hide_roofs, animate_objects).run_if(game_active));
+        app.init_resource::<DirtyChunks>().init_resource::<Loaded>().init_resource::<ChunkIndex>().add_systems(Startup, load_sheets).add_systems(Update, (stream_chunks, hide_roofs, animate_objects).run_if(game_active));
     }
 }
 

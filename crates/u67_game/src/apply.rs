@@ -22,6 +22,12 @@ pub enum Effect {
     Weather(String),
     Exec(String),
     Cast(String),
+    OpenShop(String),
+    OpenCraft(String),
+    Sleep,
+    Sfx(String),
+    Toast(String),
+    Teleported,
 }
 
 #[derive(Debug, Default)]
@@ -233,6 +239,7 @@ pub fn apply(d: &mut GameData, world: &World, a: Action) -> Outcome {
         }
         Action::SpellsAll => {
             d.spells_all = true;
+            d.spells_known.insert("*".into());
             o.say("all spells learned");
         }
         Action::Reagents => {
@@ -248,17 +255,18 @@ pub fn apply(d: &mut GameData, world: &World, a: Action) -> Outcome {
                     o.say("no quests");
                 }
                 for (k, v) in &d.quests {
-                    o.say(format!("{k}: {v:?}"));
+                    o.say(format!("{k}: {:?} (step {})", v.state, v.step));
                 }
             }
             QuestOp::Start => {
                 let id = id.unwrap_or_default();
-                d.quests.insert(id.clone(), QuestState::Active);
+                d.quests.insert(id.clone(), QuestProgress { state: QuestState::Active, step: 0 });
                 o.say(format!("quest started: {id}"));
             }
             QuestOp::Complete => {
                 let id = id.unwrap_or_default();
-                d.quests.insert(id.clone(), QuestState::Done);
+                let step = d.quests.get(&id).map_or(0, |q| q.step);
+                d.quests.insert(id.clone(), QuestProgress { state: QuestState::Done, step });
                 o.say(format!("quest completed: {id}"));
             }
             QuestOp::Reset => {
@@ -366,9 +374,9 @@ mod tests {
         run(&mut d, &w, "flag met_skald 1");
         assert!(d.flags.contains("met_skald"));
         run(&mut d, &w, "quest start norns");
-        assert_eq!(d.quests["norns"], QuestState::Active);
+        assert_eq!(d.quests["norns"].state, QuestState::Active);
         run(&mut d, &w, "quest complete norns");
-        assert_eq!(d.quests["norns"], QuestState::Done);
+        assert_eq!(d.quests["norns"].state, QuestState::Done);
         run(&mut d, &w, "party add valkyrie");
         assert_eq!(d.party, vec!["valkyrie"]);
         run(&mut d, &w, "money 100");

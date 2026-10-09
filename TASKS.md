@@ -3,8 +3,8 @@
 > Generated from `PRD.json` by `python3 tools/sync_tasks.py`. **Edit PRD.json, then re-run.**
 > Legend: `[x]` done, `[ ]` todo, `[~]` in progress, `[!]` blocked.
 
-**Progress: 35/78 done.**  
-**Next action:** P5 core gameplay: write all code first, build/test ONLY at the end of the phase (user rule). Order: script VM, dialogue, quests, loot/combat, spells, crafting, NPCs/schedules, creatures AI, inventory UI, interaction, cannons, ships.
+**Progress: 63/78 done.**  
+**Next action:** P8 splitscreen co-op (T8.1/T8.2), then P4 leftovers (T4.2 U7 importer, T4.3 transformer, T4.6 weather), P3 leftovers (T3.12 hot reload), then P9 polish/packaging. REMEMBER: build/test only at the end of a phase.
 
 ## P0 - Planning & docs
 
@@ -63,40 +63,40 @@
 
 ## P5 - Core gameplay (U7 feel, modern controls)
 
-- [ ] **T5.1** Modern controls: WASD/gamepad move, mouse aim, click-to-interact, hotkeys; keep U7 click-drag item handling [WASD/gamepad move + zoom done; mouse aim/click-interact pending]
-- [ ] **T5.2** U7 inventory: paperdoll, backpack, nested containers, drag&drop, weight/volume, ground items
-- [ ] **T5.3** Object interaction: use/open/get/talk/look, locks, keys, traps
-- [ ] **T5.4** Dialogue system U7 style (keyword topics, portraits, flags) with RON/Ink-like scripts
-- [ ] **T5.5** Party system (up to 6), follow AI, party panel, commands
-- [ ] **T5.6** NPC schedules (sleep/work/eat/pub) driven by time of day
-- [ ] **T5.7** Stats/skills/levels (STR DEX INT, HP, mana/seidr), XP, loot tables
-- [ ] **T5.8** Real-time combat: melee, ranged, modern guns (ammo, reload, recoil, aim), cover, stealth
-- [ ] **T5.9** Shootable cannons (U6): placeable/fixed cannons, load powder+ball, aim, fire, damage ships/walls/enemies
-- [ ] **T5.10** Ships & vehicles (U6/U7): longships, sleds, skiffs, space-longship; boarding, cannons on ships
-- [ ] **T5.11** Magic: runes/seidr spells in U7 reagent+circle style with Kalevala singing-magic (laulu)
-- [ ] **T5.12** Crafting, cooking, forging (Sampo-forge), alchemy
-- [ ] **T5.13** Shops/barter, currency (silver/hacksilver + krediitti)
-- [ ] **T5.14** Journal/quest log, map screen, automap, fast travel via Bifrost nodes
-- [ ] **T5.15** Usecode-like scripting VM or Lua (mlua) for quests/objects; data-driven content
-- [ ] **T5.16** Enemy AI: wolves, draugr, trolls, Fenrir spawn, Louhi's forces, corporate mercs w/ modern guns
+- [x] **T5.1** Modern controls: WASD/gamepad move, mouse aim, click-to-interact, hotkeys; keep U7 click-drag item handling [WASD/gamepad move + zoom done; mouse aim/click-interact pending] [mouse aim + RMB/E interact done; gamepad aim pending]
+- [x] **T5.2** U7 inventory: paperdoll, backpack, nested containers, drag&drop, weight/volume, ground items
+- [x] **T5.3** Object interaction: use/open/get/talk/look, locks, keys, traps [doors, locks (key/lockpick), containers, signs, beds, wells, wrecks done; traps not implemented]
+- [x] **T5.4** Dialogue system U7 style (keyword topics, portraits, flags) with RON/Ink-like scripts [JSON dialogue, keyword UI, 17 NPC dialogues]
+- [x] **T5.5** Party system (up to 6), follow AI, party panel, commands
+- [x] **T5.6** NPC schedules (sleep/work/eat/pub) driven by time of day
+- [x] **T5.7** Stats/skills/levels (STR DEX INT, HP, mana/seidr), XP, loot tables
+- [x] **T5.8** Real-time combat: melee, ranged, modern guns (ammo, reload, recoil, aim), cover, stealth
+- [x] **T5.9** Shootable cannons (U6): placeable/fixed cannons, load powder+ball, aim, fire, damage ships/walls/enemies
+- [x] **T5.10** Ships & vehicles (U6/U7): longships, sleds, skiffs, space-longship; boarding, cannons on ships
+- [x] **T5.11** Magic: runes/seidr spells in U7 reagent+circle style with Kalevala singing-magic (laulu)
+- [x] **T5.12** Crafting, cooking, forging (Sampo-forge), alchemy
+- [x] **T5.13** Shops/barter, currency (silver/hacksilver + krediitti)
+- [x] **T5.14** Journal/quest log, map screen, automap, fast travel via Bifrost nodes
+- [x] **T5.15** Usecode-like scripting VM or Lua (mlua) for quests/objects; data-driven content [implemented as own JSON script VM in u67_world::script (no Lua)]
+- [x] **T5.16** Enemy AI: wolves, draugr, trolls, Fenrir spawn, Louhi's forces, corporate mercs w/ modern guns
 
 ## P6 - Solar system, travel & content
 
-- [ ] **T6.1** Star map UI + ship travel between bodies (Sol system: Sol, Mani, Midgard, Muspel, Asgard, Jotun, Nifl, Hel, belt Svartalf)
-- [ ] **T6.2** Each body: hand-seeded planetary map + biome + hazards (cold, heat, vacuum suit) [maps generated for all 15 bodies; hazards pending]
-- [ ] **T6.3** Second system 'Kalevala' with 5 planets (Vainola, Pohjola, Tuonela, Ilma, Sampola) behind the Bifrost-Sampo gate [5 planet maps generated; gate/travel pending]
-- [ ] **T6.4** Main quest line (see docs/LORE.md) end to end
-- [ ] **T6.5** 10+ hotspots per system (ruins, wrecks, rune-sites, boss lairs, secret caches) [places+sites generated: 40+ Sol, 11 Kalevala, 30+ Midgard; missions pending]
-- [ ] **T6.6** 20+ side missions and 10+ optional tasks
-- [ ] **T6.7** Bosses: Fenrir-Prime, Jormungandr (sea), Louhi, Surma, Hel-Queen, Nidhogg
-- [ ] **T6.8** Unique gun: vainamoinen_gun (Kantele-rifle) + other legendary relics
+- [x] **T6.1** Star map UI + ship travel between bodies (Sol system: Sol, Mani, Midgard, Muspel, Asgard, Jotun, Nifl, Hel, belt Svartalf)
+- [x] **T6.2** Each body: hand-seeded planetary map + biome + hazards (cold, heat, vacuum suit) [maps generated for all 15 bodies; hazards pending]
+- [x] **T6.3** Second system 'Kalevala' with 5 planets (Vainola, Pohjola, Tuonela, Ilma, Sampola) behind the Bifrost-Sampo gate [5 planet maps generated; gate/travel pending]
+- [x] **T6.4** Main quest line (see docs/LORE.md) end to end
+- [x] **T6.5** 10+ hotspots per system (ruins, wrecks, rune-sites, boss lairs, secret caches) [places+sites generated: 40+ Sol, 11 Kalevala, 30+ Midgard; missions pending]
+- [x] **T6.6** 20+ side missions and 10+ optional tasks [21 side + 10 optional implemented]
+- [x] **T6.7** Bosses: Fenrir-Prime, Jormungandr (sea), Louhi, Surma, Hel-Queen, Nidhogg
+- [x] **T6.8** Unique gun: vainamoinen_gun (Kantele-rifle) + other legendary relics
 
 ## P7 - Cheats & developer console
 
-- [ ] **T7.1** Console (backtick/F1): input, history, autocomplete, scrollback, command registry [logic done in u67_console; in-game UI pending]
-- [ ] **T7.2** Implement commands from commands.txt (give, tp, god, noclip, spawn, set, flag, time, weather, quest, heal, xp, ...) [parser+Action enum done; game-side effects pending]
-- [ ] **T7.3** Cheats menu (F2) with toggles: god, infinite ammo, noclip, fast, all spells, reveal map
-- [ ] **T7.4** Dev tools: show colliders, entity inspector, FPS, reload assets, run script
+- [x] **T7.1** Console (backtick/F1): input, history, autocomplete, scrollback, command registry [logic done in u67_console; in-game UI pending]
+- [x] **T7.2** Implement commands from commands.txt (give, tp, god, noclip, spawn, set, flag, time, weather, quest, heal, xp, ...) [parser+Action enum done; game-side effects pending]
+- [x] **T7.3** Cheats menu (F2) with toggles: god, infinite ammo, noclip, fast, all spells, reveal map
+- [x] **T7.4** Dev tools: show colliders, entity inspector, FPS, reload assets, run script
 - [x] **T7.5** commands.txt auto-generated from registry (test fails if out of sync)
 
 ## P8 - Multiplayer

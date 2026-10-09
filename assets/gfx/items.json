@@ -317,65 +317,121 @@
       "h": 16
     },
     {
-      "name": "reagent_birch_ash",
+      "name": "scrap_iron",
       "x": 80,
       "y": 80,
       "w": 16,
       "h": 16
     },
     {
-      "name": "reagent_raven_feather",
+      "name": "iron_ingot",
       "x": 96,
       "y": 80,
       "w": 16,
       "h": 16
     },
     {
-      "name": "reagent_amber",
+      "name": "leather",
       "x": 112,
       "y": 80,
       "w": 16,
       "h": 16
     },
     {
-      "name": "reagent_fly_agaric",
+      "name": "herb",
       "x": 0,
       "y": 96,
       "w": 16,
       "h": 16
     },
     {
-      "name": "reagent_bog_iron",
+      "name": "raw_fish",
       "x": 16,
       "y": 96,
       "w": 16,
       "h": 16
     },
     {
-      "name": "backpack",
+      "name": "rye_flour",
       "x": 32,
       "y": 96,
       "w": 16,
       "h": 16
     },
     {
-      "name": "chest",
+      "name": "krediitti",
       "x": 48,
       "y": 96,
       "w": 16,
       "h": 16
     },
     {
-      "name": "pouch",
+      "name": "sampo",
       "x": 64,
       "y": 96,
       "w": 16,
       "h": 16
     },
     {
-      "name": "ammo_box",
+      "name": "reagent_birch_ash",
       "x": 80,
       "y": 96,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "reagent_raven_feather",
+      "x": 96,
+      "y": 96,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "reagent_amber",
+      "x": 112,
+      "y": 96,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "reagent_fly_agaric",
+      "x": 0,
+      "y": 112,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "reagent_bog_iron",
+      "x": 16,
+      "y": 112,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "backpack",
+      "x": 32,
+      "y": 112,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "chest",
+      "x": 48,
+      "y": 112,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "pouch",
+      "x": 64,
+      "y": 112,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "ammo_box",
+      "x": 80,
+      "y": 112,
       "w": 16,
       "h": 16
     }

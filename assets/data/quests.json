@@ -1,0 +1,1733 @@
+[
+ {
+  "id": "m01_hum_of_the_gate",
+  "title": "The Hum of the Gate",
+  "desc": "A Bifrost gate near Kaupang has begun to hum, and the dead are walking out of it.",
+  "category": "main",
+  "steps": [
+   {
+    "text": "Speak to Eirikr the Skald in the Kaupang tavern.",
+    "when": {
+     "is": "flag",
+     "flag": "talked_eirikr"
+    }
+   },
+   {
+    "text": "Stock up: carry at least 60 rounds of 9mm (Brokk Jr. sells them at the forge).",
+    "when": {
+     "is": "has_item",
+     "item": "ammo_9mm",
+     "count": 60
+    }
+   },
+   {
+    "text": "Investigate the humming Bifrost gate north of Kaupang.",
+    "when": {
+     "is": "flag",
+     "flag": "at_midgard_kaupang_gate"
+    }
+   },
+   {
+    "text": "Destroy the draugr crawling out of the gate (3).",
+    "when": {
+     "is": "counter",
+     "counter": "kills_draugr",
+     "min": 3
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 150
+   },
+   {
+    "op": "give",
+    "item": "medkit",
+    "count": 2
+   },
+   {
+    "op": "money",
+    "amount": 100
+   },
+   {
+    "op": "set_flag",
+    "flag": "gate_secured"
+   },
+   {
+    "op": "toast",
+    "text": "The gate falls quiet... for now."
+   }
+  ],
+  "start_when": {
+   "is": "flag",
+   "flag": "game_started"
+  }
+ },
+ {
+  "id": "m02_warband",
+  "title": "Gather the Warband",
+  "desc": "You cannot face the Nine Realms alone. Recruit allies.",
+  "category": "main",
+  "steps": [
+   {
+    "text": "Recruit Sigrun the Valkyrie (she drinks at the jarl's hall in Kaupang).",
+    "when": {
+     "is": "in_party",
+     "npc": "sigrun"
+    }
+   },
+   {
+    "text": "Recruit Brokk Jr. the gunsmith (at his forge in Kaupang).",
+    "when": {
+     "is": "in_party",
+     "npc": "brokk_jr"
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 200
+   },
+   {
+    "op": "give",
+    "item": "round_shield",
+    "count": 1
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m01_hum_of_the_gate",
+   "state": "done"
+  }
+ },
+ {
+  "id": "m03_three_threads",
+  "title": "The Three Threads",
+  "desc": "Urðr, Verðandi and Skuld spun three threads. They lie in Midgård's barrows and Mimir's Well.",
+  "category": "main",
+  "steps": [
+   {
+    "text": "Drink at Mimir's Well in the heart of Midgård.",
+    "when": {
+     "is": "flag",
+     "flag": "at_midgard_mimir_well"
+    }
+   },
+   {
+    "text": "Defeat the Barrow King of the western barrow (Verðandi's thread).",
+    "when": {
+     "is": "flag",
+     "flag": "at_barrow_2_boss"
+    }
+   },
+   {
+    "text": "Defeat the Barrow King of the eastern barrow (Skuld's thread).",
+    "when": {
+     "is": "flag",
+     "flag": "at_barrow_1_boss"
+    }
+   },
+   {
+    "text": "Slay the Barrow King (kill count 2).",
+    "when": {
+     "is": "counter",
+     "counter": "kills_barrow_king",
+     "min": 2
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 350
+   },
+   {
+    "op": "give",
+    "item": "thor_amulet",
+    "count": 1
+   },
+   {
+    "op": "unlock_travel",
+    "node": "midgard"
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m02_warband",
+   "state": "done"
+  }
+ },
+ {
+  "id": "m04_naglfar_ii",
+  "title": "A Ship for the Void",
+  "desc": "Your longship can sail between worlds. Learn to pilot it.",
+  "category": "main",
+  "steps": [
+   {
+    "text": "Board your longship at the Kaupang docks.",
+    "when": {
+     "is": "flag",
+     "flag": "boarded_ship"
+    }
+   },
+   {
+    "text": "Open the star map (M while aboard) and sail to Máni, the Moon.",
+    "when": {
+     "is": "in_map",
+     "map": "maani"
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 250
+   },
+   {
+    "op": "give",
+    "item": "vacuum_suit",
+    "count": 1
+   },
+   {
+    "op": "money",
+    "amount": 150
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m03_three_threads",
+   "state": "done"
+  }
+ },
+ {
+  "id": "m05_fenrir_prime",
+  "title": "Fenrir, Unchained",
+  "desc": "Gleipnir has failed; Fenrir roams the lunar craters.",
+  "category": "main",
+  "steps": [
+   {
+    "text": "Reach Sköll Crater on Máni.",
+    "when": {
+     "is": "flag",
+     "flag": "at_maani_skoll_crater"
+    }
+   },
+   {
+    "text": "Slay Fenrir, Unchained.",
+    "when": {
+     "is": "counter",
+     "counter": "kills_fenrir_prime",
+     "min": 1
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 900
+   },
+   {
+    "op": "money",
+    "amount": 300
+   },
+   {
+    "op": "set_flag",
+    "flag": "fenrir_dead"
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m04_naglfar_ii",
+   "state": "done"
+  }
+ },
+ {
+  "id": "m06_gleipnir_two",
+  "title": "Forging Gleipnir-II",
+  "desc": "Only the dwarves of Dvalinn can forge a new chain.",
+  "category": "main",
+  "steps": [
+   {
+    "text": "Travel to Dvalinn and speak with Brokkr at his forge.",
+    "when": {
+     "is": "flag",
+     "flag": "at_dvalinn_brokkr_forge"
+    }
+   },
+   {
+    "text": "Defeat the Molten Golem for bog iron (3).",
+    "when": {
+     "is": "has_item",
+     "item": "reagent_bog_iron",
+     "count": 3
+    }
+   },
+   {
+    "text": "Forge Gleipnir-II (5 iron ingots, 3 bog iron, 2 amber).",
+    "when": {
+     "is": "has_item",
+     "item": "gleipnir_chain",
+     "count": 1
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 700
+   },
+   {
+    "op": "give",
+    "item": "kevlar_vest",
+    "count": 1
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m05_fenrir_prime",
+   "state": "done"
+  }
+ },
+ {
+  "id": "m07_surtr_bunker",
+  "title": "Surtr's Bunker 7",
+  "desc": "Fire giants hold an old bunker on Múspelheimr.",
+  "category": "main",
+  "steps": [
+   {
+    "text": "Land on Múspelheimr and reach Bunker 7.",
+    "when": {
+     "is": "flag",
+     "flag": "at_muspelheimr_surtr_bunker_7"
+    }
+   },
+   {
+    "text": "Slay Surtr.",
+    "when": {
+     "is": "counter",
+     "counter": "kills_surtr",
+     "min": 1
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 1200
+   },
+   {
+    "op": "give",
+    "item": "gungnir_sniper",
+    "count": 1
+   },
+   {
+    "op": "money",
+    "amount": 400
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m06_gleipnir_two",
+   "state": "done"
+  }
+ },
+ {
+  "id": "m08_vanir_alliance",
+  "title": "The Vanir Alliance",
+  "desc": "The Vanir of Vanaheimr can be allies against Aesir Dynamics.",
+  "category": "main",
+  "steps": [
+   {
+    "text": "Visit Freyja's grove on Vanaheimr.",
+    "when": {
+     "is": "flag",
+     "flag": "at_vanaheimr_freyja_grove"
+    }
+   },
+   {
+    "text": "Earn the Vanir's trust (bring Freyja ten mead).",
+    "when": {
+     "is": "flag",
+     "flag": "vanir_allied"
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 500
+   },
+   {
+    "op": "learn",
+    "spell": "tuuli"
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m07_surtr_bunker",
+   "state": "done"
+  }
+ },
+ {
+  "id": "m09_odins_vault",
+  "title": "Odin's Vault",
+  "desc": "The Allfather's vault in Ásgarðr holds a way to open the Sampo Gate.",
+  "category": "main",
+  "steps": [
+   {
+    "text": "Reach Valhalla Hall in Ásgarðr.",
+    "when": {
+     "is": "flag",
+     "flag": "at_asgard_valhalla_hall"
+    }
+   },
+   {
+    "text": "Speak with Heimdall and take Odin's Eye.",
+    "when": {
+     "is": "has_item",
+     "item": "odin_eye",
+     "count": 1
+    }
+   },
+   {
+    "text": "Enter Odin's Vault.",
+    "when": {
+     "is": "flag",
+     "flag": "at_asgard_odin_vault"
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 900
+   },
+   {
+    "op": "give",
+    "item": "skidbladnir_ship",
+    "count": 1
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m08_vanir_alliance",
+   "state": "done"
+  }
+ },
+ {
+  "id": "m10_hel_bargain",
+  "title": "The Bargain of Hel",
+  "desc": "Hel keeps the dead of Midgård's barrows. Strike a bargain.",
+  "category": "main",
+  "steps": [
+   {
+    "text": "Reach Helheim Hall on Hel.",
+    "when": {
+     "is": "flag",
+     "flag": "at_hel_helheim_hall"
+    }
+   },
+   {
+    "text": "Parley with Queen Hel (ask about 'bargain').",
+    "when": {
+     "is": "flag",
+     "flag": "hel_bargain_made"
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 900
+   },
+   {
+    "op": "money",
+    "amount": 300
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m09_odins_vault",
+   "state": "done"
+  }
+ },
+ {
+  "id": "m11_ginnungagap",
+  "title": "Ginnungagap",
+  "desc": "Beyond Neptune's orbit a gate sleeps in the void.",
+  "category": "main",
+  "steps": [
+   {
+    "text": "Sail to Ginnungagap.",
+    "when": {
+     "is": "in_map",
+     "map": "ginnungagap"
+    }
+   },
+   {
+    "text": "Reach the Sampo Gate.",
+    "when": {
+     "is": "flag",
+     "flag": "at_ginnungagap_sampo_gate"
+    }
+   },
+   {
+    "text": "Defeat Aesir Dynamics' gate guard (2 captains).",
+    "when": {
+     "is": "counter",
+     "counter": "kills_merc_captain",
+     "min": 2
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 1000
+   },
+   {
+    "op": "set_flag",
+    "flag": "sampo_gate_open"
+   },
+   {
+    "op": "toast",
+    "text": "The Sampo Gate opens: the Kalevala system is reachable!"
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m10_hel_bargain",
+   "state": "done"
+  }
+ },
+ {
+  "id": "m12_kalevala",
+  "title": "Beyond the Gate",
+  "desc": "Väinölä, home of the old singer, waits across the black.",
+  "category": "main",
+  "steps": [
+   {
+    "text": "Land on Väinölä.",
+    "when": {
+     "is": "in_map",
+     "map": "vainola"
+    }
+   },
+   {
+    "text": "Meet Väinämöinen and take his kantele-rifle.",
+    "when": {
+     "is": "has_item",
+     "item": "vainamoinen_gun",
+     "count": 1
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 1200
+   },
+   {
+    "op": "learn",
+    "spell": "vainon_laulu"
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m11_ginnungagap",
+   "state": "done"
+  }
+ },
+ {
+  "id": "m13_sampo_shards",
+  "title": "The Five Shards",
+  "desc": "The Sampo was broken into five; each lies under a guardian.",
+  "category": "main",
+  "steps": [
+   {
+    "text": "Shard I: defeat the Hero's Guardian at the Kantele Temple on Väinölä.",
+    "when": {
+     "is": "has_item",
+     "item": "sampo_shard_1",
+     "count": 1
+    }
+   },
+   {
+    "text": "Shard II: defeat the Pohjola Iron Guard.",
+    "when": {
+     "is": "has_item",
+     "item": "sampo_shard_2",
+     "count": 1
+    }
+   },
+   {
+    "text": "Shard III: slay Surma in Tuonela.",
+    "when": {
+     "is": "has_item",
+     "item": "sampo_shard_3",
+     "count": 1
+    }
+   },
+   {
+    "text": "Shard IV: defeat Ukko's Storm-Spirit on Ilma.",
+    "when": {
+     "is": "has_item",
+     "item": "sampo_shard_4",
+     "count": 1
+    }
+   },
+   {
+    "text": "Shard V: break the Sampo Golem on Sampola.",
+    "when": {
+     "is": "has_item",
+     "item": "sampo_shard_5",
+     "count": 1
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 3000
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m12_kalevala",
+   "state": "done"
+  }
+ },
+ {
+  "id": "m14_reforge_sampo",
+  "title": "Reforging the Sampo",
+  "desc": "Mend the Sampo at the ruined forge of Sampola.",
+  "category": "main",
+  "steps": [
+   {
+    "text": "Bring the shards to the Sampo forge ruin on Sampola.",
+    "when": {
+     "is": "flag",
+     "flag": "at_sampola_sampo_forge_ruin"
+    }
+   },
+   {
+    "text": "Reforge the Sampo.",
+    "when": {
+     "is": "has_item",
+     "item": "sampo",
+     "count": 1
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 2500
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m13_sampo_shards",
+   "state": "done"
+  }
+ },
+ {
+  "id": "m15_louhi",
+  "title": "Mistress of Pohjola",
+  "desc": "Louhi pulls the sun's light through the Sampo Gate. End her.",
+  "category": "main",
+  "steps": [
+   {
+    "text": "Reach Louhi's wreck-fortress on Pohjola.",
+    "when": {
+     "is": "flag",
+     "flag": "at_pohjola_louhi_wreck"
+    }
+   },
+   {
+    "text": "Defeat Louhi.",
+    "when": {
+     "is": "counter",
+     "counter": "kills_louhi",
+     "min": 1
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 5000
+   },
+   {
+    "op": "set_flag",
+    "flag": "game_won"
+   },
+   {
+    "op": "toast",
+    "text": "Louhi falls. The nine realms exhale. (You may keep playing.)"
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m14_reforge_sampo",
+   "state": "done"
+  }
+ },
+ {
+  "id": "s01_wolf_cull",
+  "title": "Wolf Cull",
+  "desc": "Jarl Hrafnkel will pay for eight wolves.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Slay 8 wolves.",
+    "when": {
+     "is": "counter",
+     "counter": "kills_wolf",
+     "min": 8
+    }
+   },
+   {
+    "text": "Report to the jarl (talk to him).",
+    "when": {
+     "is": "flag",
+     "flag": "wolf_cull_reported"
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 100
+   },
+   {
+    "op": "money",
+    "amount": 80
+   }
+  ]
+ },
+ {
+  "id": "s02_aesir_raiders",
+  "title": "Aesir Raiders",
+  "desc": "Aesir Dynamics mercs camp along the coast.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Slay 5 Aesir mercenaries.",
+    "when": {
+     "is": "counter",
+     "counter": "kills_merc",
+     "min": 5
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 160
+   },
+   {
+    "op": "money",
+    "amount": 120
+   },
+   {
+    "op": "give",
+    "item": "cannon_ball",
+    "count": 3
+   }
+  ]
+ },
+ {
+  "id": "s03_mead_for_the_vanir",
+  "title": "Mead for the Vanir",
+  "desc": "Freyja wants ten mead for the festival.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Deliver ten mead to Freyja.",
+    "when": {
+     "is": "flag",
+     "flag": "vanir_allied"
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 120
+   },
+   {
+    "op": "give",
+    "item": "reagent_amber",
+    "count": 3
+   }
+  ]
+ },
+ {
+  "id": "s04_lost_runestones",
+  "title": "Lost Runestones",
+  "desc": "Rune rings across Midgård amplify the gate. Find them all.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Visit 6 rune rings.",
+    "when": {
+     "is": "counter",
+     "counter": "runes_found",
+     "min": 6
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 200
+   },
+   {
+    "op": "give",
+    "item": "reagent_amber",
+    "count": 4
+   }
+  ]
+ },
+ {
+  "id": "s05_ratatoskr",
+  "title": "Ratatoskr's Message",
+  "desc": "The squirrel courier of Yggdrasil carries gossip. Follow it.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Visit Nidaros.",
+    "when": {
+     "is": "flag",
+     "flag": "at_midgard_nidaros"
+    }
+   },
+   {
+    "text": "Visit Birka.",
+    "when": {
+     "is": "flag",
+     "flag": "at_midgard_birka"
+    }
+   },
+   {
+    "text": "Visit Sigtuna.",
+    "when": {
+     "is": "flag",
+     "flag": "at_midgard_sigtuna"
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 140
+   },
+   {
+    "op": "money",
+    "amount": 60
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m01_hum_of_the_gate",
+   "state": "done"
+  }
+ },
+ {
+  "id": "s06_repair_relay",
+  "title": "Repair the Bifrost Relay",
+  "desc": "Brokk Jr. needs ten scrap iron.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Bring Brokk Jr. 10 scrap iron.",
+    "when": {
+     "is": "flag",
+     "flag": "relay_repaired"
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 120
+   },
+   {
+    "op": "give",
+    "item": "ammo_762",
+    "count": 30
+   },
+   {
+    "op": "give",
+    "item": "gunpowder",
+    "count": 5
+   }
+  ]
+ },
+ {
+  "id": "s07_rescue_miners",
+  "title": "Rescue the Miners",
+  "desc": "Dark-elf raiders hold the miners' wreck in the asteroid belt.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Reach the miner wreck in Svartálfheimr.",
+    "when": {
+     "is": "flag",
+     "flag": "at_svartalfheimr_miner_wreck"
+    }
+   },
+   {
+    "text": "Slay 6 dark-elf raiders.",
+    "when": {
+     "is": "counter",
+     "counter": "kills_svartalf",
+     "min": 6
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 260
+   },
+   {
+    "op": "money",
+    "amount": 200
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m04_naglfar_ii",
+   "state": "done"
+  }
+ },
+ {
+  "id": "s08_thors_hammer",
+  "title": "Thor's Hammer-Drone",
+  "desc": "Rumour says the Barrow King wields a drone-hammer.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Take the hammer from the Barrow King.",
+    "when": {
+     "is": "has_item",
+     "item": "mjolnir_drone",
+     "count": 1
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 300
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m03_three_threads",
+   "state": "active"
+  }
+ },
+ {
+  "id": "s09_frozen_wreck",
+  "title": "Frozen Wreck Salvage",
+  "desc": "A frozen ship lies on Jötunheimr.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Reach the frozen wreck.",
+    "when": {
+     "is": "flag",
+     "flag": "at_jotunheimr_frozen_wreck"
+    }
+   },
+   {
+    "text": "Salvage a vacuum suit or ammunition from it (carry 10 scrap iron).",
+    "when": {
+     "is": "has_item",
+     "item": "scrap_iron",
+     "count": 10
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 220
+   },
+   {
+    "op": "money",
+    "amount": 150
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m04_naglfar_ii",
+   "state": "done"
+  }
+ },
+ {
+  "id": "s10_smugglers_dilemma",
+  "title": "Smuggler's Dilemma",
+  "desc": "Smugglers on Svartálfheimr offer a deal.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Visit the smuggler rock.",
+    "when": {
+     "is": "flag",
+     "flag": "at_svartalfheimr_smuggler_rock"
+    }
+   },
+   {
+    "text": "Carry 300 silver.",
+    "when": {
+     "is": "has_item",
+     "item": "silver",
+     "count": 300
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 180
+   },
+   {
+    "op": "give",
+    "item": "reagent_raven_feather",
+    "count": 5
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m04_naglfar_ii",
+   "state": "done"
+  }
+ },
+ {
+  "id": "s11_fish_for_the_jarl",
+  "title": "Fish for the Jarl",
+  "desc": "Bring the jarl three smoked fish.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Give the jarl 3 smoked fish.",
+    "when": {
+     "is": "flag",
+     "flag": "fish_delivered"
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 80
+   },
+   {
+    "op": "money",
+    "amount": 40
+   }
+  ]
+ },
+ {
+  "id": "s12_hels_hounds",
+  "title": "Hel's Hounds",
+  "desc": "Hel Hounds prowl the gate of Hel.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Slay 5 Hel Hounds.",
+    "when": {
+     "is": "counter",
+     "counter": "kills_hel_hound",
+     "min": 5
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 350
+   },
+   {
+    "op": "money",
+    "amount": 200
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m10_hel_bargain",
+   "state": "active"
+  }
+ },
+ {
+  "id": "o01_all_rune_rings",
+  "title": "Rune Collector",
+  "desc": "Visit every rune ring in Midgård.",
+  "category": "optional",
+  "steps": [
+   {
+    "text": "Visit 10 rune rings.",
+    "when": {
+     "is": "counter",
+     "counter": "runes_found",
+     "min": 10
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 500
+   },
+   {
+    "op": "give",
+    "item": "draupnir_ring",
+    "count": 1
+   }
+  ]
+ },
+ {
+  "id": "o02_kill_jormungandr",
+  "title": "The World-Serpent",
+  "desc": "Slay Jörmungandr in its nest on Midgård's southern sea.",
+  "category": "optional",
+  "steps": [
+   {
+    "text": "Slay Jörmungandr.",
+    "when": {
+     "is": "counter",
+     "counter": "kills_jormungandr",
+     "min": 1
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 2000
+   },
+   {
+    "op": "money",
+    "amount": 1000
+   }
+  ]
+ },
+ {
+  "id": "o03_cartographer",
+  "title": "Cartographer",
+  "desc": "Explore Midgård.",
+  "category": "optional",
+  "steps": [
+   {
+    "text": "Explore 300 chunks.",
+    "when": {
+     "is": "counter",
+     "counter": "chunks_explored",
+     "min": 300
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 600
+   },
+   {
+    "op": "give",
+    "item": "rope",
+    "count": 1
+   }
+  ]
+ },
+ {
+  "id": "o04_cannoneer",
+  "title": "Cannoneer",
+  "desc": "Kill with cannon fire.",
+  "category": "optional",
+  "steps": [
+   {
+    "text": "Kill 10 enemies with cannons.",
+    "when": {
+     "is": "counter",
+     "counter": "cannon_kills",
+     "min": 10
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 400
+   },
+   {
+    "op": "give",
+    "item": "cannon_ball",
+    "count": 10
+   }
+  ]
+ },
+ {
+  "id": "o05_gunslinger",
+  "title": "Gunslinger",
+  "desc": "Be famous for the sound.",
+  "category": "optional",
+  "steps": [
+   {
+    "text": "Defeat 100 enemies.",
+    "when": {
+     "is": "counter",
+     "counter": "kills_total",
+     "min": 100
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 800
+   }
+  ]
+ },
+ {
+  "id": "o06_planet_hopper",
+  "title": "Planet Hopper",
+  "desc": "Land on every body of the Sol system.",
+  "category": "optional",
+  "steps": [
+   {
+    "text": "Land on all 10 Sol bodies (Midgard included).",
+    "when": {
+     "is": "and",
+     "all": [
+      {
+       "is": "flag",
+       "flag": "at_dvalinn_landing"
+      },
+      {
+       "is": "flag",
+       "flag": "at_vanaheimr_landing"
+      },
+      {
+       "is": "flag",
+       "flag": "at_maani_landing"
+      },
+      {
+       "is": "flag",
+       "flag": "at_muspelheimr_landing"
+      },
+      {
+       "is": "flag",
+       "flag": "at_svartalfheimr_landing"
+      },
+      {
+       "is": "flag",
+       "flag": "at_asgard_landing"
+      },
+      {
+       "is": "flag",
+       "flag": "at_jotunheimr_landing"
+      },
+      {
+       "is": "flag",
+       "flag": "at_niflheimr_landing"
+      },
+      {
+       "is": "flag",
+       "flag": "at_hel_landing"
+      }
+     ]
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 1500
+   },
+   {
+    "op": "give",
+    "item": "skidbladnir_ship",
+    "count": 1
+   }
+  ]
+ },
+ {
+  "id": "o07_kalevala_pilgrim",
+  "title": "Kalevala Pilgrim",
+  "desc": "Land on every planet in the Kalevala system.",
+  "category": "optional",
+  "steps": [
+   {
+    "text": "Land on all 5 Kalevala planets.",
+    "when": {
+     "is": "and",
+     "all": [
+      {
+       "is": "flag",
+       "flag": "at_vainola_landing"
+      },
+      {
+       "is": "flag",
+       "flag": "at_pohjola_landing"
+      },
+      {
+       "is": "flag",
+       "flag": "at_tuonela_landing"
+      },
+      {
+       "is": "flag",
+       "flag": "at_ilma_landing"
+      },
+      {
+       "is": "flag",
+       "flag": "at_sampola_landing"
+      }
+     ]
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 2000
+   }
+  ]
+ },
+ {
+  "id": "o08_moneybags",
+  "title": "Moneybags",
+  "desc": "Carry 2000 silver.",
+  "category": "optional",
+  "steps": [
+   {
+    "text": "Carry 2000 silver.",
+    "when": {
+     "is": "has_item",
+     "item": "silver",
+     "count": 2000
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 300
+   }
+  ]
+ },
+ {
+  "id": "o09_level_10",
+  "title": "Seasoned Warden",
+  "desc": "Reach level 10.",
+  "category": "optional",
+  "steps": [
+   {
+    "text": "Reach level 10.",
+    "when": {
+     "is": "min_level",
+     "level": 10
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "give",
+    "item": "medkit",
+    "count": 5
+   }
+  ]
+ },
+ {
+  "id": "o10_secret_ending",
+  "title": "The Hidden Verse",
+  "desc": "Hold every relic: Sampo, Gleipnir, Odin's Eye, Draupnir, and the Kantele-Rifle.",
+  "category": "optional",
+  "steps": [
+   {
+    "text": "Own all five relics.",
+    "when": {
+     "is": "and",
+     "all": [
+      {
+       "is": "has_item",
+       "item": "sampo",
+       "count": 1
+      },
+      {
+       "is": "has_item",
+       "item": "gleipnir_chain",
+       "count": 1
+      },
+      {
+       "is": "has_item",
+       "item": "odin_eye",
+       "count": 1
+      },
+      {
+       "is": "has_item",
+       "item": "draupnir_ring",
+       "count": 1
+      },
+      {
+       "is": "has_item",
+       "item": "vainamoinen_gun",
+       "count": 1
+      }
+     ]
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 5000
+   },
+   {
+    "op": "set_flag",
+    "flag": "secret_ending"
+   }
+  ]
+ },
+ {
+  "id": "s13_lunar_fort",
+  "title": "Clear the Lunar Fort",
+  "desc": "Aesir Dynamics mercs hold a fort on Máni.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Reach the lunar fort.",
+    "when": {
+     "is": "flag",
+     "flag": "at_maani_lunar_fort"
+    }
+   },
+   {
+    "text": "Slay 8 mercenaries.",
+    "when": {
+     "is": "counter",
+     "counter": "kills_merc",
+     "min": 8
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 300
+   },
+   {
+    "op": "money",
+    "amount": 250
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m04_naglfar_ii",
+   "state": "done"
+  }
+ },
+ {
+  "id": "s14_hati_hunt",
+  "title": "The Hati Hunt",
+  "desc": "Fenrir's spawn prowl the Moon.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Slay 4 of Fenrir's spawn.",
+    "when": {
+     "is": "counter",
+     "counter": "kills_fenrir",
+     "min": 4
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 280
+   },
+   {
+    "op": "give",
+    "item": "reagent_amber",
+    "count": 3
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m04_naglfar_ii",
+   "state": "done"
+  }
+ },
+ {
+  "id": "s15_cinder_cache",
+  "title": "Cinder Cache",
+  "desc": "Something valuable sits in the fire-giants' cache.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Reach the fire cache on Múspelheimr.",
+    "when": {
+     "is": "flag",
+     "flag": "at_muspelheimr_fire_cache"
+    }
+   },
+   {
+    "text": "Slay 2 fire giants.",
+    "when": {
+     "is": "counter",
+     "counter": "kills_fire_giant",
+     "min": 2
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 420
+   },
+   {
+    "op": "give",
+    "item": "kevlar_vest"
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m06_gleipnir_two",
+   "state": "done"
+  }
+ },
+ {
+  "id": "s16_valhalla_revelry",
+  "title": "Valhalla Revelry",
+  "desc": "The dead of Valhalla feast. Bring mead.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Reach Valhalla Hall.",
+    "when": {
+     "is": "flag",
+     "flag": "at_asgard_valhalla_hall"
+    }
+   },
+   {
+    "text": "Carry 5 mead.",
+    "when": {
+     "is": "has_item",
+     "item": "mead",
+     "count": 5
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 300
+   },
+   {
+    "op": "give",
+    "item": "horned_helm"
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m07_surtr_bunker",
+   "state": "done"
+  }
+ },
+ {
+  "id": "s17_ice_giants_toll",
+  "title": "Ice Giant's Toll",
+  "desc": "A frost giant blocks the road on Jötunheimr.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Reach Thrymr's keep.",
+    "when": {
+     "is": "flag",
+     "flag": "at_jotunheimr_thrymr_keep"
+    }
+   },
+   {
+    "text": "Slay a frost jötunn.",
+    "when": {
+     "is": "counter",
+     "counter": "kills_jotun",
+     "min": 1
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 500
+   },
+   {
+    "op": "money",
+    "amount": 300
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m05_fenrir_prime",
+   "state": "done"
+  }
+ },
+ {
+  "id": "s18_troll_trouble",
+  "title": "Troll Trouble",
+  "desc": "Trolls nest in the north-east cave.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Slay 3 trolls.",
+    "when": {
+     "is": "counter",
+     "counter": "kills_troll",
+     "min": 3
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 450
+   },
+   {
+    "op": "give",
+    "item": "bear_axe"
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m02_warband",
+   "state": "done"
+  }
+ },
+ {
+  "id": "s19_bone_collector",
+  "title": "Bone Collector",
+  "desc": "Walk the shore of the dead.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Reach Náströnd.",
+    "when": {
+     "is": "flag",
+     "flag": "at_hel_nastrond"
+    }
+   },
+   {
+    "text": "Reach the gate of Garm.",
+    "when": {
+     "is": "flag",
+     "flag": "at_hel_garm_gate"
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 380
+   },
+   {
+    "op": "give",
+    "item": "medkit",
+    "count": 3
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m09_odins_vault",
+   "state": "done"
+  }
+ },
+ {
+  "id": "s20_kantele_lessons",
+  "title": "Kantele Lessons",
+  "desc": "Aino wants to hear a proper battle song.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Recruit Aino.",
+    "when": {
+     "is": "in_party",
+     "npc": "aino"
+    }
+   },
+   {
+    "text": "Reach level 3 with Aino in your party.",
+    "when": {
+     "is": "and",
+     "all": [
+      {
+       "is": "in_party",
+       "npc": "aino"
+      },
+      {
+       "is": "min_level",
+       "level": 3
+      }
+     ]
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 250
+   },
+   {
+    "op": "learn",
+    "spell": "kipina"
+   }
+  ],
+  "start_when": {
+   "is": "in_party",
+   "npc": "aino"
+  }
+ },
+ {
+  "id": "s21_song_of_the_swan",
+  "title": "Song of the Swan",
+  "desc": "The black swan of Tuonela sings to the dead.",
+  "category": "side",
+  "steps": [
+   {
+    "text": "Reach the Swan River.",
+    "when": {
+     "is": "flag",
+     "flag": "at_tuonela_swan_river"
+    }
+   },
+   {
+    "text": "Slay 5 draugr in Tuonela.",
+    "when": {
+     "is": "counter",
+     "counter": "kills_draugr",
+     "min": 8
+    }
+   }
+  ],
+  "reward": [
+   {
+    "op": "xp",
+    "amount": 900
+   },
+   {
+    "op": "money",
+    "amount": 10
+   }
+  ],
+  "start_when": {
+   "is": "quest",
+   "quest": "m12_kalevala",
+   "state": "done"
+  }
+ }
+]

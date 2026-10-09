@@ -1,0 +1,20 @@
+[
+ {"id":"smith_kaupang","name":"Brokk Jr.'s Gun & Forge","buy_rate":0.5,"stock":[
+  {"item":"rune_pistol","price":120},{"item":"hunting_shotgun","price":280},{"item":"fjord_rifle","price":340},{"item":"skald_smg","price":520},
+  {"item":"ammo_9mm","price":1,"qty":400},{"item":"ammo_762","price":2,"qty":300},{"item":"ammo_shell","price":3,"qty":200},{"item":"gunpowder","price":6,"qty":60},{"item":"cannon_ball","price":14,"qty":30},
+  {"item":"viking_axe","price":70},{"item":"long_sword","price":95},{"item":"round_spear","price":50},{"item":"puukko","price":15},
+  {"item":"kevlar_vest","price":210},{"item":"horned_helm","price":90},{"item":"round_shield","price":80},{"item":"norse_greaves","price":110},{"item":"scrap_iron","price":3,"qty":80},{"item":"iron_ingot","price":10,"qty":30}]},
+ {"id":"general_kaupang","name":"Gudrun's General Store","buy_rate":0.5,"stock":[
+  {"item":"rye_bread","price":3,"qty":40},{"item":"smoked_fish","price":5,"qty":30},{"item":"mead","price":6,"qty":40},{"item":"medkit","price":45,"qty":10},
+  {"item":"torch","price":4,"qty":30},{"item":"rope","price":8,"qty":20},{"item":"lockpick","price":18,"qty":10},{"item":"backpack","price":30,"qty":3},{"item":"pouch","price":9,"qty":10},{"item":"ammo_box","price":14,"qty":5},
+  {"item":"raw_fish","price":2,"qty":40},{"item":"rye_flour","price":2,"qty":40},{"item":"leather","price":6,"qty":30},{"item":"hiking_boots","price":25,"qty":3},{"item":"wolf_cloak","price":65,"qty":2}]},
+ {"id":"inn_kaupang","name":"The Drunken Draugr","buy_rate":0.4,"stock":[
+  {"item":"mead","price":5,"qty":99},{"item":"rye_bread","price":3,"qty":99},{"item":"smoked_fish","price":4,"qty":99}]},
+ {"id":"alchemist_helgate","name":"Vigdis's Hexworks","buy_rate":0.5,"stock":[
+  {"item":"herb","price":4,"qty":60},{"item":"reagent_birch_ash","price":5,"qty":50},{"item":"reagent_raven_feather","price":9,"qty":30},{"item":"reagent_amber","price":14,"qty":30},
+  {"item":"reagent_fly_agaric","price":10,"qty":30},{"item":"reagent_bog_iron","price":12,"qty":30},{"item":"medkit","price":40,"qty":10},{"item":"thor_amulet","price":600,"qty":1}]},
+ {"id":"dvalinn_forge","name":"Brokkr & Sindri's Armory","buy_rate":0.6,"stock":[
+  {"item":"gungnir_sniper","price":1500,"qty":1},{"item":"fjord_rifle","price":300},{"item":"ammo_762","price":2,"qty":500},{"item":"kevlar_vest","price":190},{"item":"iron_ingot","price":9,"qty":99},{"item":"cannon_ball","price":12,"qty":99},{"item":"gunpowder","price":5,"qty":99},{"item":"bear_axe","price":450,"qty":1}]},
+ {"id":"kalevala_market","name":"Singers' Market","buy_rate":0.5,"currency":"krediitti","stock":[
+  {"item":"medkit","price":20},{"item":"ammo_762","price":1,"qty":300},{"item":"ammo_9mm","price":1,"qty":300},{"item":"reagent_amber","price":6,"qty":40},{"item":"herb","price":2,"qty":60},{"item":"smoked_fish","price":2,"qty":40}]}
+]

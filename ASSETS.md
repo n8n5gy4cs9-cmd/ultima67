@@ -65,6 +65,7 @@
 | boss fights | `music_boss` | `assets/music/boss.wav` | generated (placeholder) |
 | Kalevala system (kantele/runolaulu feel) | `music_kalevala` | `assets/music/kalevala.wav` | generated (placeholder) |
 | Hel, Tuonela and the dead | `music_hel` | `assets/music/hel.wav` | generated (placeholder) |
+| all in-game text (embedded as the default font) | `font_ui` | `assets/fonts/UI.ttf` | DejaVu Sans (free licence, see fonts/LICENSE-DejaVu.txt) (final) |
 
 ## 2. Details
 

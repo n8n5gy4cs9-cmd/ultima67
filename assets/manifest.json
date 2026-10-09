@@ -512,6 +512,15 @@
       "source": "generated",
       "status": "placeholder",
       "notes": "16000 Hz mono WAV, 20 s loop"
+    },
+    {
+      "id": "font_ui",
+      "kind": "font",
+      "path": "fonts/UI.ttf",
+      "use": "all in-game text (embedded as the default font)",
+      "source": "DejaVu Sans (free licence, see fonts/LICENSE-DejaVu.txt)",
+      "status": "final",
+      "notes": "TTF with Latin Extended + runic glyphs; replace with any TTF that has ä ö å and keep the filename (rebuild required: it is embedded with include_bytes!)"
     }
   ]
 }

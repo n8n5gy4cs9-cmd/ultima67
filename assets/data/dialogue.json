@@ -1,0 +1,1564 @@
+[
+ {
+  "id": "eirikr",
+  "name": "Eirikr the Skald",
+  "greeting": [
+   {
+    "text": "Eirikr leans on his kantele-case and grins. \"Again, {name}! The stories find you faster than I can sing them.\"",
+    "when": {
+     "is": "flag",
+     "flag": "talked_eirikr"
+    }
+   },
+   {
+    "text": "A grey-bearded skald looks up from his mead. \"A Rune-Warden! Sit. Your timing is dreadful, which is to say perfect. The old gate north of {town} has started to hum.\"",
+    "then": [
+     {
+      "op": "set_flag",
+      "flag": "talked_eirikr"
+     },
+     {
+      "op": "toast",
+      "text": "Quest updated: The Hum of the Gate"
+     }
+    ]
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "I am Eirikr, skald of {town}, keeper of three hundred songs and one very large debt.",
+    "reveals": [
+     "gate"
+    ]
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "I carry stories between the Nine Realms. These days I carry warnings more than stories."
+   },
+   {
+    "keys": [
+     "gate"
+    ],
+    "text": "A Bifrost gate, old as Yggdrasil. For centuries it slept under the barley fields. Three nights ago it began to hum, and the dead started walking out of it.",
+    "reveals": [
+     "Bifrost",
+     "draugr"
+    ]
+   },
+   {
+    "keys": [
+     "bifrost"
+    ],
+    "text": "The rainbow bridge, {name}. The Aesir used it before they became rumours. Now it hums with a modern tune — someone is pushing power through it.",
+    "reveals": [
+     "Aesir"
+    ]
+   },
+   {
+    "keys": [
+     "draugr"
+    ],
+    "text": "Restless dead in rusted mail. Slow, but they come at night and in numbers. Take a gun and a torch, and do not be alone.",
+    "reveals": [
+     "smith"
+    ]
+   },
+   {
+    "keys": [
+     "smith"
+    ],
+    "text": "Brokk Jr., the dwarf at the forge in {town}, sells honest guns. Tell him I sent you; he will pretend not to be flattered."
+   },
+   {
+    "keys": [
+     "Aesir",
+     "corporation"
+    ],
+    "text": "Aesir Dynamics. Mercenaries in black, with better rifles than manners. They want what lies beyond the gate — and they do not ask the gate's opinion.",
+    "reveals": [
+     "Fenrir"
+    ]
+   },
+   {
+    "keys": [
+     "Fenrir"
+    ],
+    "text": "The wolf bound by Gleipnir. If the gate unravels the chain's old magic, he runs free. The Moon would be his first meal.",
+    "reveals": [
+     "Gleipnir",
+     "Norns"
+    ]
+   },
+   {
+    "keys": [
+     "Gleipnir"
+    ],
+    "text": "Made from the sound of a cat's footfall, the beard of a woman, the roots of a mountain... Today we would say: it was made of things that do not exist. A new one must be forged by the dwarves of Dvalinn."
+   },
+   {
+    "keys": [
+     "Norns",
+     "threads"
+    ],
+    "text": "Urðr, Verðandi and Skuld spin the threads of fate. Their three threads lie in the barrows and in Mimir's Well. Find them and we may re-weave the gate's lock.",
+    "when": {
+     "is": "quest",
+     "quest": "m01_hum_of_the_gate",
+     "state": "done"
+    },
+    "reveals": [
+     "warband"
+    ]
+   },
+   {
+    "keys": [
+     "warband"
+    ],
+    "text": "You cannot do this alone. Sigrun the valkyrie drinks at the jarl's hall. Brokk Jr. is a fine gunsmith and a better friend. Ask them to join you.",
+    "when": {
+     "is": "quest",
+     "quest": "m01_hum_of_the_gate",
+     "state": "done"
+    }
+   },
+   {
+    "keys": [
+     "songs",
+     "kantele"
+    ],
+    "text": "Here: I sing you the verse of the wolf. 'Grey runs the shadow beneath the moon...' Hm. Never finished it. Perhaps you will."
+   },
+   {
+    "keys": [
+     "Kalevala",
+     "Sampo"
+    ],
+    "text": "Across the black between worlds there is another sky, where the Kalevala singers live. Väinämöinen, Louhi... and the Sampo that was broken. But that is a song for later.",
+    "when": {
+     "is": "flag",
+     "flag": "sampo_gate_open"
+    }
+   }
+  ],
+  "farewell": "May the Norns spin you a long thread."
+ },
+ {
+  "id": "hrafnkel",
+  "name": "Jarl Hrafnkel",
+  "greeting": [
+   {
+    "text": "The jarl rises. \"Warden {name}. {town} is in your debt — and I do not say that lightly.\"",
+    "when": {
+     "is": "quest",
+     "quest": "m01_hum_of_the_gate",
+     "state": "done"
+    }
+   },
+   {
+    "text": "A broad man in wolf furs and a cheap headset eyes you. \"So you are the Rune-Warden. Good. Skalds talk, but a jarl needs hands.\"",
+    "then": [
+     {
+      "op": "set_flag",
+      "flag": "talked_jarl"
+     }
+    ]
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "Hrafnkel Thorgrimsson, jarl of {town}, and I'd thank you not to touch the ceremonial rifle."
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "I keep the peace, the harbour, and the books. Mostly the books."
+   },
+   {
+    "keys": [
+     "wolves",
+     "wolf"
+    ],
+    "text": "Wolves have grown bold since the gate began humming. Cull eight of them and I will pay you eighty silver. Hunters' rate.",
+    "when": {
+     "is": "quest",
+     "quest": "s01_wolf_cull",
+     "state": "none"
+    },
+    "then": [
+     {
+      "op": "start_quest",
+      "quest": "s01_wolf_cull"
+     }
+    ],
+    "reveals": [
+     "raiders"
+    ]
+   },
+   {
+    "keys": [
+     "wolves",
+     "wolf"
+    ],
+    "text": "Keep hunting, Warden. Eight wolves, that was our bargain.",
+    "when": {
+     "is": "quest",
+     "quest": "s01_wolf_cull",
+     "state": "active"
+    }
+   },
+   {
+    "keys": [
+     "wolves",
+     "wolf"
+    ],
+    "text": "The roads are safer. You have my thanks.",
+    "when": {
+     "is": "quest",
+     "quest": "s01_wolf_cull",
+     "state": "done"
+    }
+   },
+   {
+    "keys": [
+     "raiders"
+    ],
+    "text": "Aesir Dynamics scouts camp along the coast. Five of them gone would let our dock-guards sleep. The reward is a good cannon ball in the face of the next one.",
+    "when": {
+     "is": "quest",
+     "quest": "s02_aesir_raiders",
+     "state": "none"
+    },
+    "then": [
+     {
+      "op": "start_quest",
+      "quest": "s02_aesir_raiders"
+     }
+    ],
+    "reveals": [
+     "fish"
+    ]
+   },
+   {
+    "keys": [
+     "fish"
+    ],
+    "text": "My cook has run out of smoked fish. Bring me three and I will make it worth your while.",
+    "when": {
+     "is": "quest",
+     "quest": "s11_fish_for_the_jarl",
+     "state": "none"
+    },
+    "then": [
+     {
+      "op": "start_quest",
+      "quest": "s11_fish_for_the_jarl"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "fish"
+    ],
+    "text": "Three smoked fish for the jarl's table, if you please.",
+    "when": {
+     "is": "and",
+     "all": [
+      {
+       "is": "quest",
+       "quest": "s11_fish_for_the_jarl",
+       "state": "active"
+      },
+      {
+       "is": "not",
+       "cond": {
+        "is": "has_item",
+        "item": "smoked_fish",
+        "count": 3
+       }
+      }
+     ]
+    }
+   },
+   {
+    "keys": [
+     "fish"
+    ],
+    "text": "Splendid!",
+    "when": {
+     "is": "and",
+     "all": [
+      {
+       "is": "quest",
+       "quest": "s11_fish_for_the_jarl",
+       "state": "active"
+      },
+      {
+       "is": "has_item",
+       "item": "smoked_fish",
+       "count": 3
+      }
+     ]
+    },
+    "then": [
+     {
+      "op": "take",
+      "item": "smoked_fish",
+      "count": 3
+     },
+     {
+      "op": "set_flag",
+      "flag": "fish_delivered"
+     },
+     {
+      "op": "money",
+      "amount": 60
+     }
+    ]
+   },
+   {
+    "keys": [
+     "gate"
+    ],
+    "text": "I have posted guards, but guards do not stop the dead. Bullets and bravery do. Investigate it, Warden.",
+    "when": {
+     "is": "quest",
+     "quest": "m01_hum_of_the_gate",
+     "state": "active"
+    }
+   },
+   {
+    "keys": [
+     "harbour"
+    ],
+    "text": "The longship at the docks is yours, if you want it. A gift from the town for the favour you do us. She is quick, and quiet — suspiciously quiet.",
+    "when": {
+     "is": "quest",
+     "quest": "m01_hum_of_the_gate",
+     "state": "done"
+    },
+    "then": [
+     {
+      "op": "set_flag",
+      "flag": "ship_granted"
+     }
+    ]
+   }
+  ],
+  "farewell": "Go well."
+ },
+ {
+  "id": "sigrun",
+  "name": "Sigrun the Valkyrie",
+  "greeting": [
+   {
+    "text": "Sigrun salutes with a closed fist. \"Ready when you are, {name}.\"",
+    "when": {
+     "is": "in_party",
+     "npc": "sigrun"
+    }
+   },
+   {
+    "text": "A tall woman in silver armour looks you over, one hand on a spear that has a rifle bolted under the blade. \"I choose the slain. Lately there is too much choosing.\""
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "Sigrun. Once of the Valkyrie Host, now unemployed — Odin stopped answering."
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "I used to ride to battlefields and decide who died. Now I decide who lives, which is harder."
+   },
+   {
+    "keys": [
+     "join"
+    ],
+    "text": "I will follow a warden who actually fights. Prove you are one: stop the dead at the gate, then ask me again.",
+    "when": {
+     "is": "and",
+     "all": [
+      {
+       "is": "not",
+       "cond": {
+        "is": "in_party",
+        "npc": "sigrun"
+       }
+      },
+      {
+       "is": "not",
+       "cond": {
+        "is": "quest",
+        "quest": "m01_hum_of_the_gate",
+        "state": "done"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "keys": [
+     "join",
+     "party",
+     "follow"
+    ],
+    "text": "Then my spear is yours.",
+    "when": {
+     "is": "and",
+     "all": [
+      {
+       "is": "not",
+       "cond": {
+        "is": "in_party",
+        "npc": "sigrun"
+       }
+      },
+      {
+       "is": "quest",
+       "quest": "m01_hum_of_the_gate",
+       "state": "done"
+      }
+     ]
+    },
+    "then": [
+     {
+      "op": "join_party",
+      "npc": "sigrun"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "leave",
+     "stay"
+    ],
+    "text": "Understood. I'll wait here. Call when you need me.",
+    "when": {
+     "is": "in_party",
+     "npc": "sigrun"
+    },
+    "then": [
+     {
+      "op": "leave_party",
+      "npc": "sigrun"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "Odin"
+    ],
+    "text": "The Allfather went through the gate and never came back. Some say he sits in a vault in Ásgarðr, drinking his own eye.",
+    "reveals": [
+     "Valhalla"
+    ]
+   },
+   {
+    "keys": [
+     "Valhalla"
+    ],
+    "text": "The hall of the slain, now a floating ruin above Jupiter's storms. Draugr hold the benches. We should visit, in time."
+   }
+  ],
+  "farewell": "Hail and farewell."
+ },
+ {
+  "id": "brokk_jr",
+  "name": "Brokk Jr.",
+  "greeting": [
+   {
+    "text": "\"Warden {name}! The forge is hot and the prices are cold.\"",
+    "when": {
+     "is": "flag",
+     "flag": "met_brokk"
+    }
+   },
+   {
+    "text": "A broad dwarf with a soot-streaked beard hammers a barrel of something that is definitely not a cannon. \"Brokk Junior. Gunsmith. Don't touch the red one.\"",
+    "then": [
+     {
+      "op": "set_flag",
+      "flag": "met_brokk"
+     }
+    ]
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "Brokk Jr. My father forged Mjölnir. I forge ammo. Everyone has a legacy."
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "Guns, ammunition, armour, the occasional explosion. Ask to trade and see what I've got.",
+    "reveals": [
+     "trade"
+    ]
+   },
+   {
+    "keys": [
+     "trade",
+     "buy",
+     "sell",
+     "wares"
+    ],
+    "text": "Browse, haggle, regret it later.",
+    "then": [
+     {
+      "op": "shop",
+      "shop": "smith_kaupang"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "craft",
+     "forge"
+    ],
+    "text": "The forge at the back is free to use if you bring materials. Scrap iron, powder, leather — I'll show you the ropes.",
+    "then": [
+     {
+      "op": "craft",
+      "station": "forge"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "relay"
+    ],
+    "text": "The Bifrost relay on the hill is shorting out. Bring me ten scrap iron and I will rewire it — and give you something shiny.",
+    "when": {
+     "is": "quest",
+     "quest": "s06_repair_relay",
+     "state": "none"
+    },
+    "then": [
+     {
+      "op": "start_quest",
+      "quest": "s06_repair_relay"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "relay"
+    ],
+    "text": "Ten scrap iron, please. Anything rusty will do.",
+    "when": {
+     "is": "and",
+     "all": [
+      {
+       "is": "quest",
+       "quest": "s06_repair_relay",
+       "state": "active"
+      },
+      {
+       "is": "not",
+       "cond": {
+        "is": "has_item",
+        "item": "scrap_iron",
+        "count": 10
+       }
+      }
+     ]
+    }
+   },
+   {
+    "keys": [
+     "relay"
+    ],
+    "text": "Perfect! Rewired.",
+    "when": {
+     "is": "and",
+     "all": [
+      {
+       "is": "quest",
+       "quest": "s06_repair_relay",
+       "state": "active"
+      },
+      {
+       "is": "has_item",
+       "item": "scrap_iron",
+       "count": 10
+      }
+     ]
+    },
+    "then": [
+     {
+      "op": "take",
+      "item": "scrap_iron",
+      "count": 10
+     },
+     {
+      "op": "set_flag",
+      "flag": "relay_repaired"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "join",
+     "party",
+     "follow"
+    ],
+    "text": "A warband needs a gunsmith. Aye, I'm in — I'll fix your rifle on the march.",
+    "when": {
+     "is": "not",
+     "cond": {
+      "is": "in_party",
+      "npc": "brokk_jr"
+     }
+    },
+    "then": [
+     {
+      "op": "join_party",
+      "npc": "brokk_jr"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "leave",
+     "stay"
+    ],
+    "text": "I'll mind the forge.",
+    "when": {
+     "is": "in_party",
+     "npc": "brokk_jr"
+    },
+    "then": [
+     {
+      "op": "leave_party",
+      "npc": "brokk_jr"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "Gleipnir"
+    ],
+    "text": "Dvalinn. My cousins have the hottest forge in the system. They will want bog iron and amber. And your firstborn, probably.",
+    "when": {
+     "is": "quest",
+     "quest": "m05_fenrir_prime",
+     "state": "active"
+    }
+   },
+   {
+    "keys": [
+     "Dvalinn"
+    ],
+    "text": "The dwarf-world of Mercury. Lava, forges, and relatives. Bring a vacuum suit."
+   }
+  ],
+  "farewell": "Mind the red one."
+ },
+ {
+  "id": "gudrun",
+  "name": "Gudrun",
+  "greeting": [
+   {
+    "text": "\"Welcome to Gudrun's. If we do not have it, you do not need it.\""
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "Gudrun Ketilsdottir, shopkeeper, sole survivor of three husbands and one flood."
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "Food, rope, torches, backpacks. The unglamorous things that keep heroes alive.",
+    "reveals": [
+     "trade"
+    ]
+   },
+   {
+    "keys": [
+     "trade",
+     "buy",
+     "sell"
+    ],
+    "text": "Look all you like.",
+    "then": [
+     {
+      "op": "shop",
+      "shop": "general_kaupang"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "rumors"
+    ],
+    "text": "They say a woman in Helgate sells spells in jars. And that the barrows are opening, one by one."
+   }
+  ],
+  "farewell": "Come again!"
+ },
+ {
+  "id": "hild",
+  "name": "Hild the Innkeeper",
+  "greeting": [
+   {
+    "text": "\"The Drunken Draugr! Mead, bread, bed — pick two, three if you are paying.\""
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "Hild. Yes, the draugr in the name is my late husband. He likes the attention."
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "Rooms, food, drink. I hear everything."
+   },
+   {
+    "keys": [
+     "trade",
+     "food",
+     "drink"
+    ],
+    "text": "Eat well.",
+    "then": [
+     {
+      "op": "shop",
+      "shop": "inn_kaupang"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "room",
+     "rest",
+     "bed",
+     "sleep"
+    ],
+    "text": "Five silver for a bed until morning.",
+    "then": [
+     {
+      "op": "if",
+      "cond": {
+       "is": "has_item",
+       "item": "silver",
+       "count": 5
+      },
+      "then": [
+       {
+        "op": "take",
+        "item": "silver",
+        "count": 5
+       },
+       {
+        "op": "sleep"
+       }
+      ],
+      "els": [
+       {
+        "op": "say",
+        "text": "You are short, friend."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "keys": [
+     "rumors"
+    ],
+    "text": "The jarl wants wolves culled. The skald wants someone to take him seriously. I want my husband to stop haunting the cellar."
+   }
+  ],
+  "farewell": "Sleep well."
+ },
+ {
+  "id": "aino",
+  "name": "Aino",
+  "greeting": [
+   {
+    "text": "A young woman in a red-and-white folk dress hums an impossible interval. \"Oh! You have a listening face.\""
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "Aino. From Savo, where the lakes are many and the winters are long."
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "I sing runot — the old verses. In the old days they changed the world. In these days, they also change the reload speed of a rifle."
+   },
+   {
+    "keys": [
+     "laulu"
+    ],
+    "text": "A laulu is a song with intent. You do not 'cast' it; you sing it true. Choose runes, in order, and the world listens. There is a grammar to it.",
+    "reveals": [
+     "runes"
+    ]
+   },
+   {
+    "keys": [
+     "runes"
+    ],
+    "text": "Three runes make a verse. Each spell has its own. The song for light is Fehu, Ansuz, Gebo — but that would be telling.",
+    "then": [
+     {
+      "op": "learn",
+      "spell": "valo"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "join",
+     "party",
+     "follow"
+    ],
+    "text": "I have always wanted to sing in a place where the sky is not a ceiling. Yes.",
+    "when": {
+     "is": "not",
+     "cond": {
+      "is": "in_party",
+      "npc": "aino"
+     }
+    },
+    "then": [
+     {
+      "op": "join_party",
+      "npc": "aino"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "leave",
+     "stay"
+    ],
+    "text": "I'll hum quietly until you return.",
+    "when": {
+     "is": "in_party",
+     "npc": "aino"
+    },
+    "then": [
+     {
+      "op": "leave_party",
+      "npc": "aino"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "Väinämöinen"
+    ],
+    "text": "The old singer. He sailed to the sky-islands in a copper boat. Some say he left a kantele in the ruins of his temple — a gun, now.",
+    "when": {
+     "is": "flag",
+     "flag": "met_vainamoinen"
+    }
+   },
+   {
+    "keys": [
+     "Kalevala"
+    ],
+    "text": "Our home is a story. I would like to see if the story is still there."
+   }
+  ],
+  "farewell": "Sing well."
+ },
+ {
+  "id": "vigdis",
+  "name": "Vigdis the Völva",
+  "greeting": [
+   {
+    "text": "\"Hm. Warden. Your aura is... loud. It sounds like gunpowder and old promises.\""
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "Vigdis, völva of Helgate, hacker of seidr, seller of hexes."
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "I mend what the gods broke, and I sell the leftovers.",
+    "reveals": [
+     "trade"
+    ]
+   },
+   {
+    "keys": [
+     "trade",
+     "buy",
+     "sell"
+    ],
+    "text": "Nothing fresh is cheap.",
+    "then": [
+     {
+      "op": "shop",
+      "shop": "alchemist_helgate"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "join",
+     "party",
+     "follow"
+    ],
+    "text": "The threads lead through you. I will follow them, and you.",
+    "when": {
+     "is": "and",
+     "all": [
+      {
+       "is": "not",
+       "cond": {
+        "is": "in_party",
+        "npc": "vigdis"
+       }
+      },
+      {
+       "is": "quest",
+       "quest": "m01_hum_of_the_gate",
+       "state": "done"
+      }
+     ]
+    },
+    "then": [
+     {
+      "op": "join_party",
+      "npc": "vigdis"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "join",
+     "party",
+     "follow"
+    ],
+    "text": "Come back when the dead at your gate have stopped walking.",
+    "when": {
+     "is": "not",
+     "cond": {
+      "is": "quest",
+      "quest": "m01_hum_of_the_gate",
+      "state": "done"
+     }
+    }
+   },
+   {
+    "keys": [
+     "leave",
+     "stay"
+    ],
+    "text": "I will wait.",
+    "when": {
+     "is": "in_party",
+     "npc": "vigdis"
+    },
+    "then": [
+     {
+      "op": "leave_party",
+      "npc": "vigdis"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "Hel"
+    ],
+    "text": "The Queen of the dead. A lonely woman with a half-dead face and a good sense of humour. She keeps her hall in the black beyond Neptune.",
+    "when": {
+     "is": "quest",
+     "quest": "m10_hel_bargain",
+     "state": "active"
+    }
+   },
+   {
+    "keys": [
+     "magic"
+    ],
+    "text": "Reagents and runes. The ingredients — ash, feather, amber — are the grammar. The runes are the verb."
+   }
+  ],
+  "farewell": "Mind the threads."
+ },
+ {
+  "id": "bjorn",
+  "name": "Bjorn Bear-Shirt",
+  "greeting": [
+   {
+    "text": "A huge man in a bear-pelt looks up from sharpening an axe. \"Is that a gun? Good. I like things that make noise.\""
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "Bjorn. They call me Bear-Shirt. I was not wearing a shirt when I wrestled the bear."
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "Berserker. I hit things until they stop being problems."
+   },
+   {
+    "keys": [
+     "join",
+     "party",
+     "follow"
+    ],
+    "text": "FINALLY. Someone who says 'ready' and means it.",
+    "when": {
+     "is": "not",
+     "cond": {
+      "is": "in_party",
+      "npc": "bjorn"
+     }
+    },
+    "then": [
+     {
+      "op": "join_party",
+      "npc": "bjorn"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "leave",
+     "stay"
+    ],
+    "text": "I will guard the beer.",
+    "when": {
+     "is": "in_party",
+     "npc": "bjorn"
+    },
+    "then": [
+     {
+      "op": "leave_party",
+      "npc": "bjorn"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "troll"
+    ],
+    "text": "There is a troll in the cave to the north-east. Big as a longhouse. I have been meaning to hit it."
+   }
+  ],
+  "farewell": "Bash well!"
+ },
+ {
+  "id": "freyja",
+  "name": "Freyja",
+  "greeting": [
+   {
+    "text": "A radiant woman in feathered cloak looks at you with amusement. \"Little warden. You have come a long way to ask me for something.\""
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "Freyja of the Vanir. Yes, that one."
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "I keep the oldest seidr schools alive on Vanaheimr, in a world that mostly wants to forget them.",
+    "reveals": [
+     "alliance"
+    ]
+   },
+   {
+    "keys": [
+     "alliance"
+    ],
+    "text": "The Vanir will stand with you against Aesir Dynamics — if you prove you honour the old ways. Bring me ten mead for the festival.",
+    "when": {
+     "is": "and",
+     "all": [
+      {
+       "is": "quest",
+       "quest": "s03_mead_for_the_vanir",
+       "state": "none"
+      }
+     ]
+    },
+    "then": [
+     {
+      "op": "start_quest",
+      "quest": "s03_mead_for_the_vanir"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "alliance"
+    ],
+    "text": "I need ten mead for the festival, Warden.",
+    "when": {
+     "is": "and",
+     "all": [
+      {
+       "is": "quest",
+       "quest": "s03_mead_for_the_vanir",
+       "state": "active"
+      },
+      {
+       "is": "not",
+       "cond": {
+        "is": "has_item",
+        "item": "mead",
+        "count": 10
+       }
+      }
+     ]
+    }
+   },
+   {
+    "keys": [
+     "alliance"
+    ],
+    "text": "The Vanir stand with you.",
+    "when": {
+     "is": "and",
+     "all": [
+      {
+       "is": "quest",
+       "quest": "s03_mead_for_the_vanir",
+       "state": "active"
+      },
+      {
+       "is": "has_item",
+       "item": "mead",
+       "count": 10
+      }
+     ]
+    },
+    "then": [
+     {
+      "op": "take",
+      "item": "mead",
+      "count": 10
+     },
+     {
+      "op": "set_flag",
+      "flag": "vanir_allied"
+     },
+     {
+      "op": "learn",
+      "spell": "suojaus"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "mead"
+    ],
+    "text": "A good mead is half the world's peace treaties."
+   }
+  ],
+  "farewell": "Come back with stories."
+ },
+ {
+  "id": "brokkr",
+  "name": "Brokkr",
+  "greeting": [
+   {
+    "text": "\"Hm. Another surface-dweller with dirty boots. Welcome to the hottest forge in the system.\""
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "Brokkr. The elder. Sindri is the one who actually builds things."
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "We forged Mjölnir, Gungnir and Draupnir. Lately: cannon balls for anyone who pays."
+   },
+   {
+    "keys": [
+     "trade",
+     "buy",
+     "sell"
+    ],
+    "text": "Dwarf prices. Pay or leave.",
+    "then": [
+     {
+      "op": "shop",
+      "shop": "dvalinn_forge"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "Gleipnir"
+    ],
+    "text": "A new Gleipnir? Bring me five ingots, three bog iron and two amber, and use my anvil. We'll supply the blessing.",
+    "when": {
+     "is": "quest",
+     "quest": "m06_gleipnir_two",
+     "state": "active"
+    },
+    "then": [
+     {
+      "op": "set_flag",
+      "flag": "at_dvalinn_brokkr_forge"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "forge"
+    ],
+    "text": "Craft at my anvil. It's old, but it listens.",
+    "then": [
+     {
+      "op": "craft",
+      "station": "forge"
+     }
+    ]
+   }
+  ],
+  "farewell": "Mind the lava."
+ },
+ {
+  "id": "heimdall",
+  "name": "Heimdall",
+  "greeting": [
+   {
+    "text": "A watchman with a ram's horn and sharper eyes than any rifle scope turns slowly. \"I see you, Warden. I heard you coming for three days.\""
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "Heimdall. Gatekeeper of the Bifrost. I never sleep, which explains a lot."
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "I watch. Lately there is much to watch.",
+    "reveals": [
+     "Odin"
+    ]
+   },
+   {
+    "keys": [
+     "Odin"
+    ],
+    "text": "The Allfather's vault is in the hall behind me. He locked it with a lock only Mimir's eye can open.",
+    "when": {
+     "is": "quest",
+     "quest": "m09_odins_vault",
+     "state": "active"
+    },
+    "then": [
+     {
+      "op": "give",
+      "item": "odin_eye"
+     },
+     {
+      "op": "toast",
+      "text": "Heimdall gives you Odin's Eye"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "vault"
+    ],
+    "text": "Go in, and speak to no one. The dead there are not the quiet kind."
+   }
+  ],
+  "farewell": "I see you leaving."
+ },
+ {
+  "id": "hel_queen_npc",
+  "name": "Hel",
+  "greeting": [
+   {
+    "text": "Half her face is pale and warm, half is blue and still. \"A living guest. How rare. How rude.\""
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "Hel. Queen of the dead, hostess of the quieter half of the Nine Realms."
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "I count the dead. It is not a metaphor."
+   },
+   {
+    "keys": [
+     "bargain"
+    ],
+    "text": "The living come here to take back what is mine, or to ask for what is theirs. Your friends on Midgård are sleeping better because of you. In return: do not wake my wolves.",
+    "when": {
+     "is": "quest",
+     "quest": "m10_hel_bargain",
+     "state": "active"
+    },
+    "then": [
+     {
+      "op": "set_flag",
+      "flag": "hel_bargain_made"
+     },
+     {
+      "op": "give",
+      "item": "draupnir_ring"
+     }
+    ]
+   },
+   {
+    "keys": [
+     "Naglfar"
+    ],
+    "text": "The ship of dead men's nails. It is a wreck now. I keep it for sentimental reasons."
+   }
+  ],
+  "farewell": "Not yet, then."
+ },
+ {
+  "id": "vainamoinen",
+  "name": "Väinämöinen",
+  "greeting": [
+   {
+    "text": "An ancient, bearded singer turns from the water. His voice is the sound of a lake in spring. \"You are the one who comes with the gun and the song. Good. I have been waiting.\"",
+    "then": [
+     {
+      "op": "set_flag",
+      "flag": "met_vainamoinen"
+     }
+    ]
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "Väinämöinen. Eternal singer. Your kind has many names for me. 'Grandpa' is the rudest."
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "I sing what must be sung. Right now it must be sung loudly."
+   },
+   {
+    "keys": [
+     "Sampo"
+    ],
+    "text": "The Sampo was the mill of plenty. Louhi stole it; we broke it; its five pieces lie across five skies. Gather them, and I will help you mend it.",
+    "reveals": [
+     "shards"
+    ]
+   },
+   {
+    "keys": [
+     "shards"
+    ],
+    "text": "Kalevala guards one. Pohjola's iron men guard another. Surma holds one in the dark river. Ukko's storm-spirit holds the fourth. The fifth sleeps in the Golem of Sampola."
+   },
+   {
+    "keys": [
+     "kantele"
+    ],
+    "text": "My kantele — it is a rifle now, yes? A fine joke. Take it. It sings stun and it shoots true.",
+    "when": {
+     "is": "and",
+     "all": [
+      {
+       "is": "quest",
+       "quest": "m12_kalevala",
+       "state": "active"
+      },
+      {
+       "is": "not",
+       "cond": {
+        "is": "has_item",
+        "item": "vainamoinen_gun",
+        "count": 1
+       }
+      }
+     ]
+    },
+    "then": [
+     {
+      "op": "give",
+      "item": "vainamoinen_gun"
+     },
+     {
+      "op": "give",
+      "item": "ammo_762",
+      "count": 30
+     }
+    ]
+   },
+   {
+    "keys": [
+     "Louhi"
+    ],
+    "text": "Mistress of Pohjola. She was a witch, then a queen, now something that needs a new word. Do not trust her gifts."
+   }
+  ],
+  "farewell": "May your song stay true."
+ },
+ {
+  "id": "villager",
+  "name": "Villager",
+  "greeting": [
+   {
+    "text": "\"Hail, traveller. Mind the roads after dark.\""
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "Just a villager of {town}, as it happens."
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "I make myself useful. Mostly I complain."
+   },
+   {
+    "keys": [
+     "rumors"
+    ],
+    "text": "They say the old gate hums. Skalds say the dead walk. My cousin says the dead owe him money."
+   },
+   {
+    "keys": [
+     "{town}"
+    ],
+    "text": "{town} is as good a place as any, and better than most."
+   },
+   {
+    "keys": [
+     "gate"
+    ],
+    "text": "I stay away from the gate. And I advise you to take a gun."
+   }
+  ],
+  "farewell": "Safe travels."
+ },
+ {
+  "id": "guard",
+  "name": "Warden Guard",
+  "greeting": [
+   {
+    "text": "\"Halt. Oh — Rune-Warden. Carry on.\""
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "Just a guard. Name's on the paperwork."
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "I stand here and look like a deterrent."
+   },
+   {
+    "keys": [
+     "trouble"
+    ],
+    "text": "Wolves in the woods, draugr after dark, mercs on the coast. Nothing out of the ordinary."
+   }
+  ],
+  "farewell": "Move along."
+ },
+ {
+  "id": "wanderer",
+  "name": "Wanderer",
+  "greeting": [
+   {
+    "text": "A weathered traveller nods. \"Not many walk this far.\""
+   }
+  ],
+  "topics": [
+   {
+    "keys": [
+     "name"
+    ],
+    "text": "Names are for people who stay in one place."
+   },
+   {
+    "keys": [
+     "job"
+    ],
+    "text": "I walk and I listen."
+   },
+   {
+    "keys": [
+     "rumors"
+    ],
+    "text": "They say strange things happen at the old rune-rings when the moon is high. Mind the draugr."
+   }
+  ],
+  "farewell": "Walk well."
+ }
+]

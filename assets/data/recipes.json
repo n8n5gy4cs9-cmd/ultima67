@@ -1,0 +1,22 @@
+[
+ {"id":"ingot","name":"Smelt Iron Ingot","station":"forge","inputs":[["scrap_iron",3]],"output":["iron_ingot",1]},
+ {"id":"ammo_9mm","name":"Press 9mm Rounds","station":"forge","inputs":[["scrap_iron",1],["gunpowder",1]],"output":["ammo_9mm",20]},
+ {"id":"ammo_762","name":"Press 7.62 Rounds","station":"forge","inputs":[["scrap_iron",1],["gunpowder",1]],"output":["ammo_762",15]},
+ {"id":"ammo_shell","name":"Load Shotgun Shells","station":"forge","inputs":[["scrap_iron",1],["gunpowder",1]],"output":["ammo_shell",10]},
+ {"id":"cannon_ball","name":"Cast Cannon Balls","station":"forge","inputs":[["iron_ingot",1]],"output":["cannon_ball",2]},
+ {"id":"puukko","name":"Forge Puukko","station":"forge","inputs":[["iron_ingot",1]],"output":["puukko",1]},
+ {"id":"viking_axe","name":"Forge Viking Axe","station":"forge","inputs":[["iron_ingot",2],["leather",1]],"output":["viking_axe",1]},
+ {"id":"round_spear","name":"Forge Spear","station":"forge","inputs":[["iron_ingot",1],["leather",1]],"output":["round_spear",1]},
+ {"id":"long_sword","name":"Forge Long Sword","station":"forge","inputs":[["iron_ingot",3],["leather",1]],"output":["long_sword",1],"level":3},
+ {"id":"kevlar_vest","name":"Stitch Kevlar Vest","station":"forge","inputs":[["leather",3],["iron_ingot",2]],"output":["kevlar_vest",1],"level":2},
+ {"id":"round_shield","name":"Forge Round Shield","station":"forge","inputs":[["iron_ingot",2],["leather",2]],"output":["round_shield",1]},
+ {"id":"gleipnir","name":"Forge Gleipnir-II","station":"forge","inputs":[["iron_ingot",5],["reagent_bog_iron",3],["reagent_amber",2]],"output":["gleipnir_chain",1],"needs_flag":"at_dvalinn_brokkr_forge"},
+ {"id":"sampo","name":"Reforge the Sampo","station":"forge","inputs":[["sampo_shard_1",1],["sampo_shard_2",1],["sampo_shard_3",1],["sampo_shard_4",1],["sampo_shard_5",1]],"output":["sampo",1],"needs_flag":"at_sampola_sampo_forge_ruin"},
+ {"id":"smoked_fish","name":"Smoke Fish","station":"campfire","inputs":[["raw_fish",1]],"output":["smoked_fish",1]},
+ {"id":"rye_bread","name":"Bake Rye Bread","station":"campfire","inputs":[["rye_flour",2]],"output":["rye_bread",1]},
+ {"id":"medkit","name":"Assemble Medkit","station":"workbench","inputs":[["herb",3],["leather",1]],"output":["medkit",1]},
+ {"id":"gunpowder","name":"Mix Gunpowder","station":"workbench","inputs":[["reagent_birch_ash",2],["reagent_bog_iron",1]],"output":["gunpowder",4]},
+ {"id":"torch","name":"Make Torches","station":"workbench","inputs":[["reagent_birch_ash",1],["leather",1]],"output":["torch",2]},
+ {"id":"pouch","name":"Sew Pouch","station":"workbench","inputs":[["leather",2]],"output":["pouch",1]},
+ {"id":"backpack","name":"Sew Backpack","station":"workbench","inputs":[["leather",5]],"output":["backpack",1]}
+]

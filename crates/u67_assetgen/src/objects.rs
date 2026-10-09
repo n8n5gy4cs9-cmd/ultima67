@@ -324,6 +324,7 @@ pub fn frames_of(id: &str, f: usize) -> Canvas {
         "runestone" => runestone(f == 1),
         "longhouse_roof" => roof(),
         "door_wood" => door(f == 1),
+        "door_open" => door(true),
         "chest" => chest(f == 1),
         "bed" => bed(),
         "table" => table(),

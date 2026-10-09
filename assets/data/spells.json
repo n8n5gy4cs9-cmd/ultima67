@@ -1,0 +1,16 @@
+[
+ {"id":"valo","name":"Valo (Light)","circle":1,"mana":4,"reagents":[["reagent_birch_ash",1]],"runes":[0,4,8],"effect":{"kind":"light","seconds":120},"desc":"Conjures a steady light.","known":true},
+ {"id":"parane","name":"Parane (Heal)","circle":1,"mana":6,"reagents":[["herb",1]],"runes":[1,5,9],"effect":{"kind":"heal","amount":30},"desc":"A sung charm that closes wounds.","known":true},
+ {"id":"puhdista","name":"Puhdista (Cure)","circle":1,"mana":5,"reagents":[["herb",1]],"runes":[12,16,20],"effect":{"kind":"cure"},"desc":"Cleans poison and chill from the blood."},
+ {"id":"ukon_nuoli","name":"Ukon Nuoli (Lightning)","circle":2,"mana":8,"reagents":[["reagent_amber",1]],"runes":[2,6,10],"effect":{"kind":"bolt","damage":28,"speed":26,"range":14,"element":"lightning"},"desc":"Ukko's arrow strikes where you point.","known":true},
+ {"id":"kipina","name":"Kipinä (Fire Bolt)","circle":2,"mana":8,"reagents":[["reagent_birch_ash",1]],"runes":[3,7,11],"effect":{"kind":"bolt","damage":22,"speed":18,"range":12,"splash":1.6,"element":"fire"},"desc":"A spark that grows into flame."},
+ {"id":"suojaus","name":"Suojaus (Protect)","circle":2,"mana":7,"reagents":[["reagent_amber",1]],"runes":[4,8,12],"effect":{"kind":"protect","amount":12,"seconds":60},"desc":"Amber ward against blows."},
+ {"id":"paljasta","name":"Paljasta (Reveal)","circle":2,"mana":6,"reagents":[["reagent_raven_feather",1]],"runes":[11,15,19],"effect":{"kind":"reveal","radius":30},"desc":"Raven eyes show what hides nearby."},
+ {"id":"tuuli","name":"Tuuli (Haste)","circle":3,"mana":10,"reagents":[["reagent_raven_feather",1]],"runes":[5,9,13],"effect":{"kind":"haste","seconds":30},"desc":"The wind lends you its feet."},
+ {"id":"pelko","name":"Pelko (Fear)","circle":3,"mana":10,"reagents":[["reagent_fly_agaric",1]],"runes":[6,10,14],"effect":{"kind":"fear","radius":7,"seconds":8},"desc":"Enemies flee in terror."},
+ {"id":"jaa","name":"Jää (Freeze)","circle":3,"mana":12,"reagents":[["reagent_bog_iron",1]],"runes":[7,11,15],"effect":{"kind":"freeze","radius":6,"seconds":6},"desc":"Frost stills everything near you."},
+ {"id":"loitsunuolet","name":"Loitsunuolet (Missiles)","circle":3,"mana":14,"reagents":[["reagent_amber",2],["reagent_raven_feather",1]],"runes":[8,12,16],"effect":{"kind":"missiles","count":5,"damage":10,"range":13},"desc":"Five seeking arrows of song."},
+ {"id":"siirto","name":"Siirto (Blink)","circle":4,"mana":12,"reagents":[["reagent_raven_feather",2]],"runes":[9,13,17],"effect":{"kind":"blink","range":9},"desc":"Step through the air."},
+ {"id":"kutsu_susi","name":"Kutsu Susi (Summon Wolf)","circle":4,"mana":16,"reagents":[["reagent_fly_agaric",2]],"runes":[10,14,18],"effect":{"kind":"summon","creature":"wolf","count":2,"seconds":60},"desc":"Call spirit wolves to fight for you."},
+ {"id":"vainon_laulu","name":"Väinön Laulu (Song of Väinämöinen)","circle":5,"mana":30,"reagents":[["reagent_amber",3]],"runes":[13,17,21],"effect":{"kind":"freeze","radius":10,"seconds":10},"desc":"The old singer's song stills the whole battlefield."}
+]
