@@ -18,7 +18,7 @@
   "done",
   "blocked"
  ],
- "next_action": "T2.1-T2.7 workspace; headless crates first (world, console, assetgen, mapgen), Bevy game last.",
+ "next_action": "T4.4 u67_mapgen (procedural Midgard + planets), then T2.2 Bevy game crate (window, renderer, input), T2.5-T2.7.",
  "phases": [
   {
    "id": "P0",
@@ -109,7 +109,7 @@
     {
      "id": "T2.4",
      "title": "Platform abstraction: paths via `directories`, no mac-only APIs",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T2.5",
@@ -135,57 +135,57 @@
     {
      "id": "T3.1",
      "title": "assets/manifest.json: every asset id -> path, kind, source, status",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T3.2",
      "title": "u67_assetgen: procedural Starbound-style Norse pixel sprite generator (seeded, deterministic)",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T3.3",
      "title": "Generate terrain tileset (grass, snow, rock, water, lava, ice, void, regolith, gas, floors, walls)",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T3.4",
      "title": "Generate object sprites (trees, runestones, longhouses, chests, doors, cannons, ships, furniture)",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T3.5",
      "title": "Generate character sprites 4-dir x walk/idle/attack/die (player, party, NPC archetypes, creatures, bosses)",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T3.6",
      "title": "Generate weapon/item/inventory icons (modern guns + Norse relics)",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T3.7",
      "title": "Generate UI art (paperdoll frame, backpack, containers, dialogue box, HUD, runic font)",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T3.8",
      "title": "Generate planet/space art (star map, planet surfaces, ship, Bifrost gate)",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T3.9",
      "title": "Placeholder SFX generator (WAV synth: steps, gun, cannon, hit, door, UI, spell, ambient)",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T3.10",
      "title": "Placeholder music generator (procedural MIDI-like -> OGG/WAV, one loop per region + combat + menu)",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T3.11",
      "title": "Auto-generate ASSETS.md from manifest (top: clean table use|name|path|source; below: detailed notes)",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T3.12",

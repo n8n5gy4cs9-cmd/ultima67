@@ -1,0 +1,517 @@
+{
+  "entries": [
+    {
+      "id": "terrain",
+      "kind": "sheet",
+      "path": "gfx/terrain.png",
+      "use": "terrain tiles",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "16x16, 4 variants per tile"
+    },
+    {
+      "id": "terrain_index",
+      "kind": "atlas",
+      "path": "gfx/terrain.json",
+      "use": "terrain tiles (name -> rect index)",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "generated together with the sheet"
+    },
+    {
+      "id": "objects",
+      "kind": "sheet",
+      "path": "gfx/objects.png",
+      "use": "world objects (trees, runestones, cannons, ships...)",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "32x32 cells"
+    },
+    {
+      "id": "objects_index",
+      "kind": "atlas",
+      "path": "gfx/objects.json",
+      "use": "world objects (trees, runestones, cannons, ships...) (name -> rect index)",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "generated together with the sheet"
+    },
+    {
+      "id": "characters",
+      "kind": "sheet",
+      "path": "gfx/characters.png",
+      "use": "characters, NPCs, creatures, bosses",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "24x24 cells, 11 frames x 4 dirs"
+    },
+    {
+      "id": "characters_index",
+      "kind": "atlas",
+      "path": "gfx/characters.json",
+      "use": "characters, NPCs, creatures, bosses (name -> rect index)",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "generated together with the sheet"
+    },
+    {
+      "id": "items",
+      "kind": "sheet",
+      "path": "gfx/items.png",
+      "use": "inventory item icons",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "16x16"
+    },
+    {
+      "id": "items_index",
+      "kind": "atlas",
+      "path": "gfx/items.json",
+      "use": "inventory item icons (name -> rect index)",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "generated together with the sheet"
+    },
+    {
+      "id": "ui",
+      "kind": "sheet",
+      "path": "gfx/ui.png",
+      "use": "UI panels, slots, bars, paperdoll, cursors, runes",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "mixed sizes"
+    },
+    {
+      "id": "ui_index",
+      "kind": "atlas",
+      "path": "gfx/ui.json",
+      "use": "UI panels, slots, bars, paperdoll, cursors, runes (name -> rect index)",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "generated together with the sheet"
+    },
+    {
+      "id": "space",
+      "kind": "sheet",
+      "path": "gfx/space.png",
+      "use": "planets, ship, bifrost gate, starfield",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "64x64 bodies"
+    },
+    {
+      "id": "space_index",
+      "kind": "atlas",
+      "path": "gfx/space.json",
+      "use": "planets, ship, bifrost gate, starfield (name -> rect index)",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "generated together with the sheet"
+    },
+    {
+      "id": "sfx_footstep",
+      "kind": "sfx",
+      "path": "sfx/footstep.wav",
+      "use": "walking",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_footstep_snow",
+      "kind": "sfx",
+      "path": "sfx/footstep_snow.wav",
+      "use": "walking on snow",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_gun_pistol",
+      "kind": "sfx",
+      "path": "sfx/gun_pistol.wav",
+      "use": "pistol shot",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_gun_rifle",
+      "kind": "sfx",
+      "path": "sfx/gun_rifle.wav",
+      "use": "rifle shot",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_gun_shotgun",
+      "kind": "sfx",
+      "path": "sfx/gun_shotgun.wav",
+      "use": "shotgun blast",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_reload",
+      "kind": "sfx",
+      "path": "sfx/reload.wav",
+      "use": "reloading a gun",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_cannon_fire",
+      "kind": "sfx",
+      "path": "sfx/cannon_fire.wav",
+      "use": "cannon firing",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_explosion",
+      "kind": "sfx",
+      "path": "sfx/explosion.wav",
+      "use": "explosions / cannonball impact",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_hit_flesh",
+      "kind": "sfx",
+      "path": "sfx/hit_flesh.wav",
+      "use": "melee hit on creature",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_hit_metal",
+      "kind": "sfx",
+      "path": "sfx/hit_metal.wav",
+      "use": "weapon on armor",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_swing",
+      "kind": "sfx",
+      "path": "sfx/swing.wav",
+      "use": "melee swing",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_death",
+      "kind": "sfx",
+      "path": "sfx/death.wav",
+      "use": "creature death",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_door_open",
+      "kind": "sfx",
+      "path": "sfx/door_open.wav",
+      "use": "door open",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_door_close",
+      "kind": "sfx",
+      "path": "sfx/door_close.wav",
+      "use": "door close",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_chest_open",
+      "kind": "sfx",
+      "path": "sfx/chest_open.wav",
+      "use": "chest/container open",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_pickup",
+      "kind": "sfx",
+      "path": "sfx/pickup.wav",
+      "use": "pick up item",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_drop",
+      "kind": "sfx",
+      "path": "sfx/drop.wav",
+      "use": "drop item",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_coin",
+      "kind": "sfx",
+      "path": "sfx/coin.wav",
+      "use": "money",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_ui_click",
+      "kind": "sfx",
+      "path": "sfx/ui_click.wav",
+      "use": "button click",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_ui_open",
+      "kind": "sfx",
+      "path": "sfx/ui_open.wav",
+      "use": "open inventory / menu",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_ui_close",
+      "kind": "sfx",
+      "path": "sfx/ui_close.wav",
+      "use": "close menu",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_ui_error",
+      "kind": "sfx",
+      "path": "sfx/ui_error.wav",
+      "use": "invalid action / console error",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_spell_cast",
+      "kind": "sfx",
+      "path": "sfx/spell_cast.wav",
+      "use": "casting a spell (seidr/laulu)",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_spell_fizzle",
+      "kind": "sfx",
+      "path": "sfx/spell_fizzle.wav",
+      "use": "failed spell",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_level_up",
+      "kind": "sfx",
+      "path": "sfx/level_up.wav",
+      "use": "level up / quest done",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_quest_start",
+      "kind": "sfx",
+      "path": "sfx/quest_start.wav",
+      "use": "new quest",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_bifrost",
+      "kind": "sfx",
+      "path": "sfx/bifrost.wav",
+      "use": "bifrost travel",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_ship_creak",
+      "kind": "sfx",
+      "path": "sfx/ship_creak.wav",
+      "use": "ship movement",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_splash",
+      "kind": "sfx",
+      "path": "sfx/splash.wav",
+      "use": "water splash",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_ambient_wind",
+      "kind": "sfx",
+      "path": "sfx/ambient_wind.wav",
+      "use": "wind loop (snow, mountains, space-planets)",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_ambient_forest",
+      "kind": "sfx",
+      "path": "sfx/ambient_forest.wav",
+      "use": "forest loop (birds + rustle)",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_ambient_sea",
+      "kind": "sfx",
+      "path": "sfx/ambient_sea.wav",
+      "use": "waves loop",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_ambient_cave",
+      "kind": "sfx",
+      "path": "sfx/ambient_cave.wav",
+      "use": "dungeon/cave loop (drips + drone)",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_ambient_space",
+      "kind": "sfx",
+      "path": "sfx/ambient_space.wav",
+      "use": "ship / space station hum loop",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_wolf_howl",
+      "kind": "sfx",
+      "path": "sfx/wolf_howl.wav",
+      "use": "wolf / Fenrir",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "sfx_kantele",
+      "kind": "sfx",
+      "path": "sfx/kantele.wav",
+      "use": "kantele pluck (Väinämöinen's gun, singing magic)",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "22050 Hz mono WAV"
+    },
+    {
+      "id": "music_menu",
+      "kind": "music",
+      "path": "music/menu.wav",
+      "use": "main menu",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "16000 Hz mono WAV, 20 s loop"
+    },
+    {
+      "id": "music_midgard_town",
+      "kind": "music",
+      "path": "music/midgard_town.wav",
+      "use": "towns of Midgard",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "16000 Hz mono WAV, 20 s loop"
+    },
+    {
+      "id": "music_midgard_wilds",
+      "kind": "music",
+      "path": "music/midgard_wilds.wav",
+      "use": "overworld, forests, fjords",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "16000 Hz mono WAV, 20 s loop"
+    },
+    {
+      "id": "music_dungeon",
+      "kind": "music",
+      "path": "music/dungeon.wav",
+      "use": "caves, ruins, barrows",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "16000 Hz mono WAV, 20 s loop"
+    },
+    {
+      "id": "music_space",
+      "kind": "music",
+      "path": "music/space.wav",
+      "use": "star map and space travel",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "16000 Hz mono WAV, 20 s loop"
+    },
+    {
+      "id": "music_combat",
+      "kind": "music",
+      "path": "music/combat.wav",
+      "use": "fights",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "16000 Hz mono WAV, 20 s loop"
+    },
+    {
+      "id": "music_boss",
+      "kind": "music",
+      "path": "music/boss.wav",
+      "use": "boss fights",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "16000 Hz mono WAV, 20 s loop"
+    },
+    {
+      "id": "music_kalevala",
+      "kind": "music",
+      "path": "music/kalevala.wav",
+      "use": "Kalevala system (kantele/runolaulu feel)",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "16000 Hz mono WAV, 20 s loop"
+    },
+    {
+      "id": "music_hel",
+      "kind": "music",
+      "path": "music/hel.wav",
+      "use": "Hel, Tuonela and the dead",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "16000 Hz mono WAV, 20 s loop"
+    }
+  ]
+}

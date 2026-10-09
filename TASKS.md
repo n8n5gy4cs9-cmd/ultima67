@@ -3,8 +3,8 @@
 > Generated from `PRD.json` by `python3 tools/sync_tasks.py`. **Edit PRD.json, then re-run.**
 > Legend: `[x]` done, `[ ]` todo, `[~]` in progress, `[!]` blocked.
 
-**Progress: 13/78 done.**  
-**Next action:** T2.1-T2.7 workspace; headless crates first (world, console, assetgen, mapgen), Bevy game last.
+**Progress: 25/78 done.**  
+**Next action:** T4.4 u67_mapgen (procedural Midgard + planets), then T2.2 Bevy game crate (window, renderer, input), T2.5-T2.7.
 
 ## P0 - Planning & docs
 
@@ -28,24 +28,24 @@
 - [ ] **T2.1** Cargo workspace: u67_core, u67_world, u67_game, u67_assetgen, u67_console, u67_net
 - [ ] **T2.2** Bevy app boots window on macOS arm64, 60fps, fixed-timestep sim
 - [ ] **T2.3** GitHub Actions CI: fmt, clippy, test on macOS+Linux; Windows build job
-- [ ] **T2.4** Platform abstraction: paths via `directories`, no mac-only APIs
+- [x] **T2.4** Platform abstraction: paths via `directories`, no mac-only APIs
 - [ ] **T2.5** Config/settings file (RON), keybinding + gamepad remap
 - [ ] **T2.6** Game state machine: Boot, MainMenu, Playing, Paused, Inventory, Dialogue, Console
 - [ ] **T2.7** Save/load (serde + versioned), 10 slots + quicksave
 
 ## P3 - Asset pipeline & placeholder generation
 
-- [ ] **T3.1** assets/manifest.json: every asset id -> path, kind, source, status
-- [ ] **T3.2** u67_assetgen: procedural Starbound-style Norse pixel sprite generator (seeded, deterministic)
-- [ ] **T3.3** Generate terrain tileset (grass, snow, rock, water, lava, ice, void, regolith, gas, floors, walls)
-- [ ] **T3.4** Generate object sprites (trees, runestones, longhouses, chests, doors, cannons, ships, furniture)
-- [ ] **T3.5** Generate character sprites 4-dir x walk/idle/attack/die (player, party, NPC archetypes, creatures, bosses)
-- [ ] **T3.6** Generate weapon/item/inventory icons (modern guns + Norse relics)
-- [ ] **T3.7** Generate UI art (paperdoll frame, backpack, containers, dialogue box, HUD, runic font)
-- [ ] **T3.8** Generate planet/space art (star map, planet surfaces, ship, Bifrost gate)
-- [ ] **T3.9** Placeholder SFX generator (WAV synth: steps, gun, cannon, hit, door, UI, spell, ambient)
-- [ ] **T3.10** Placeholder music generator (procedural MIDI-like -> OGG/WAV, one loop per region + combat + menu)
-- [ ] **T3.11** Auto-generate ASSETS.md from manifest (top: clean table use|name|path|source; below: detailed notes)
+- [x] **T3.1** assets/manifest.json: every asset id -> path, kind, source, status
+- [x] **T3.2** u67_assetgen: procedural Starbound-style Norse pixel sprite generator (seeded, deterministic)
+- [x] **T3.3** Generate terrain tileset (grass, snow, rock, water, lava, ice, void, regolith, gas, floors, walls)
+- [x] **T3.4** Generate object sprites (trees, runestones, longhouses, chests, doors, cannons, ships, furniture)
+- [x] **T3.5** Generate character sprites 4-dir x walk/idle/attack/die (player, party, NPC archetypes, creatures, bosses)
+- [x] **T3.6** Generate weapon/item/inventory icons (modern guns + Norse relics)
+- [x] **T3.7** Generate UI art (paperdoll frame, backpack, containers, dialogue box, HUD, runic font)
+- [x] **T3.8** Generate planet/space art (star map, planet surfaces, ship, Bifrost gate)
+- [x] **T3.9** Placeholder SFX generator (WAV synth: steps, gun, cannon, hit, door, UI, spell, ambient)
+- [x] **T3.10** Placeholder music generator (procedural MIDI-like -> OGG/WAV, one loop per region + combat + menu)
+- [x] **T3.11** Auto-generate ASSETS.md from manifest (top: clean table use|name|path|source; below: detailed notes)
 - [ ] **T3.12** Hot-reload assets in dev builds so replacing a file shows instantly
 - [ ] **T3.13** Use user-supplied original sfx/music from assets/original/ as optional upgrades (never committed) _(optional)_
 

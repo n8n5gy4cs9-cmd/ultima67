@@ -14,5 +14,9 @@ Work may stop at any time (token limit ~5h windows). Resume procedure:
 - Keep everything cross-platform; macOS Apple Silicon is the primary target.
 - Content is data-driven (RON/JSON/script files) so it can be edited without recompiling.
 
+## Regenerate assets
+`cargo run -p u67_assetgen` rewrites `assets/` and `ASSETS.md` (committed). Console docs: `cargo run -q -p u67_console --bin gen_commands > commands.txt`. Tasks: `python3 tools/sync_tasks.py`.
+
 ## Last session log
 - 2026-10-09: Planning phase (P0) completed. No code yet. Next: P1 reference study, then P2 workspace.
+- 2026-10-09 (later): P1 notes done; u67_core/world/console/assetgen implemented + tested; assets generated. Arena mode dropped. Next: u67_mapgen, then Bevy game crate.

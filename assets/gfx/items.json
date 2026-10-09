@@ -1,0 +1,383 @@
+{
+  "image": "gfx/items.png",
+  "entries": [
+    {
+      "name": "rune_pistol",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "hunting_shotgun",
+      "x": 16,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "fjord_rifle",
+      "x": 32,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "skald_smg",
+      "x": 48,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "gungnir_sniper",
+      "x": 64,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "vainamoinen_gun",
+      "x": 80,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "flare_gun",
+      "x": 96,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "viking_axe",
+      "x": 112,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "round_spear",
+      "x": 0,
+      "y": 16,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "long_sword",
+      "x": 16,
+      "y": 16,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "bear_axe",
+      "x": 32,
+      "y": 16,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "mjolnir_drone",
+      "x": 48,
+      "y": 16,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "puukko",
+      "x": 64,
+      "y": 16,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "ammo_9mm",
+      "x": 80,
+      "y": 16,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "ammo_762",
+      "x": 96,
+      "y": 16,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "ammo_shell",
+      "x": 112,
+      "y": 16,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "ammo_flare",
+      "x": 0,
+      "y": 32,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "cannon_ball",
+      "x": 16,
+      "y": 32,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "gunpowder",
+      "x": 32,
+      "y": 32,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "horned_helm",
+      "x": 48,
+      "y": 32,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "kevlar_vest",
+      "x": 64,
+      "y": 32,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "wolf_cloak",
+      "x": 80,
+      "y": 32,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "norse_greaves",
+      "x": 96,
+      "y": 32,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "hiking_boots",
+      "x": 112,
+      "y": 32,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "round_shield",
+      "x": 0,
+      "y": 48,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "draupnir_ring",
+      "x": 16,
+      "y": 48,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "thor_amulet",
+      "x": 32,
+      "y": 48,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "mead",
+      "x": 48,
+      "y": 48,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "rye_bread",
+      "x": 64,
+      "y": 48,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "smoked_fish",
+      "x": 80,
+      "y": 48,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "medkit",
+      "x": 96,
+      "y": 48,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "torch",
+      "x": 112,
+      "y": 48,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "lockpick",
+      "x": 0,
+      "y": 64,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "rope",
+      "x": 16,
+      "y": 64,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "vacuum_suit",
+      "x": 32,
+      "y": 64,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "rune_key",
+      "x": 48,
+      "y": 64,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "silver",
+      "x": 64,
+      "y": 64,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "sampo_shard_1",
+      "x": 80,
+      "y": 64,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "sampo_shard_2",
+      "x": 96,
+      "y": 64,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "sampo_shard_3",
+      "x": 112,
+      "y": 64,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "sampo_shard_4",
+      "x": 0,
+      "y": 80,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "sampo_shard_5",
+      "x": 16,
+      "y": 80,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "gleipnir_chain",
+      "x": 32,
+      "y": 80,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "odin_eye",
+      "x": 48,
+      "y": 80,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "skidbladnir_ship",
+      "x": 64,
+      "y": 80,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "reagent_birch_ash",
+      "x": 80,
+      "y": 80,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "reagent_raven_feather",
+      "x": 96,
+      "y": 80,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "reagent_amber",
+      "x": 112,
+      "y": 80,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "reagent_fly_agaric",
+      "x": 0,
+      "y": 96,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "reagent_bog_iron",
+      "x": 16,
+      "y": 96,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "backpack",
+      "x": 32,
+      "y": 96,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "chest",
+      "x": 48,
+      "y": 96,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "pouch",
+      "x": 64,
+      "y": 96,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "name": "ammo_box",
+      "x": 80,
+      "y": 96,
+      "w": 16,
+      "h": 16
+    }
+  ]
+}

@@ -191,9 +191,9 @@ mod tests {
     use super::*;
     #[test]
     fn all_tiles_opaque_and_deterministic() {
-        for id in 0..TILES.len() {
+        for (id, d) in TILES.iter().enumerate() {
             let a = tile(id, 1);
-            assert!(a.px.iter().all(|p| p[3] == 255), "{}", TILES[id].name);
+            assert!(a.px.iter().all(|p| p[3] == 255), "{}", d.name);
             assert_eq!(a.px, tile(id, 1).px);
         }
         assert_ne!(tile(1, 0).px, tile(1, 1).px);

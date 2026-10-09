@@ -113,8 +113,7 @@ mod tests {
     use super::*;
     #[test]
     fn submit_flow() {
-        let mut c = Console::default();
-        c.input = "give rope 2".into();
+        let mut c = Console { input: "give rope 2".into(), ..Console::default() };
         assert!(matches!(c.submit(), Some(Action::Give { .. })));
         c.input = "nonsense".into();
         assert!(c.submit().is_none());
