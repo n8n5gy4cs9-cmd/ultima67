@@ -1,7 +1,9 @@
-# Ultima67 console commands (PLANNED - not implemented yet; see T7.2)
-# Open console with ` or F1. Toggles: "cmd [on|off]".
-# Format: command <args> - description
+# Ultima67 console commands. GENERATED from the registry:
+#   cargo run -q -p u67_console --bin gen_commands > commands.txt
+# Open the console with ` or F1; cheats menu with F2. Toggles: "cmd [on|off]".
+# Format: command <required> [optional] - description
 
+# --- console ---
 help [command]                    - list commands / show usage
 cmds                              - print all commands
 clear                             - clear console output
@@ -33,9 +35,9 @@ kill_all                          - kill all hostile NPCs nearby
 invisible [on|off]                - enemies ignore you
 one_hit [on|off]                  - all attacks kill
 
-# --- movement / world ---
+# --- world ---
 tp <place_id>                     - teleport to named place (tp kaupang, tp mimir_well)
-tpxy <x> <y> [z]                  - teleport to coordinates
+tpxy <x> <y>                      - teleport to coordinates on current map
 pos                               - print position
 planet <body_id>                  - travel to planet (planet maani, planet pohjola)
 planets                           - list bodies
@@ -44,10 +46,10 @@ reveal_map                        - reveal full map
 unlock_travel                     - unlock all fast-travel nodes
 time <HH:MM>                      - set game time
 timescale <x>                     - game time speed multiplier
-weather <clear|rain|snow|storm|aurora> - set weather
+weather <clear|rain|snow|storm|aurora>- set weather
 
 # --- spawn ---
-spawn <npc_or_creature_id> [count] - spawn at cursor
+spawn <npc_or_creature_id> [count]- spawn at cursor
 spawn_ship <ship_id>              - spawn ship
 spawn_cannon                      - spawn a cannon at cursor
 creatures [filter]                - list spawnable ids
@@ -57,17 +59,19 @@ spells_all                        - learn all spells
 reagents                          - fill reagents
 cast <spell_id>                   - cast without cost
 
-# --- quests / flags ---
-quest list                        - list quests
-quest start|complete|reset <id>   - change quest state
+# --- quests ---
+quest <list|start|complete|reset> [id]- list quests / change quest state
 flag <name> [0|1]                 - get/set story flag
-party add|remove <npc_id>         - party management
+party <add|remove> <npc_id>       - party management
 ending <a|b|c>                    - jump to ending (debug)
 
-# --- game / dev ---
+# --- game ---
 save [slot]                       - save
 load [slot]                       - load
 quit                              - quit game
+splitscreen <players 1-4>         - set local players (debug)
+
+# --- dev ---
 fps [on|off]                      - show fps
 debug_colliders [on|off]          - draw collision boxes
 inspect [on|off]                  - entity inspector under cursor
@@ -75,6 +79,5 @@ reload_assets                     - hot-reload assets
 reload_data                       - reload data files
 screenshot                        - save screenshot
 seed <n>                          - set rng seed
-splitscreen <players 1-4>         - set local players (debug)
 set <cvar> <value>                - set config variable
 get <cvar>                        - read config variable

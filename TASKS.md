@@ -3,7 +3,7 @@
 > Generated from `PRD.json` by `python3 tools/sync_tasks.py`. **Edit PRD.json, then re-run.**
 > Legend: `[x]` done, `[ ]` todo, `[~]` in progress, `[!]` blocked.
 
-**Progress: 12/78 done.**  
+**Progress: 13/78 done.**  
 **Next action:** T2.1-T2.7 workspace; headless crates first (world, console, assetgen, mapgen), Bevy game last.
 
 ## P0 - Planning & docs
@@ -93,11 +93,11 @@
 
 ## P7 - Cheats & developer console
 
-- [ ] **T7.1** Console (backtick/F1): input, history, autocomplete, scrollback, command registry
-- [ ] **T7.2** Implement commands from commands.txt (give, tp, god, noclip, spawn, set, flag, time, weather, quest, heal, xp, ...)
+- [ ] **T7.1** Console (backtick/F1): input, history, autocomplete, scrollback, command registry [logic done in u67_console; in-game UI pending]
+- [ ] **T7.2** Implement commands from commands.txt (give, tp, god, noclip, spawn, set, flag, time, weather, quest, heal, xp, ...) [parser+Action enum done; game-side effects pending]
 - [ ] **T7.3** Cheats menu (F2) with toggles: god, infinite ammo, noclip, fast, all spells, reveal map
 - [ ] **T7.4** Dev tools: show colliders, entity inspector, FPS, reload assets, run script
-- [ ] **T7.5** commands.txt auto-generated from registry (test fails if out of sync)
+- [x] **T7.5** commands.txt auto-generated from registry (test fails if out of sync)
 
 ## P8 - Multiplayer
 

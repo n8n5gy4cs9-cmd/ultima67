@@ -199,6 +199,7 @@ name = "u67_console"
 version = "0.1.0"
 dependencies = [
  "u67_core",
+ "u67_world",
 ]
 
 [[package]]

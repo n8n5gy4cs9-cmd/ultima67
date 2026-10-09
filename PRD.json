@@ -390,12 +390,12 @@
    "tasks": [
     {
      "id": "T7.1",
-     "title": "Console (backtick/F1): input, history, autocomplete, scrollback, command registry",
+     "title": "Console (backtick/F1): input, history, autocomplete, scrollback, command registry [logic done in u67_console; in-game UI pending]",
      "status": "todo"
     },
     {
      "id": "T7.2",
-     "title": "Implement commands from commands.txt (give, tp, god, noclip, spawn, set, flag, time, weather, quest, heal, xp, ...)",
+     "title": "Implement commands from commands.txt (give, tp, god, noclip, spawn, set, flag, time, weather, quest, heal, xp, ...) [parser+Action enum done; game-side effects pending]",
      "status": "todo"
     },
     {
@@ -411,7 +411,7 @@
     {
      "id": "T7.5",
      "title": "commands.txt auto-generated from registry (test fails if out of sync)",
-     "status": "todo"
+     "status": "done"
     }
    ]
   },
