@@ -40,7 +40,7 @@ ultima67/
 
 **Magic.** Seidr/runes with reagents (U7) and Kalevala *laulu* (sung spells: choose a short rune sequence). Mana from "väki" stat.
 
-**Multiplayer.** Phase 1: local splitscreen, one world, N cameras, input devices mapped to player entities (`u67_net::LocalSeat`). Arena mode reuses the same code with classes. Netcode (optional) = deterministic lockstep, which the fixed tick enables.
+**Multiplayer.** Phase 1: local splitscreen, one world, N cameras, input devices mapped to player entities (`u67_net::LocalSeat`). Netcode (optional) = deterministic lockstep, which the fixed tick enables.
 
 **Asset pipeline.** Everything the game loads is listed in `assets/manifest.ron` (id, kind, path, source, status). Game loads by id, so replacing the file at the path replaces the asset. `u67_assetgen` writes placeholders and `ASSETS.md`. Dev builds hot-reload.
 

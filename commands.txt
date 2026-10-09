@@ -76,6 +76,5 @@ reload_data                       - reload data files
 screenshot                        - save screenshot
 seed <n>                          - set rng seed
 splitscreen <players 1-4>         - set local players (debug)
-arena <deathmatch|ctf>            - start arena mode
 set <cvar> <value>                - set config variable
 get <cvar>                        - read config variable

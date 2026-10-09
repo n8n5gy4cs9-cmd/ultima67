@@ -1,6 +1,6 @@
 # Ultima67
 
-A Rust RPG: an **Ultima 7**-style open world remade as **Midgård**, with **Ultima 6** touches (shootable cannons, ships) and **OpenNox**-style arena multiplayer. Norse/Viking mythology and the Finnish *Kalevala*, set in the modern day with modern guns, across our Solar System (Norse names).
+A Rust RPG: an **Ultima 7**-style open world remade as **Midgård**, with **Ultima 6** touches (shootable cannons, ships) and OpenNox-inspired spells and combat feel. Norse/Viking mythology and the Finnish *Kalevala*, set in the modern day with modern guns, across our Solar System (Norse names).
 
 **By Crowelian 2026 + Sonnet**
 

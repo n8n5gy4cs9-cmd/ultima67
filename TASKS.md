@@ -3,7 +3,7 @@
 > Generated from `PRD.json` by `python3 tools/sync_tasks.py`. **Edit PRD.json, then re-run.**
 > Legend: `[x]` done, `[ ]` todo, `[~]` in progress, `[!]` blocked.
 
-**Progress: 11/79 done.**  
+**Progress: 12/78 done.**  
 **Next action:** T2.1-T2.7 workspace; headless crates first (world, console, assetgen, mapgen), Bevy game last.
 
 ## P0 - Planning & docs
@@ -21,7 +21,7 @@
 - [x] **T1.0** Study upstream in ../refs (exult, nuvie, opennox); fill docs/REFERENCES.md map + notes
 - [x] **T1.0a** Study exult: world/chunk model, schedules, party AI, inventory -> own notes
 - [x] **T1.0b** Study nuvie: cannons, ships, combat, UI -> own notes
-- [x] **T1.0c** Study opennox: classes, spells, arena modes, netcode -> own notes
+- [x] **T1.0c** Study opennox: classes, spells, netcode -> own notes
 
 ## P2 - Workspace & engine skeleton
 
@@ -51,7 +51,7 @@
 
 ## P4 - World: Midgard map (U7 layout remake)
 
-- [ ] **T4.1** World model: map grid, 16x16 chunks, interiors as separate maps (z via portals)
+- [x] **T4.1** World model: map grid, 16x16 chunks, interiors as separate maps (z via portals)
 - [ ] **T4.2** U7 importer: read the USER-OWNED Ultima 7 data from assets/original/ (port ideas/format readers from exult); output Midgard-remapped map. Never commit data.
 - [ ] **T4.3** Midgard transformer: remap U7 terrain/objects to Norse equivalents (towns -> Norse/Finnish villages, Britannia coast -> fjords)
 - [ ] **T4.4** Fallback: procedural Midgard map generator with same macro-layout (works w/o U7 data; ships in repo)
@@ -101,9 +101,8 @@
 
 ## P8 - Multiplayer
 
-- [ ] **T8.1** Local splitscreen co-op (2-4 players): per-player camera, controller/keyboard assignment, shared world
-- [ ] **T8.2** Splitscreen per-player inventory UI + shared/separate party modes
-- [ ] **T8.3** OpenNox-style Arena mode: classes Warrior/Conjurer/Wizard -> Berserker/Volva/Skald, deathmatch, CTF, on splitscreen
+- [ ] **T8.1** Local splitscreen co-op adventure (2-4 players): per-player camera, controller/keyboard assignment, same world, solo or co-op
+- [ ] **T8.2** Splitscreen per-player inventory UI; shared party + shared quest state; drop-in/drop-out join
 - [ ] **T8.4** Optional: LAN/online netcode (lockstep or rollback) via u67_net _(optional)_
 
 ## P9 - Polish, packaging, platforms

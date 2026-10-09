@@ -9,7 +9,7 @@ A full single-player (plus splitscreen co-op) RPG with the feel of Ultima 7: a h
 1. **U7 soul:** world simulation, inventory, dialogue, exploration.
 2. **Modern feel:** WASD/gamepad, mouse aim, hotkeys, readable UI, quicksave.
 3. **U6 spice:** shootable cannons, ships, ship-to-ship fights.
-4. **Nox spice:** class-based arena multiplayer (splitscreen), spell feel.
+4. **Adventure first:** the whole game is the solo adventure; splitscreen co-op plays the same adventure. No competitive arena modes.
 5. **Moddable:** all assets replaceable (ASSETS.md), content in data files, console + cheats.
 6. **Simple:** fewest systems that deliver the above. Optional tasks are marked optional.
 
@@ -32,7 +32,7 @@ See `docs/LORE.md`. Sol system with Norse names is the main play area. A second 
 | F6 | Two systems: Sol (main) + Kalevala (5 planets) | P6 |
 | F7 | Main quest, hotspots, side + optional missions | T6.4-T6.6 |
 | F8 | Cheats menu + developer console, all commands in `commands.txt` | P7 |
-| F9 | Splitscreen co-op (2-4), OpenNox-style arena mode | P8 |
+| F9 | Splitscreen co-op adventure (2-4); solo is the primary mode | P8 |
 | F10 | All sprites/sfx/music generated as placeholders; documented in `ASSETS.md`, trivially replaceable | P3 |
 | F11 | Save/load | T2.7 |
 

@@ -51,5 +51,5 @@ Upstream (cloned to `../refs/`, outside this repo, never committed):
 
 ### OpenNox (Nox) - classes, spells, net
 - **Classes:** Warrior, Conjurer, Wizard. **Spells** (file per spell, hints for our list): anchor, berserk, blind, counter, death, death ray, detect magic, fear, freeze, harpoon, haste, infravision, invisibility, invulnerability, light, magic wall, missiles, nullify, protect, run, slow, summon, trap, tread, vampirism, villain, warcry.
-- **Modes:** quest, arena, CTF (flagball) - uses a server/client network model with a discovery protocol. Our netcode is optional (T8.4); splitscreen first.
-- Our Norse mapping: Warrior->Berserker, Conjurer->Volva (summoner), Wizard->Skald (sung spells).
+- Arena/CTF modes exist upstream but are **out of scope** (user decision: adventure + splitscreen co-op only). Netcode optional (T8.4).
+- Our Norse mapping for player archetypes/spell schools: Warrior->Berserker, Conjurer->Volva (summoner), Wizard->Skald (sung spells).

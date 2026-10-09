@@ -82,7 +82,7 @@
     },
     {
      "id": "T1.0c",
-     "title": "Study opennox: classes, spells, arena modes, netcode -> own notes",
+     "title": "Study opennox: classes, spells, netcode -> own notes",
      "status": "done"
     }
    ]
@@ -207,7 +207,7 @@
     {
      "id": "T4.1",
      "title": "World model: map grid, 16x16 chunks, interiors as separate maps (z via portals)",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T4.2",
@@ -421,17 +421,12 @@
    "tasks": [
     {
      "id": "T8.1",
-     "title": "Local splitscreen co-op (2-4 players): per-player camera, controller/keyboard assignment, shared world",
+     "title": "Local splitscreen co-op adventure (2-4 players): per-player camera, controller/keyboard assignment, same world, solo or co-op",
      "status": "todo"
     },
     {
      "id": "T8.2",
-     "title": "Splitscreen per-player inventory UI + shared/separate party modes",
-     "status": "todo"
-    },
-    {
-     "id": "T8.3",
-     "title": "OpenNox-style Arena mode: classes Warrior/Conjurer/Wizard -> Berserker/Volva/Skald, deathmatch, CTF, on splitscreen",
+     "title": "Splitscreen per-player inventory UI; shared party + shared quest state; drop-in/drop-out join",
      "status": "todo"
     },
     {
