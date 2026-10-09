@@ -3,8 +3,8 @@
 > Generated from `PRD.json` by `python3 tools/sync_tasks.py`. **Edit PRD.json, then re-run.**
 > Legend: `[x]` done, `[ ]` todo, `[~]` in progress, `[!]` blocked.
 
-**Progress: 7/79 done.**  
-**Next action:** T1.1 - create Cargo workspace. See HANDOFF.md.
+**Progress: 11/79 done.**  
+**Next action:** T2.1-T2.7 workspace; headless crates first (world, console, assetgen, mapgen), Bevy game last.
 
 ## P0 - Planning & docs
 
@@ -18,10 +18,10 @@
 
 ## P1 - Reference study
 
-- [ ] **T1.0** Study upstream in ../refs (exult, nuvie, opennox); fill docs/REFERENCES.md map + notes
-- [ ] **T1.0a** Study exult: world/chunk model, schedules, party AI, inventory -> own notes
-- [ ] **T1.0b** Study nuvie: cannons, ships, combat, UI -> own notes
-- [ ] **T1.0c** Study opennox: classes, spells, arena modes, netcode -> own notes
+- [x] **T1.0** Study upstream in ../refs (exult, nuvie, opennox); fill docs/REFERENCES.md map + notes
+- [x] **T1.0a** Study exult: world/chunk model, schedules, party AI, inventory -> own notes
+- [x] **T1.0b** Study nuvie: cannons, ships, combat, UI -> own notes
+- [x] **T1.0c** Study opennox: classes, spells, arena modes, netcode -> own notes
 
 ## P2 - Workspace & engine skeleton
 

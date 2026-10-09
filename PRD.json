@@ -18,7 +18,7 @@
   "done",
   "blocked"
  ],
- "next_action": "T1.1 - create Cargo workspace. See HANDOFF.md.",
+ "next_action": "T2.1-T2.7 workspace; headless crates first (world, console, assetgen, mapgen), Bevy game last.",
  "phases": [
   {
    "id": "P0",
@@ -68,22 +68,22 @@
     {
      "id": "T1.0",
      "title": "Study upstream in ../refs (exult, nuvie, opennox); fill docs/REFERENCES.md map + notes",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T1.0a",
      "title": "Study exult: world/chunk model, schedules, party AI, inventory -> own notes",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T1.0b",
      "title": "Study nuvie: cannons, ships, combat, UI -> own notes",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T1.0c",
      "title": "Study opennox: classes, spells, arena modes, netcode -> own notes",
-     "status": "todo"
+     "status": "done"
     }
    ]
   },
