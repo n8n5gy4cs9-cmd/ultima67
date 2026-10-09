@@ -18,7 +18,7 @@
   "done",
   "blocked"
  ],
- "next_action": "T2.2 Bevy game crate: window + tile renderer + player walk on generated Midgard (u67_game). Then T2.5-2.7, P5.",
+ "next_action": "P5 core gameplay: write all code first, build/test ONLY at the end of the phase (user rule). Order: script VM, dialogue, quests, loot/combat, spells, crafting, NPCs/schedules, creatures AI, inventory UI, interaction, cannons, ships.",
  "phases": [
   {
    "id": "P0",
@@ -94,17 +94,17 @@
     {
      "id": "T2.1",
      "title": "Cargo workspace: u67_core, u67_world, u67_game, u67_assetgen, u67_console, u67_net",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T2.2",
      "title": "Bevy app boots window on macOS arm64, 60fps, fixed-timestep sim",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T2.3",
      "title": "GitHub Actions CI: fmt, clippy, test on macOS+Linux; Windows build job",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T2.4",
@@ -113,18 +113,18 @@
     },
     {
      "id": "T2.5",
-     "title": "Config/settings file (RON), keybinding + gamepad remap",
-     "status": "todo"
+     "title": "Config/settings file (RON), keybinding + gamepad remap [settings.ron + key rebinding done; gamepad uses fixed layout, remap UI pending]",
+     "status": "done"
     },
     {
      "id": "T2.6",
      "title": "Game state machine: Boot, MainMenu, Playing, Paused, Inventory, Dialogue, Console",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T2.7",
      "title": "Save/load (serde + versioned), 10 slots + quicksave",
-     "status": "todo"
+     "status": "done"
     }
    ]
   },
@@ -189,7 +189,7 @@
     },
     {
      "id": "T3.12",
-     "title": "Hot-reload assets in dev builds so replacing a file shows instantly",
+     "title": "Hot-reload assets in dev builds so replacing a file shows instantly [pending: use bevy file_watcher feature]",
      "status": "todo"
     },
     {
@@ -227,11 +227,11 @@
     {
      "id": "T4.5",
      "title": "Map renderer: layered isometric-ish/top-down tile rendering w/ object depth sorting, roofs hide on entry",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T4.6",
-     "title": "Day/night cycle, weather, lighting",
+     "title": "Day/night cycle, weather, lighting [clock + day/night overlay done; weather visuals pending]",
      "status": "todo"
     },
     {
@@ -258,7 +258,7 @@
    "tasks": [
     {
      "id": "T5.1",
-     "title": "Modern controls: WASD/gamepad move, mouse aim, click-to-interact, hotkeys; keep U7 click-drag item handling",
+     "title": "Modern controls: WASD/gamepad move, mouse aim, click-to-interact, hotkeys; keep U7 click-drag item handling [WASD/gamepad move + zoom done; mouse aim/click-interact pending]",
      "status": "todo"
     },
     {

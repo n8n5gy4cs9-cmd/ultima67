@@ -3,8 +3,8 @@
 > Generated from `PRD.json` by `python3 tools/sync_tasks.py`. **Edit PRD.json, then re-run.**
 > Legend: `[x]` done, `[ ]` todo, `[~]` in progress, `[!]` blocked.
 
-**Progress: 28/78 done.**  
-**Next action:** T2.2 Bevy game crate: window + tile renderer + player walk on generated Midgard (u67_game). Then T2.5-2.7, P5.
+**Progress: 35/78 done.**  
+**Next action:** P5 core gameplay: write all code first, build/test ONLY at the end of the phase (user rule). Order: script VM, dialogue, quests, loot/combat, spells, crafting, NPCs/schedules, creatures AI, inventory UI, interaction, cannons, ships.
 
 ## P0 - Planning & docs
 
@@ -25,13 +25,13 @@
 
 ## P2 - Workspace & engine skeleton
 
-- [ ] **T2.1** Cargo workspace: u67_core, u67_world, u67_game, u67_assetgen, u67_console, u67_net
-- [ ] **T2.2** Bevy app boots window on macOS arm64, 60fps, fixed-timestep sim
-- [ ] **T2.3** GitHub Actions CI: fmt, clippy, test on macOS+Linux; Windows build job
+- [x] **T2.1** Cargo workspace: u67_core, u67_world, u67_game, u67_assetgen, u67_console, u67_net
+- [x] **T2.2** Bevy app boots window on macOS arm64, 60fps, fixed-timestep sim
+- [x] **T2.3** GitHub Actions CI: fmt, clippy, test on macOS+Linux; Windows build job
 - [x] **T2.4** Platform abstraction: paths via `directories`, no mac-only APIs
-- [ ] **T2.5** Config/settings file (RON), keybinding + gamepad remap
-- [ ] **T2.6** Game state machine: Boot, MainMenu, Playing, Paused, Inventory, Dialogue, Console
-- [ ] **T2.7** Save/load (serde + versioned), 10 slots + quicksave
+- [x] **T2.5** Config/settings file (RON), keybinding + gamepad remap [settings.ron + key rebinding done; gamepad uses fixed layout, remap UI pending]
+- [x] **T2.6** Game state machine: Boot, MainMenu, Playing, Paused, Inventory, Dialogue, Console
+- [x] **T2.7** Save/load (serde + versioned), 10 slots + quicksave
 
 ## P3 - Asset pipeline & placeholder generation
 
@@ -46,7 +46,7 @@
 - [x] **T3.9** Placeholder SFX generator (WAV synth: steps, gun, cannon, hit, door, UI, spell, ambient)
 - [x] **T3.10** Placeholder music generator (procedural MIDI-like -> OGG/WAV, one loop per region + combat + menu)
 - [x] **T3.11** Auto-generate ASSETS.md from manifest (top: clean table use|name|path|source; below: detailed notes)
-- [ ] **T3.12** Hot-reload assets in dev builds so replacing a file shows instantly
+- [ ] **T3.12** Hot-reload assets in dev builds so replacing a file shows instantly [pending: use bevy file_watcher feature]
 - [ ] **T3.13** Use user-supplied original sfx/music from assets/original/ as optional upgrades (never committed) _(optional)_
 
 ## P4 - World: Midgard map (U7 layout remake)
@@ -55,15 +55,15 @@
 - [ ] **T4.2** U7 importer: read the USER-OWNED Ultima 7 data from assets/original/ (port ideas/format readers from exult); output Midgard-remapped map. Never commit data.
 - [ ] **T4.3** Midgard transformer: remap U7 terrain/objects to Norse equivalents (towns -> Norse/Finnish villages, Britannia coast -> fjords)
 - [x] **T4.4** Fallback: procedural Midgard map generator with same macro-layout (works w/o U7 data; ships in repo)
-- [ ] **T4.5** Map renderer: layered isometric-ish/top-down tile rendering w/ object depth sorting, roofs hide on entry
-- [ ] **T4.6** Day/night cycle, weather, lighting
+- [x] **T4.5** Map renderer: layered isometric-ish/top-down tile rendering w/ object depth sorting, roofs hide on entry
+- [ ] **T4.6** Day/night cycle, weather, lighting [clock + day/night overlay done; weather visuals pending]
 - [x] **T4.7** Interiors/dungeons as separate z/instance maps
 - [x] **T4.8** Towns: Uppsala-ish Kaupang, Birka, Hedeby, Kuusamo, Rovaniemi-like Pohjola, Hel gate, 10+ more
 - [ ] **T4.9** Map editor mode (in-game dev tool) to hand-edit tiles/objects _(optional)_
 
 ## P5 - Core gameplay (U7 feel, modern controls)
 
-- [ ] **T5.1** Modern controls: WASD/gamepad move, mouse aim, click-to-interact, hotkeys; keep U7 click-drag item handling
+- [ ] **T5.1** Modern controls: WASD/gamepad move, mouse aim, click-to-interact, hotkeys; keep U7 click-drag item handling [WASD/gamepad move + zoom done; mouse aim/click-interact pending]
 - [ ] **T5.2** U7 inventory: paperdoll, backpack, nested containers, drag&drop, weight/volume, ground items
 - [ ] **T5.3** Object interaction: use/open/get/talk/look, locks, keys, traps
 - [ ] **T5.4** Dialogue system U7 style (keyword topics, portraits, flags) with RON/Ink-like scripts

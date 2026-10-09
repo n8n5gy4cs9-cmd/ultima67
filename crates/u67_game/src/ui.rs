@@ -1,0 +1,232 @@
+//! UI: main menu, HUD, pause menu, console overlay, inventory placeholder, toasts.
+use crate::app::{AppState, Cli, Game, HasQuicksave, Paths, WorldRes};
+use crate::apply;
+use bevy::input::keyboard::{Key, KeyboardInput};
+use bevy::prelude::*;
+use u67_console::Console;
+
+#[derive(Resource, Default)]
+pub struct ConsoleRes(pub Console);
+
+#[derive(Resource, Default)]
+pub struct Toast {
+    pub text: String,
+    pub timer: f32,
+}
+
+#[derive(Event, Clone, Debug)]
+pub struct EffectEvent(pub apply::Effect);
+
+#[derive(Component)]
+struct Hud;
+#[derive(Component)]
+struct ToastText;
+#[derive(Component)]
+struct MenuRoot;
+#[derive(Component)]
+struct PauseRoot;
+#[derive(Component)]
+struct ConsoleRoot;
+#[derive(Component)]
+struct ConsoleText;
+#[derive(Component)]
+struct InvRoot;
+#[derive(Component)]
+struct InvText;
+
+fn text_node(left: f32, top: f32) -> Node {
+    Node { position_type: PositionType::Absolute, left: Val::Px(left), top: Val::Px(top), ..default() }
+}
+
+fn overlay(alpha: f32) -> (Node, BackgroundColor) {
+    (Node { position_type: PositionType::Absolute, width: Val::Percent(100.0), height: Val::Percent(100.0), flex_direction: FlexDirection::Column, justify_content: JustifyContent::Center, align_items: AlignItems::Center, row_gap: Val::Px(12.0), ..default() }, BackgroundColor(Color::srgba(0.03, 0.02, 0.05, alpha)))
+}
+
+fn spawn_menu(mut commands: Commands, quick: Option<Res<HasQuicksave>>) {
+    let cont = quick.is_some_and(|q| q.0);
+    commands.spawn((MenuRoot, overlay(1.0))).with_children(|p| {
+        p.spawn((Text::new("ULTIMA 67"), TextFont { font_size: 72.0, ..default() }, TextColor(Color::srgb(0.95, 0.78, 0.35))));
+        p.spawn((Text::new("Midgård awaits"), TextFont { font_size: 26.0, ..default() }, TextColor(Color::srgb(0.6, 0.85, 0.95))));
+        p.spawn((Text::new("[Enter] New Game"), TextFont { font_size: 30.0, ..default() }));
+        p.spawn((Text::new(if cont { "[C] Continue (quicksave)" } else { "[C] Continue (no quicksave)" }), TextFont { font_size: 30.0, ..default() }, TextColor(if cont { Color::WHITE } else { Color::srgb(0.5, 0.5, 0.5) })));
+        p.spawn((Text::new("[Q] Quit"), TextFont { font_size: 30.0, ..default() }));
+        p.spawn((Text::new(u67_core::CREDIT), TextFont { font_size: 20.0, ..default() }, TextColor(Color::srgb(0.7, 0.7, 0.7))));
+    });
+}
+
+fn menu_input(kb: Res<ButtonInput<KeyCode>>, mut next: ResMut<NextState<AppState>>, mut exit: EventWriter<AppExit>, paths: Res<Paths>, mut game: ResMut<Game>, mut toast: ResMut<Toast>) {
+    if kb.just_pressed(KeyCode::Enter) || kb.just_pressed(KeyCode::Space) {
+        next.set(AppState::Playing);
+    } else if kb.just_pressed(KeyCode::KeyC) {
+        match crate::save::read(&paths.saves, None) {
+            Ok(d) => {
+                game.0 = d;
+                next.set(AppState::Playing);
+            }
+            Err(e) => *toast = Toast { text: format!("no quicksave: {e}"), timer: 3.0 },
+        }
+    } else if kb.just_pressed(KeyCode::KeyQ) {
+        exit.write(AppExit::Success);
+    }
+}
+
+fn despawn_all<T: Component>(mut commands: Commands, q: Query<Entity, With<T>>) {
+    for e in &q {
+        commands.entity(e).despawn();
+    }
+}
+
+fn spawn_hud(mut commands: Commands, existing: Query<(), With<Hud>>) {
+    if existing.iter().next().is_some() {
+        return;
+    }
+    commands.spawn((Hud, Text::new(""), TextFont { font_size: 18.0, ..default() }, TextColor(Color::srgb(1.0, 0.95, 0.8)), text_node(10.0, 8.0)));
+    commands.spawn((ToastText, Text::new(""), TextFont { font_size: 26.0, ..default() }, TextColor(Color::srgb(0.6, 1.0, 0.8)), text_node(10.0, 60.0)));
+}
+
+fn update_hud(game: Res<Game>, diag: Res<bevy::diagnostic::DiagnosticsStore>, mut hud: Query<&mut Text, (With<Hud>, Without<ToastText>)>, mut toast_q: Query<&mut Text, (With<ToastText>, Without<Hud>)>, mut toast: ResMut<Toast>, time: Res<Time>) {
+    let g = &game.0;
+    let p = &g.players[0];
+    let fps = diag.get(&bevy::diagnostic::FrameTimeDiagnosticsPlugin::FPS).and_then(|d| d.smoothed()).unwrap_or(0.0);
+    let mut s = format!("{}  {:02}:{:02}  day {}  HP {}/{}  Lv {}", g.current_map, g.clock.hour(), g.clock.minute(), g.clock.day() + 1, p.stats.hp, p.stats.max_hp(), p.stats.level);
+    if g.cheats.fps {
+        s += &format!("  {fps:.0} fps  @{:.1},{:.1}", p.pos[0], p.pos[1]);
+    }
+    let on: Vec<_> = u67_console::Cheat::ALL.iter().filter(|c| g.cheats.get(**c) && !matches!(c, u67_console::Cheat::Fps)).map(|c| c.command()).collect();
+    if !on.is_empty() {
+        s += &format!("  [cheats: {}]", on.join(","));
+    }
+    if let Ok(mut t) = hud.single_mut() {
+        t.0 = s;
+    }
+    toast.timer -= time.delta_secs();
+    if let Ok(mut t) = toast_q.single_mut() {
+        t.0 = if toast.timer > 0.0 { toast.text.clone() } else { String::new() };
+    }
+}
+
+fn spawn_pause(mut commands: Commands) {
+    commands.spawn((PauseRoot, overlay(0.55))).with_children(|p| {
+        p.spawn((Text::new("PAUSED"), TextFont { font_size: 56.0, ..default() }));
+        p.spawn((Text::new("[Esc] resume   [F5] quick save   [F9] quick load   [Q] quit to desktop"), TextFont { font_size: 22.0, ..default() }));
+    });
+}
+
+fn pause_input(kb: Res<ButtonInput<KeyCode>>, mut exit: EventWriter<AppExit>) {
+    if kb.just_pressed(KeyCode::KeyQ) {
+        exit.write(AppExit::Success);
+    }
+}
+
+fn spawn_console(mut commands: Commands) {
+    commands.spawn((ConsoleRoot, Node { position_type: PositionType::Absolute, width: Val::Percent(100.0), height: Val::Percent(46.0), padding: UiRect::all(Val::Px(10.0)), ..default() }, BackgroundColor(Color::srgba(0.02, 0.03, 0.08, 0.88)))).with_children(|p| {
+        p.spawn((ConsoleText, Text::new(""), TextFont { font_size: 18.0, ..default() }, TextColor(Color::srgb(0.75, 1.0, 0.85))));
+    });
+}
+
+fn console_input(mut ev: EventReader<KeyboardInput>, mut con: ResMut<ConsoleRes>, mut game: ResMut<Game>, world: Res<WorldRes>, mut fx: EventWriter<EffectEvent>) {
+    for e in ev.read() {
+        if !e.state.is_pressed() {
+            continue;
+        }
+        match &e.logical_key {
+            Key::Character(s) => {
+                if !s.contains('`') && !s.contains('§') {
+                    con.0.input.push_str(s);
+                }
+            }
+            Key::Space => con.0.input.push(' '),
+            Key::Backspace => {
+                con.0.input.pop();
+            }
+            Key::Tab => con.0.tab(),
+            Key::ArrowUp => con.0.history_prev(),
+            Key::ArrowDown => con.0.history_next(),
+            Key::Enter => {
+                if let Some(action) = con.0.submit() {
+                    let out = apply::apply(&mut game.0, &world.0, action);
+                    for l in out.lines {
+                        con.0.print(l);
+                    }
+                    for f in out.effects {
+                        fx.write(EffectEvent(f));
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+fn console_view(con: Res<ConsoleRes>, time: Res<Time>, mut q: Query<&mut Text, With<ConsoleText>>) {
+    let Ok(mut t) = q.single_mut() else { return };
+    let n = con.0.scrollback.len();
+    let mut s = con.0.scrollback[n.saturating_sub(15)..].join("\n");
+    let cursor = if (time.elapsed_secs() * 2.0) as u32 % 2 == 0 { "_" } else { " " };
+    s += &format!("\n> {}{cursor}", con.0.input);
+    t.0 = s;
+}
+
+fn spawn_inventory(mut commands: Commands) {
+    commands.spawn((InvRoot, overlay(0.8))).with_children(|p| {
+        p.spawn((Text::new("INVENTORY"), TextFont { font_size: 40.0, ..default() }));
+        p.spawn((InvText, Text::new(""), TextFont { font_size: 20.0, ..default() }));
+        p.spawn((Text::new("[I] close"), TextFont { font_size: 18.0, ..default() }));
+    });
+}
+
+fn inventory_view(game: Res<Game>, mut q: Query<&mut Text, With<InvText>>) {
+    let Ok(mut t) = q.single_mut() else { return };
+    let inv = &game.0.players[0].inventory;
+    let mut s = String::new();
+    for (slot, it) in &inv.equipped {
+        s += &format!("{slot:?}: {}\n", u67_world::items::get(&it.id).map_or(it.id.as_str(), |d| d.name));
+    }
+    fn walk(v: &[u67_world::inventory::Item], depth: usize, s: &mut String) {
+        for it in v {
+            let name = u67_world::items::get(&it.id).map_or(it.id.as_str(), |d| d.name);
+            *s += &format!("{}{}{}\n", "  ".repeat(depth), name, if it.qty > 1 { format!(" x{}", it.qty) } else { String::new() });
+            walk(&it.contents, depth + 1, s);
+        }
+    }
+    walk(&inv.pack, 0, &mut s);
+    s += &format!("\nweight {:.1}/{:.1}", inv.total_weight(), inv.max_weight);
+    t.0 = s;
+}
+
+fn quick_keys(kb: Res<ButtonInput<KeyCode>>, keys: Res<crate::input::KeyMap>, mut fx: EventWriter<EffectEvent>) {
+    use crate::settings::Action;
+    if keys.just_pressed(Action::QuickSave, &kb) {
+        fx.write(EffectEvent(apply::Effect::Save(None)));
+    }
+    if keys.just_pressed(Action::QuickLoad, &kb) {
+        fx.write(EffectEvent(apply::Effect::Load(None)));
+    }
+}
+
+pub struct UiPlugin;
+impl Plugin for UiPlugin {
+    fn build(&self, app: &mut App) {
+        use AppState::*;
+        app.init_resource::<ConsoleRes>()
+            .init_resource::<Toast>()
+            .add_event::<EffectEvent>()
+            .add_plugins(bevy::diagnostic::FrameTimeDiagnosticsPlugin::default())
+            .add_systems(OnEnter(MainMenu), spawn_menu)
+            .add_systems(OnExit(MainMenu), despawn_all::<MenuRoot>)
+            .add_systems(Update, menu_input.run_if(in_state(MainMenu)))
+            .add_systems(OnEnter(Playing), spawn_hud)
+            .add_systems(Update, update_hud.run_if(resource_exists::<Game>).run_if(not(in_state(Boot))).run_if(not(in_state(MainMenu))))
+            .add_systems(OnEnter(Paused), spawn_pause)
+            .add_systems(OnExit(Paused), despawn_all::<PauseRoot>)
+            .add_systems(Update, (pause_input, quick_keys).run_if(in_state(Paused)))
+            .add_systems(Update, quick_keys.run_if(in_state(Playing)))
+            .add_systems(OnEnter(Console), spawn_console)
+            .add_systems(OnExit(Console), despawn_all::<ConsoleRoot>)
+            .add_systems(Update, (console_input, console_view).chain().run_if(in_state(Console)))
+            .add_systems(OnEnter(Inventory), spawn_inventory)
+            .add_systems(OnExit(Inventory), despawn_all::<InvRoot>)
+            .add_systems(Update, inventory_view.run_if(in_state(Inventory)));
+        let _ = Cli::default;
+    }
+}

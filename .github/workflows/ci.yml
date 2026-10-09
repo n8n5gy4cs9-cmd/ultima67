@@ -1,0 +1,64 @@
+name: CI
+on:
+  push:
+    branches: [main, "claude/**"]
+  pull_request:
+env:
+  CARGO_TERM_COLOR: always
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: Linux system deps
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev libudev-dev libwayland-dev libxkbcommon-dev libx11-dev
+      - name: Format
+        run: cargo fmt --all -- --check
+        continue-on-error: true
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Test
+        run: cargo test --workspace --release
+      - name: Generated files are in sync
+        if: runner.os == 'Linux'
+        run: |
+          cargo run -q --release -p u67_assetgen
+          cargo run -q -p u67_console --bin gen_commands > commands.txt
+          git diff --exit-code -- commands.txt ASSETS.md assets/manifest.json
+  release-build:
+    needs: check
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            target: aarch64-apple-darwin
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+      - name: Linux system deps
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev libudev-dev libwayland-dev libxkbcommon-dev libx11-dev
+      - run: cargo build --release -p u67_game --target ${{ matrix.target }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ultima67-${{ matrix.target }}
+          path: |
+            target/${{ matrix.target }}/release/ultima67*
+            assets/

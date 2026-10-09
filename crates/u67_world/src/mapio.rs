@@ -54,7 +54,14 @@ pub fn from_bytes(b: &[u8]) -> Result<Map, String> {
     if tiles.len() != n {
         return Err(format!("tile count {} != {}", tiles.len(), n));
     }
-    Ok(Map { name: meta.name, width: meta.width, height: meta.height, tiles, objects: meta.objects, portals: meta.portals, buildings: meta.buildings, places: meta.places })
+    let mut map = Map::new(&meta.name, meta.width, meta.height, TileId(0));
+    map.tiles = tiles;
+    map.objects = meta.objects;
+    map.portals = meta.portals;
+    map.buildings = meta.buildings;
+    map.places = meta.places;
+    map.reindex();
+    Ok(map)
 }
 
 #[cfg(test)]

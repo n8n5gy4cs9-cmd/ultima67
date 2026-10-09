@@ -3,5 +3,25 @@ name = "u67_game"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+default-run = "ultima67"
+
+[[bin]]
+name = "ultima67"
+path = "src/main.rs"
+
 [dependencies]
 u67_core = { path = "../u67_core" }
+u67_world = { path = "../u67_world" }
+u67_console = { path = "../u67_console" }
+u67_mapgen = { path = "../u67_mapgen" }
+u67_assetgen = { path = "../u67_assetgen" }
+serde.workspace = true
+serde_json.workspace = true
+image.workspace = true
+ron = "0.8"
+bevy = { version = "=0.16.1", default-features = false, features = [
+    "std", "async_executor", "multi_threaded",
+    "bevy_asset", "bevy_audio", "bevy_color", "bevy_core_pipeline", "bevy_gilrs", "bevy_log",
+    "bevy_render", "bevy_sprite", "bevy_state", "bevy_text", "bevy_ui", "bevy_window", "bevy_winit",
+    "default_font", "png", "wav", "x11", "wayland", "tonemapping_luts"
+] }

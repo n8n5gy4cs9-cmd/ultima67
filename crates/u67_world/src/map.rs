@@ -2,8 +2,15 @@
 use crate::objects::{self, Building, Portal, WorldObject};
 use crate::tiles::{self, TileId};
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashSet};
 use u67_core::{TilePos, CHUNK};
+
+/// Cache of tiles blocked by objects. Valid only while `built_len == objects.len()`.
+#[derive(Clone, Debug, Default)]
+struct BlockIndex {
+    built_len: usize,
+    blocked: HashSet<TilePos>,
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Map {
@@ -17,6 +24,8 @@ pub struct Map {
     pub buildings: Vec<Building>,
     /// Named places for `tp <name>`.
     pub places: BTreeMap<String, TilePos>,
+    #[serde(skip)]
+    index: BlockIndex,
 }
 
 impl Map {
@@ -30,6 +39,7 @@ impl Map {
             portals: vec![],
             buildings: vec![],
             places: BTreeMap::new(),
+            index: BlockIndex::default(),
         }
     }
     pub fn in_bounds(&self, p: TilePos) -> bool {
@@ -48,12 +58,23 @@ impl Map {
         }
     }
     pub fn add_object(&mut self, kind: &str, p: TilePos) {
-        debug_assert!(objects::def(kind).is_some(), "unknown object {kind}");
-        self.objects.push(WorldObject { kind: kind.into(), pos: p, frame: 0, locked: false, group: 0 });
+        self.add_object_in(kind, p, 0);
     }
     pub fn add_object_in(&mut self, kind: &str, p: TilePos, group: u16) {
         debug_assert!(objects::def(kind).is_some(), "unknown object {kind}");
+        let in_sync = self.index.built_len == self.objects.len();
         self.objects.push(WorldObject { kind: kind.into(), pos: p, frame: 0, locked: false, group });
+        if in_sync {
+            if objects::def(kind).is_some_and(|d| d.blocking) {
+                self.index.blocked.insert(p);
+            }
+            self.index.built_len = self.objects.len();
+        }
+    }
+    /// Rebuild the blocking-object cache. Call after loading or after editing `objects` directly.
+    pub fn reindex(&mut self) {
+        self.index.blocked = self.objects.iter().filter(|o| objects::def(&o.kind).is_some_and(|d| d.blocking)).map(|o| o.pos).collect();
+        self.index.built_len = self.objects.len();
     }
     pub fn building_at(&self, p: TilePos) -> Option<&Building> {
         self.buildings.iter().find(|b| b.contains(p))
@@ -62,6 +83,9 @@ impl Map {
         self.objects.iter().filter(move |o| o.pos == p)
     }
     pub fn blocked_by_object(&self, p: TilePos) -> bool {
+        if self.index.built_len == self.objects.len() {
+            return self.index.blocked.contains(&p);
+        }
         self.objects_at(p).any(|o| objects::def(&o.kind).is_some_and(|d| d.blocking))
     }
     pub fn walkable(&self, p: TilePos) -> bool {
@@ -83,6 +107,8 @@ pub struct World {
 
 impl World {
     pub fn insert(&mut self, m: Map) {
+        let mut m = m;
+        m.reindex();
         self.maps.insert(m.name.clone(), m);
     }
     pub fn find_place(&self, name: &str) -> Option<(&str, TilePos)> {

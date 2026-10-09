@@ -9,6 +9,8 @@ Work may stop at any time (token limit ~5h windows). Resume procedure:
 5. Keep ASSETS.md in sync whenever an asset is added (T3.11 will automate it).
 
 ## Rules
+- **USER RULE: do not build/test after every task. Write a whole phase of code, then build + test ONCE at the end of the phase.**
+- Run the game headless here: `xvfb-run -a ./target/debug/ultima67 --screenshot out.png --frames 120 [--tp place] [--time HH:MM] [--zoom N]` with `VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.json` (apt: mesa-vulkan-drivers libxkbcommon-x11-0 libasound2-dev libudev-dev). Bevy is pinned =0.16.1.
 - Branch: `claude/ecstatic-meitner-cfmv5a`. Commit small and often.
 - Do **not** commit original Ultima 7 / Nox game data. Exult/Nuvie/OpenNox code may be ported (project is GPL-3.0-or-later; add attribution header + list in REFERENCES.md). Never commit original game data (see `docs/REFERENCES.md`).
 - Keep everything cross-platform; macOS Apple Silicon is the primary target.
