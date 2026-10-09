@@ -4,9 +4,8 @@ use crate::audio::SfxEvent;
 use crate::creatures::{radius, Corpse, Creature};
 use crate::data::{obj_key, GroundItem};
 use crate::db_res::DbRes;
-use crate::input::{Intent, KeyMap};
+use crate::seats::{Intent, Intents, Operating, PlayerRt};
 use crate::render::{self, DirtyChunks, Sheets, CHAR_COLS};
-use crate::settings::Action;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use u67_core::{Dir, Rng, TilePos};
@@ -19,21 +18,6 @@ use u67_world::tiles;
 pub struct Cursor {
     pub tile: Vec2,
     pub valid: bool,
-}
-
-#[derive(Resource, Default)]
-pub struct PlayerRt {
-    pub cooldown: f32,
-    pub reload: Option<(f32, String)>,
-    pub iframes: f32,
-    pub roll_t: f32,
-    pub roll_cd: f32,
-    pub roll_dir: Vec2,
-    pub haste: f32,
-    pub protect: (i32, f32),
-    pub light: f32,
-    pub shake: f32,
-    pub hurt_flash: f32,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -76,6 +60,7 @@ pub struct KillEvent {
 }
 #[derive(Event, Clone, Debug)]
 pub struct PlayerHit {
+    pub target: usize,
     pub amount: i32,
     pub from: Vec2,
     pub special: String,
@@ -139,20 +124,17 @@ fn update_cursor(windows: Query<&Window>, cams: Query<(&Camera, &GlobalTransform
     }
 }
 
-fn weapon_of(game: &Game) -> Option<&'static items::ItemDef> {
-    game.0.players[0].inventory.equipped.get(&Slot::HandR).and_then(|i| items::get(&i.id))
+fn weapon_of(game: &crate::data::GameData) -> Option<&'static items::ItemDef> {
+    game.players[0].inventory.equipped.get(&Slot::HandR).and_then(|i| items::get(&i.id))
 }
 
 #[allow(clippy::too_many_arguments)]
 fn player_attack(
     time: Res<Time>,
-    mouse: Res<ButtonInput<MouseButton>>,
-    kb: Res<ButtonInput<KeyCode>>,
-    keys: Res<KeyMap>,
-    intent: Res<Intent>,
+    intents: Res<Intents>,
     cursor: Res<Cursor>,
     mut game: ResMut<Game>,
-    mut rt: ResMut<PlayerRt>,
+    mut rts: ResMut<PlayerRt>,
     mut shots: EventWriter<SpawnProjectile>,
     mut dmg: EventWriter<DamageEvent>,
     mut sfx: EventWriter<SfxEvent>,
@@ -160,10 +142,39 @@ fn player_attack(
     creatures: Query<(Entity, &Creature)>,
     db: Res<DbRes>,
     mut rng: Local<Option<Rng>>,
-    op: Res<crate::interact::Operating>,
+    op: Res<Operating>,
 ) {
     let rng = rng.get_or_insert_with(|| Rng::new(31));
     let dt = time.delta_secs();
+    for seat in 0..game.0.players.len() {
+        rts.active = seat;
+        let intent = intents.get(seat);
+        game.0.players.swap(0, seat);
+        let cannon_busy = op.list[seat].is_some();
+        attack_seat(seat, dt, intent, &cursor, &mut game, &mut rts, &mut shots, &mut dmg, &mut sfx, &mut toast, &creatures, &db, rng, cannon_busy);
+        game.0.players.swap(0, seat);
+    }
+    rts.active = 0;
+}
+
+/// One seat's per-frame combat logic. Expects that seat swapped into `players[0]`.
+#[allow(clippy::too_many_arguments)]
+fn attack_seat(
+    seat: usize,
+    dt: f32,
+    intent: Intent,
+    cursor: &Cursor,
+    game: &mut Game,
+    rt: &mut PlayerRt,
+    shots: &mut EventWriter<SpawnProjectile>,
+    dmg: &mut EventWriter<DamageEvent>,
+    sfx: &mut EventWriter<SfxEvent>,
+    toast: &mut crate::ui::Toast,
+    creatures: &Query<(Entity, &Creature)>,
+    db: &DbRes,
+    rng: &mut Rng,
+    cannon_busy: bool,
+) {
     rt.cooldown = (rt.cooldown - dt).max(0.0);
     rt.iframes = (rt.iframes - dt).max(0.0);
     rt.roll_cd = (rt.roll_cd - dt).max(0.0);
@@ -176,6 +187,9 @@ fn player_attack(
         if rt.protect.1 <= 0.0 {
             rt.protect.0 = 0;
         }
+    }
+    if rt.downed {
+        return;
     }
     // reload progress
     if let Some((t, gun)) = rt.reload.clone() {
@@ -199,21 +213,25 @@ fn player_attack(
         }
     }
     let pos = Vec2::from(game.0.players[0].pos);
-    let aim = if cursor.valid { (cursor.tile - (pos - Vec2::new(0.0, 0.5))).normalize_or_zero() } else { {
+    let aim = if intent.aim != Vec2::ZERO {
+        intent.aim
+    } else if seat == 0 && cursor.valid {
+        (cursor.tile - (pos - Vec2::new(0.0, 0.5))).normalize_or_zero()
+    } else {
         let (fx, fy) = game.0.players[0].facing.delta();
         Vec2::new(fx as f32, fy as f32)
-    } };
+    };
     let aim = if aim == Vec2::ZERO { Vec2::Y } else { aim };
     // roll
-    if keys.just_pressed(Action::Roll, &kb) && rt.roll_cd <= 0.0 {
+    if intent.roll && rt.roll_cd <= 0.0 {
         rt.roll_t = 0.25;
         rt.roll_cd = 0.9;
         rt.iframes = 0.4;
         rt.roll_dir = if intent.movement.length() > 0.1 { intent.movement.normalize() } else { aim };
     }
     // reload key
-    if keys.just_pressed(Action::Reload, &kb) && rt.reload.is_none() {
-        if let Some(w) = weapon_of(&game).filter(|w| w.kind == Kind::Gun) {
+    if intent.reload && rt.reload.is_none() {
+        if let Some(w) = weapon_of(&game.0).filter(|w| w.kind == Kind::Gun) {
             if let Some(gs) = rules::gun_stats(w.id) {
                 let have = game.0.players[0].loaded.get(w.id).copied().unwrap_or(0);
                 if have < gs.mag && (game.0.cheats.infinite_ammo || game.0.players[0].inventory.count(w.ammo.unwrap_or("")) > 0) {
@@ -225,15 +243,14 @@ fn player_attack(
             }
         }
     }
-    if op.0.is_some() {
+    if cannon_busy {
         return; // cannon operators fire the cannon instead
     }
-    let wants = mouse.pressed(MouseButton::Left) || keys.pressed(Action::Attack, &kb);
-    if !wants || rt.cooldown > 0.0 || rt.reload.is_some() || rt.roll_t > 0.0 {
+    if !intent.attack_held || rt.cooldown > 0.0 || rt.reload.is_some() || rt.roll_t > 0.0 {
         return;
     }
     game.0.players[0].facing = aim_dir(aim);
-    let weapon = weapon_of(&game);
+    let weapon = weapon_of(&game.0);
     let stats = game.0.players[0].stats.clone();
     let cheats = game.0.cheats.clone();
     match weapon {
@@ -287,7 +304,7 @@ fn player_attack(
             rt.cooldown = cd * if rt.haste > 0.0 { 0.6 } else { 1.0 };
             sfx.write(SfxEvent("swing".into()));
             let mut hit_any = false;
-            for (e, c) in &creatures {
+            for (e, c) in creatures.iter() {
                 if c.ally {
                     continue;
                 }
@@ -350,7 +367,7 @@ fn step_projectiles(
 ) {
     let dt = time.delta_secs();
     let Some(map) = world.0.maps.get(&game.0.current_map) else { return };
-    let player = Vec2::from(game.0.players[0].pos) - Vec2::new(0.0, 0.5);
+    let player_pos: Vec<(usize, Vec2)> = game.0.players.iter().enumerate().filter(|(i, p)| p.stats.hp > 0 && !rt.list.get(*i).is_some_and(|r| r.downed)).map(|(i, p)| (i, Vec2::from(p.pos) - Vec2::new(0.0, 0.5))).collect();
     for (e, mut p, mut tf) in &mut q {
         let step = p.vel * dt;
         p.pos += step;
@@ -386,8 +403,8 @@ fn step_projectiles(
                         break;
                     }
                 }
-            } else if p.pos.distance(player) < 0.42 && rt.iframes <= 0.0 {
-                hits.write(PlayerHit { amount: p.dmg, from: p.pos - p.vel, special: p.special.clone() });
+            } else if let Some((idx, _)) = player_pos.iter().find(|(i, pp)| p.pos.distance(*pp) < 0.42 && rt.list.get(*i).is_none_or(|r| r.iframes <= 0.0)) {
+                hits.write(PlayerHit { target: *idx, amount: p.dmg, from: p.pos - p.vel, special: p.special.clone() });
                 done = true;
             }
             if !done && p.range_left <= 0.0 {
@@ -478,24 +495,53 @@ fn handle_kills(mut ev: EventReader<KillEvent>, mut commands: Commands, mut game
     }
 }
 
-fn apply_player_hit(mut ev: EventReader<PlayerHit>, mut game: ResMut<Game>, mut rt: ResMut<PlayerRt>, mut sfx: EventWriter<SfxEvent>, mut next: ResMut<NextState<AppState>>) {
+fn apply_player_hit(mut ev: EventReader<PlayerHit>, mut game: ResMut<Game>, mut rt: ResMut<PlayerRt>, mut sfx: EventWriter<SfxEvent>, mut next: ResMut<NextState<AppState>>, mut toast: ResMut<crate::ui::Toast>) {
     for h in ev.read() {
-        if rt.iframes > 0.0 || game.0.cheats.god {
+        let i = h.target.min(game.0.players.len() - 1);
+        if rt.list[i].iframes > 0.0 || game.0.cheats.god || rt.list[i].downed {
             continue;
         }
-        let armor = player_armor(&game.0.players[0].inventory) + rt.protect.0;
+        let armor = player_armor(&game.0.players[i].inventory) + rt.list[i].protect.0;
         let d = rules::after_armor(h.amount, armor);
-        game.0.players[0].stats.hp -= d;
-        rt.iframes = 0.35;
-        rt.hurt_flash = 0.25;
-        rt.shake = 0.12;
+        game.0.players[i].stats.hp -= d;
+        rt.list[i].iframes = 0.35;
+        rt.list[i].hurt_flash = 0.25;
+        rt.list[i].shake = 0.12;
         sfx.write(SfxEvent("hit_flesh".into()));
-        if game.0.players[0].stats.hp <= 0 {
-            game.0.players[0].stats.hp = 0;
-            next.set(AppState::Dead);
+        if game.0.players[i].stats.hp <= 0 {
+            game.0.players[i].stats.hp = 0;
+            rt.list[i].downed = true;
+            rt.list[i].down_timer = 0.0;
             sfx.write(SfxEvent("death".into()));
+            let all_down = (0..game.0.players.len()).all(|k| rt.list[k].downed);
+            if all_down {
+                next.set(AppState::Dead);
+            } else {
+                *toast = crate::ui::Toast { text: format!("{} is down! Stand close and press interact to revive (or wait).", game.0.players[i].name), timer: 4.0 };
+            }
         }
     }
+}
+
+/// Downed players get back up after a while (co-op), at reduced health.
+fn auto_revive(mut game: ResMut<Game>, mut rt: ResMut<PlayerRt>) {
+    let n = game.0.players.len();
+    if n < 2 {
+        return;
+    }
+    for i in 0..n {
+        if rt.list[i].downed && rt.list[i].down_timer > 25.0 && (0..n).any(|k| k != i && !rt.list[k].downed) {
+            revive(&mut game, &mut rt, i, 0.3);
+        }
+    }
+}
+
+pub fn revive(game: &mut Game, rt: &mut PlayerRt, i: usize, frac: f32) {
+    rt.list[i].downed = false;
+    rt.list[i].down_timer = 0.0;
+    rt.list[i].iframes = 1.5;
+    let max = game.0.players[i].stats.max_hp();
+    game.0.players[i].stats.hp = ((max as f32 * frac) as i32).max(1);
 }
 
 const DESTRUCTIBLE: &[&str] = &["crate", "barrel", "door_wood", "door_open", "signpost", "table", "bed", "pine_tree", "birch_tree"];
@@ -525,10 +571,11 @@ fn explosions(
                 dmg.write(DamageEvent { target: e, amount: amt.max(1), crit: false, by_player: b.friendly, special: String::new(), cannon: b.cannon });
             }
         }
-        let pp = Vec2::from(game.0.players[0].pos);
-        let d = pp.distance(b.pos);
-        if d <= b.radius && rt.iframes <= 0.0 {
-            hits.write(PlayerHit { amount: (b.dmg as f32 * if b.friendly { 0.4 } else { 1.0 }) as i32, from: b.pos, special: String::new() });
+        for (i, pd) in game.0.players.iter().enumerate() {
+            let d = Vec2::from(pd.pos).distance(b.pos);
+            if d <= b.radius && rt.list.get(i).is_none_or(|r| r.iframes <= 0.0) {
+                hits.write(PlayerHit { target: i, amount: (b.dmg as f32 * if b.friendly { 0.4 } else { 1.0 }) as i32, from: b.pos, special: String::new() });
+            }
         }
         if !b.cannon {
             continue;
@@ -640,36 +687,45 @@ pub fn pickup(game: &mut Game, idx: usize) -> String {
     }
 }
 
-fn auto_pickup(mut game: ResMut<Game>, mut toast: ResMut<crate::ui::Toast>, mut sfx: EventWriter<SfxEvent>) {
-    let p = game.0.players[0].pos;
+fn auto_pickup(mut game: ResMut<Game>, mut toast: ResMut<crate::ui::Toast>, mut sfx: EventWriter<SfxEvent>, rt: Res<PlayerRt>) {
     let map = game.0.current_map.clone();
-    let mut i = 0;
-    while i < game.0.ground.len() {
-        let g = &game.0.ground[i];
-        let near = g.map == map && (g.pos[0] - p[0]).powi(2) + (g.pos[1] - p[1]).powi(2) < 0.8 * 0.8;
-        let auto = matches!(items::get(&g.item.id).map(|d| d.kind), Some(Kind::Ammo)) || g.item.id == "silver" || g.item.id == "krediitti";
-        if near && auto {
-            let msg = pickup(&mut game, i);
-            if !msg.is_empty() && !msg.starts_with("Too") {
-                *toast = crate::ui::Toast { text: msg, timer: 1.2 };
-                sfx.write(SfxEvent("pickup".into()));
-                continue;
-            }
+    for seat in 0..game.0.players.len() {
+        if rt.list[seat].downed {
+            continue;
         }
-        i += 1;
+        game.0.players.swap(0, seat);
+        let p = game.0.players[0].pos;
+        let mut i = 0;
+        while i < game.0.ground.len() {
+            let g = &game.0.ground[i];
+            let near = g.map == map && (g.pos[0] - p[0]).powi(2) + (g.pos[1] - p[1]).powi(2) < 0.8 * 0.8;
+            let auto = matches!(items::get(&g.item.id).map(|d| d.kind), Some(Kind::Ammo)) || g.item.id == "silver" || g.item.id == "krediitti";
+            if near && auto {
+                let msg = pickup(&mut game, i);
+                if !msg.is_empty() && !msg.starts_with("Too") {
+                    *toast = crate::ui::Toast { text: msg, timer: 1.2 };
+                    sfx.write(SfxEvent("pickup".into()));
+                    continue;
+                }
+            }
+            i += 1;
+        }
+        game.0.players.swap(0, seat);
     }
 }
 
-fn roll_move(mut game: ResMut<Game>, world: Res<WorldRes>, mut rt: ResMut<PlayerRt>, time: Res<Time>) {
-    if rt.roll_t <= 0.0 {
-        return;
-    }
+fn roll_move(mut game: ResMut<Game>, world: Res<WorldRes>, mut rts: ResMut<PlayerRt>, time: Res<Time>) {
     let dt = time.delta_secs();
-    rt.roll_t -= dt;
     let Some(map) = world.0.maps.get(&game.0.current_map) else { return };
-    let cur = Vec2::from(game.0.players[0].pos);
-    let np = crate::player::step(map, cur, rt.roll_dir * 9.0 * dt, game.0.cheats.noclip);
-    game.0.players[0].pos = np.into();
+    for i in 0..game.0.players.len() {
+        if rts.list[i].roll_t <= 0.0 {
+            continue;
+        }
+        rts.list[i].roll_t -= dt;
+        let cur = Vec2::from(game.0.players[i].pos);
+        let np = crate::player::step(map, cur, rts.list[i].roll_dir * 9.0 * dt, game.0.cheats.noclip);
+        game.0.players[i].pos = np.into();
+    }
 }
 
 fn game_ready(game: Option<Res<Game>>, db: Option<Res<DbRes>>, sheets: Option<Res<Sheets>>) -> bool {
@@ -680,7 +736,6 @@ pub struct CombatPlugin;
 impl Plugin for CombatPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<Cursor>()
-            .init_resource::<PlayerRt>()
             .init_resource::<GroundSync>()
             .init_resource::<DirtyChunks>()
             .add_event::<SpawnProjectile>()
@@ -692,7 +747,7 @@ impl Plugin for CombatPlugin {
             .add_systems(Update, (fx_update, sync_ground).run_if(game_ready).run_if(not(in_state(AppState::Boot))).run_if(not(in_state(AppState::MainMenu))))
             .add_systems(
                 FixedUpdate,
-                (roll_move, spawn_projectiles, step_projectiles, explosions, apply_damage, handle_kills, apply_player_hit, auto_pickup).chain().run_if(game_ready).run_if(in_state(AppState::Playing)),
+                (roll_move, spawn_projectiles, step_projectiles, explosions, apply_damage, handle_kills, apply_player_hit, auto_revive, auto_pickup).chain().run_if(game_ready).run_if(in_state(AppState::Playing)),
             );
     }
 }

@@ -19,6 +19,7 @@ pub mod persist;
 pub mod player;
 pub mod render;
 pub mod save;
+pub mod seats;
 pub mod script;
 pub mod settings;
 pub mod ui;

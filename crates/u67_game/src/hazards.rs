@@ -1,6 +1,6 @@
 //! Environmental hazards on other worlds: vacuum, heat, cold, lava, toxic gas.
 use crate::app::{AppState, Game, WorldRes};
-use crate::combat::PlayerRt;
+use crate::seats::PlayerRt;
 use crate::ui::Toast;
 use bevy::prelude::*;
 use u67_core::TilePos;
@@ -58,25 +58,35 @@ pub fn hazard(map: &str, tile: &TileDef, inv: &Inventory) -> (f32, &'static str)
 }
 
 #[allow(clippy::too_many_arguments)]
-fn tick(time: Res<Time>, mut acc: Local<f32>, mut game: ResMut<Game>, world: Res<WorldRes>, rt: Res<PlayerRt>, mut toast: ResMut<Toast>, mut next: ResMut<NextState<AppState>>) {
+fn tick(time: Res<Time>, mut acc: Local<f32>, mut game: ResMut<Game>, world: Res<WorldRes>, mut rts: ResMut<PlayerRt>, mut toast: ResMut<Toast>, mut next: ResMut<NextState<AppState>>) {
     *acc += time.delta_secs();
     if *acc < 1.0 {
         return;
     }
     *acc = 0.0;
-    if game.0.cheats.god || game.0.vehicle.is_some() || rt.roll_t > 0.0 {
+    if game.0.cheats.god {
         return;
     }
     let Some(map) = world.0.maps.get(&game.0.current_map) else { return };
-    let p = game.0.players[0].pos;
-    let t = map.tile(TilePos::new(p[0].floor() as i32, p[1].floor() as i32));
-    let (dps, msg) = hazard(&game.0.current_map, tiles::def(t), &game.0.players[0].inventory);
-    if dps > 0.0 {
-        game.0.players[0].stats.hp -= dps.ceil() as i32;
-        *toast = Toast { text: msg.into(), timer: 2.0 };
-        if game.0.players[0].stats.hp <= 0 {
-            game.0.players[0].stats.hp = 0;
-            next.set(AppState::Dead);
+    let map_name = game.0.current_map.clone();
+    for i in 0..game.0.players.len() {
+        if rts.list[i].downed || rts.list[i].roll_t > 0.0 || (i == 0 && game.0.vehicle.is_some()) {
+            continue;
+        }
+        let p = game.0.players[i].pos;
+        let t = map.tile(TilePos::new(p[0].floor() as i32, p[1].floor() as i32));
+        let (dps, msg) = hazard(&map_name, tiles::def(t), &game.0.players[i].inventory);
+        if dps > 0.0 {
+            game.0.players[i].stats.hp -= dps.ceil() as i32;
+            *toast = Toast { text: msg.into(), timer: 2.0 };
+            if game.0.players[i].stats.hp <= 0 {
+                game.0.players[i].stats.hp = 0;
+                rts.list[i].downed = true;
+                rts.list[i].down_timer = 0.0;
+                if (0..game.0.players.len()).all(|k| rts.list[k].downed) {
+                    next.set(AppState::Dead);
+                }
+            }
         }
     }
 }

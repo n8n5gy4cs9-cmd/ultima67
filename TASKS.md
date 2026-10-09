@@ -3,8 +3,8 @@
 > Generated from `PRD.json` by `python3 tools/sync_tasks.py`. **Edit PRD.json, then re-run.**
 > Legend: `[x]` done, `[ ]` todo, `[~]` in progress, `[!]` blocked.
 
-**Progress: 63/78 done.**  
-**Next action:** P8 splitscreen co-op (T8.1/T8.2), then P4 leftovers (T4.2 U7 importer, T4.3 transformer, T4.6 weather), P3 leftovers (T3.12 hot reload), then P9 polish/packaging. REMEMBER: build/test only at the end of a phase.
+**Progress: 65/78 done.**  
+**Next action:** Leftovers: T4.6 weather, T3.12 hot reload, T3.13 original asset overrides, then P9 (menus/intro/options, macOS/Windows/Linux packaging scripts, balance, accessibility), then T4.2/T4.3 U7 importer + transformer (user supplies U7 data in assets/original/). Build/test only at phase end.
 
 ## P0 - Planning & docs
 
@@ -101,8 +101,8 @@
 
 ## P8 - Multiplayer
 
-- [ ] **T8.1** Local splitscreen co-op adventure (2-4 players): per-player camera, controller/keyboard assignment, same world, solo or co-op
-- [ ] **T8.2** Splitscreen per-player inventory UI; shared party + shared quest state; drop-in/drop-out join
+- [x] **T8.1** Local splitscreen co-op adventure (2-4 players): per-player camera, controller/keyboard assignment, same world, solo or co-op [seats.rs: 1-4 players, viewports, per-seat input (kbd1 / kbd2 / gamepads), downed+revive; console: splitscreen N]
+- [x] **T8.2** Splitscreen per-player inventory UI; shared party + shared quest state; drop-in/drop-out join [modal screens open for the seat that triggered them; shared quests/flags/world]
 - [ ] **T8.4** Optional: LAN/online netcode (lockstep or rollback) via u67_net _(optional)_
 
 ## P9 - Polish, packaging, platforms

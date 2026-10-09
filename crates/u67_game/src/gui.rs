@@ -10,6 +10,7 @@ use crate::magic::{CastRequest, SingRequest};
 use crate::menus::{self, Row};
 use crate::npc::Npcs;
 use crate::render::{self, Sheets, CHAR_COLS};
+use crate::seats::{ActiveSeat, SeatSwap};
 use crate::script;
 use crate::ui::{EffectEvent, Toast};
 use bevy::input::keyboard::{Key, KeyboardInput};
@@ -124,8 +125,13 @@ fn handle_requests(
     mut out_fx: EventWriter<EffectEvent>,
     mut toast: ResMut<Toast>,
     mut images: ResMut<Assets<Image>>,
+    active: Res<ActiveSeat>,
+    mut swap: ResMut<SeatSwap>,
 ) {
     let reqs: Vec<UiRequest> = ev.read().cloned().collect();
+    if !reqs.is_empty() {
+        swap.swap_in(&mut game.0, active.0);
+    }
     for r in reqs.into_iter().take(1) {
         match r {
             UiRequest::Dialogue(i) => {
@@ -812,6 +818,7 @@ fn menu_input(
     mut sfx: EventWriter<SfxEvent>,
     mut toast: ResMut<Toast>,
     mut fx: EventWriter<EffectEvent>,
+    active: Res<ActiveSeat>,
 ) {
     for w in wheel.read() {
         let d = if w.y > 0.0 { -2i32 } else { 2 };
@@ -881,7 +888,7 @@ fn menu_input(
                 }
             }
             ("cast", MenuKind::Spells) => {
-                cast.write(CastRequest(arg.to_string()));
+                cast.write(CastRequest(arg.to_string(), active.0));
                 next.set(AppState::Playing);
                 Ok(String::new())
             }
@@ -923,13 +930,17 @@ fn spawn_dead(mut commands: Commands) {
     });
 }
 
-fn dead_input(kb: Res<ButtonInput<KeyCode>>, mut game: ResMut<Game>, world: Res<WorldRes>, paths: Res<Paths>, mut next: ResMut<NextState<AppState>>, mut toast: ResMut<Toast>) {
+fn dead_input(kb: Res<ButtonInput<KeyCode>>, mut game: ResMut<Game>, world: Res<WorldRes>, paths: Res<Paths>, mut next: ResMut<NextState<AppState>>, mut toast: ResMut<Toast>, mut rts: ResMut<crate::seats::PlayerRt>) {
     if kb.just_pressed(KeyCode::Enter) {
         let s = world.0.maps["midgard"].places.get("start").copied().unwrap_or_default();
         let g = &mut game.0;
         g.current_map = "midgard".into();
-        g.players[0].pos = [s.x as f32 + 0.5, s.y as f32 + 0.5];
-        g.players[0].stats.hp = g.players[0].stats.max_hp() / 2;
+        for (k, p) in g.players.iter_mut().enumerate() {
+            p.pos = [s.x as f32 + 0.5 + k as f32 * 0.7, s.y as f32 + 0.5];
+            p.stats.hp = p.stats.max_hp() / 2;
+            rts.list[k].downed = false;
+            rts.list[k].iframes = 2.0;
+        }
         let lost = g.players[0].inventory.count("silver") / 10;
         g.players[0].inventory.remove("silver", lost);
         g.vehicle = None;
@@ -939,6 +950,9 @@ fn dead_input(kb: Res<ButtonInput<KeyCode>>, mut game: ResMut<Game>, world: Res<
     } else if kb.just_pressed(KeyCode::KeyL) {
         match crate::save::read(&paths.saves, None) {
             Ok(d) => {
+                for r in rts.list.iter_mut() {
+                    r.downed = false;
+                }
                 game.0 = d;
                 next.set(AppState::Playing);
             }
@@ -958,8 +972,12 @@ fn spawn_hud2(mut commands: Commands, q: Query<(), With<Hud2>>) {
     commands.spawn((Hud2, Text::new(""), TextFont { font_size: 17.0, ..default() }, TextColor(Color::srgb(1.0, 0.95, 0.8)), Node { position_type: PositionType::Absolute, right: Val::Px(12.0), top: Val::Px(8.0), ..default() }));
 }
 
-fn update_hud2(game: Res<Game>, db: Res<DbRes>, npcs: Res<Npcs>, rt: Res<crate::combat::PlayerRt>, op: Res<crate::interact::Operating>, cursor: Res<crate::combat::Cursor>, creatures: Query<&crate::creatures::Creature>, world: Res<WorldRes>, mut q: Query<&mut Text, With<Hud2>>) {
+fn update_hud2(game: Res<Game>, db: Res<DbRes>, npcs: Res<Npcs>, rt: Res<crate::seats::PlayerRt>, op: Res<crate::seats::Operating>, cursor: Res<crate::combat::Cursor>, creatures: Query<&crate::creatures::Creature>, world: Res<WorldRes>, mut q: Query<&mut Text, With<Hud2>>) {
     let Ok(mut t) = q.single_mut() else { return };
+    if game.0.players.len() > 1 {
+        t.0 = String::new();
+        return;
+    }
     let p = &game.0.players[0];
     let mut s = String::new();
     if let Some(w) = p.inventory.equipped.get(&Slot::HandR).and_then(|i| items::get(&i.id)) {
@@ -977,7 +995,7 @@ fn update_hud2(game: Res<Game>, db: Res<DbRes>, npcs: Res<Npcs>, rt: Res<crate::
         s += "Unarmed";
     }
     s += &format!("\nMana {}/{}   [1-3] spells  [B] book  [L] sing", p.stats.mana, p.stats.max_mana());
-    if op.0.is_some() {
+    if op.list[0].is_some() {
         s += "\nCANNON: aim + click to fire (E to leave)";
     }
     if game.0.vehicle.is_some() {
@@ -1017,6 +1035,43 @@ fn update_hud2(game: Res<Game>, db: Res<DbRes>, npcs: Res<Npcs>, rt: Res<crate::
     }
     s += "\n\n[I] inventory  [J] journal  [M] map  [E] interact  [F2] cheats";
     t.0 = s;
+}
+
+/// Back in the game world: put the seat that opened a screen back where it belongs.
+fn restore_seat(mut game: ResMut<Game>, mut swap: ResMut<SeatSwap>) {
+    swap.swap_out(&mut game.0);
+}
+
+#[derive(Component)]
+struct SeatHud(usize);
+
+/// One compact HUD per seat inside its own viewport (split-screen).
+#[allow(clippy::too_many_arguments)]
+fn seat_huds(mut commands: Commands, game: Res<Game>, rts: Res<crate::seats::PlayerRt>, cams: Query<(Entity, &crate::player::SeatCam)>, mut huds: Query<(Entity, &SeatHud, &mut Text)>, ops: Res<crate::seats::Operating>) {
+    let n = game.0.players.len();
+    if n < 2 {
+        for (e, _, _) in &huds {
+            commands.entity(e).despawn();
+        }
+        return;
+    }
+    if huds.iter().count() != n {
+        for (e, _, _) in &huds {
+            commands.entity(e).despawn();
+        }
+        for (cam, sc) in &cams {
+            commands.spawn((SeatHud(sc.0), Text::new(""), TextFont { font_size: 16.0, ..default() }, TextColor(Color::srgb(1.0, 0.95, 0.8)), Node { position_type: PositionType::Absolute, left: Val::Px(8.0), bottom: Val::Px(6.0), ..default() }, bevy::ui::UiTargetCamera(cam)));
+        }
+        return;
+    }
+    for (_, h, mut t) in &mut huds {
+        let Some(p) = game.0.players.get(h.0) else { continue };
+        let st = &p.stats;
+        let w = p.inventory.equipped.get(&Slot::HandR).and_then(|i| items::get(&i.id));
+        let ammo = w.and_then(|w| u67_world::combat::gun_stats(w.id).map(|gs| format!("{}/{} (+{})", p.loaded.get(w.id).copied().unwrap_or(0), gs.mag, p.inventory.count(w.ammo.unwrap_or(""))))).unwrap_or_default();
+        let down = rts.list.get(h.0).is_some_and(|r| r.downed);
+        t.0 = format!("P{} {}  HP {}/{}  Lv {}  {}  {}{}", h.0 + 1, p.name, st.hp, st.max_hp(), st.level, w.map_or("Unarmed", |w| w.name), ammo, if down { "  DOWN - ally: press interact to revive!" } else if ops.list.get(h.0).copied().flatten().is_some() { "  [at cannon]" } else { "" });
+    }
 }
 
 // ------------------------------------------------------------------ plugin
@@ -1067,7 +1122,8 @@ impl Plugin for GuiPlugin {
             .add_systems(OnEnter(Dead), spawn_dead)
             .add_systems(Update, dead_input.run_if(ready).run_if(in_state(Dead)))
             .add_systems(OnExit(Dead), despawn_all::<DeadRoot>)
-            .add_systems(OnEnter(Playing), spawn_hud2)
+            .add_systems(OnEnter(Playing), (spawn_hud2, restore_seat))
+            .add_systems(Update, seat_huds.run_if(ready).run_if(resource_exists::<Game>).run_if(not(in_state(Boot))).run_if(not(in_state(MainMenu))))
             .add_systems(Update, (update_hud2, progress_tick).run_if(ready).run_if(in_state(Playing)));
     }
 }

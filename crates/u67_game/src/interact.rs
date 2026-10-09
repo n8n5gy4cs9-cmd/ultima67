@@ -1,10 +1,11 @@
 //! Interaction with the world: NPCs, objects, ground items, cannons and ships.
 use crate::app::{AppState, Game, WorldRes};
 use crate::audio::SfxEvent;
-use crate::combat::{Cursor, PlayerRt, ProjKind, SpawnProjectile};
+use crate::combat::{Cursor, ProjKind, SpawnProjectile};
+use crate::seats::{ActiveSeat, Intents, Operating, PlayerRt};
 use crate::data::{ObjState, Vehicle};
 use crate::db_res::DbRes;
-use crate::input::{Intent, KeyMap};
+use crate::input::KeyMap;
 use crate::npc::{self, Npcs};
 use crate::persist;
 use crate::render::{ChunkIndex, DirtyChunks};
@@ -29,9 +30,6 @@ pub enum UiRequest {
     Laulu,
     Cheats,
 }
-
-#[derive(Resource, Default)]
-pub struct Operating(pub Option<usize>);
 
 pub const INTERACTIVE: &[&str] = &["door_wood", "door_open", "chest", "barrel", "crate", "signpost", "runestone", "well", "bed", "forge", "campfire", "table", "bifrost_node", "wreck", "cannon", "longship"];
 const REACH: f32 = 1.9;
@@ -79,8 +77,7 @@ pub fn roll_container(db: &u67_world::db::Db, kind: &str, map: &str, p: TilePos,
 
 #[allow(clippy::too_many_arguments)]
 fn interact(
-    intent: Res<Intent>,
-    mouse: Res<ButtonInput<MouseButton>>,
+    intents: Res<Intents>,
     mut game: ResMut<Game>,
     mut world: ResMut<WorldRes>,
     db: Res<DbRes>,
@@ -93,17 +90,54 @@ fn interact(
     mut fx: EventWriter<EffectEvent>,
     mut op: ResMut<Operating>,
     mut rt: ResMut<PlayerRt>,
+    mut active: ResMut<ActiveSeat>,
 ) {
-    if !(intent.interact || mouse.just_pressed(MouseButton::Right)) {
-        return;
+    for seat in 0..game.0.players.len() {
+        if !intents.get(seat).interact || rt.list[seat].downed {
+            continue;
+        }
+        // reviving a downed teammate takes priority
+        let me = Vec2::from(game.0.players[seat].pos);
+        if let Some(k) = (0..game.0.players.len()).find(|k| *k != seat && rt.list[*k].downed && Vec2::from(game.0.players[*k].pos).distance(me) < 1.8) {
+            crate::combat::revive(&mut game, &mut rt, k, 0.4);
+            *toast = Toast { text: format!("{} revived {}!", game.0.players[seat].name, game.0.players[k].name), timer: 3.0 };
+            sfx.write(SfxEvent("level_up".into()));
+            continue;
+        }
+        active.0 = seat;
+        game.0.players.swap(0, seat);
+        op.active = seat;
+        rt.active = seat;
+        interact_seat(seat, &mut game, &mut world, &db, &npcs, &index, &mut dirty, &mut ui, &mut toast, &mut sfx, &mut fx, &mut op, &mut rt);
+        game.0.players.swap(0, seat);
     }
+    op.active = 0;
+    rt.active = 0;
+}
+
+#[allow(clippy::too_many_arguments)]
+fn interact_seat(
+    _seat: usize,
+    game: &mut Game,
+    world: &mut WorldRes,
+    db: &DbRes,
+    npcs: &Npcs,
+    index: &ChunkIndex,
+    dirty: &mut DirtyChunks,
+    ui: &mut EventWriter<UiRequest>,
+    toast: &mut Toast,
+    sfx: &mut EventWriter<SfxEvent>,
+    fx: &mut EventWriter<EffectEvent>,
+    op: &mut Operating,
+    rt: &mut PlayerRt,
+) {
     // aboard ship: disembark
     if game.0.vehicle.is_some() {
-        disembark(&mut game, &mut world, &mut dirty, &mut toast);
+        disembark(game, world, dirty, toast);
         return;
     }
-    if op.0.is_some() {
-        op.0 = None;
+    if op.get().is_some() {
+        op.set(None);
         *toast = Toast { text: "You step away from the cannon.".into(), timer: 1.5 };
         return;
     }
@@ -124,7 +158,7 @@ fn interact(
     }
     if let Some((gi, gd)) = ground_i {
         if gd <= obj_d {
-            let msg = crate::combat::pickup(&mut game, gi);
+            let msg = crate::combat::pickup(game, gi);
             sfx.write(SfxEvent("pickup".into()));
             *toast = Toast { text: msg, timer: 1.8 };
             return;
@@ -143,14 +177,14 @@ fn interact(
                 let has_key = game.0.players[0].inventory.count("rune_key") > 0;
                 let pick = game.0.players[0].inventory.count("lockpick") > 0 && Rng::new(seed_for(&map_name, opos, game.0.seed) ^ game.0.clock.minutes).chance(0.6);
                 if !(has_key || pick) {
-                    say(&mut toast, "The door is locked.".into());
+                    say(toast, "The door is locked.".into());
                     sfx.write(SfxEvent("ui_error".into()));
                     return;
                 }
                 world.0.maps.get_mut(&map_name).unwrap().objects[oi].locked = false;
             }
             if !opening && Vec2::new(opos.x as f32 + 0.5, opos.y as f32 + 0.5).distance(Vec2::from(game.0.players[0].pos)) < 0.9 {
-                say(&mut toast, "Something is in the way.".into());
+                say(toast, "Something is in the way.".into());
                 return;
             }
             let nk = if opening { "door_open" } else { "door_wood" };
@@ -173,7 +207,7 @@ fn interact(
             let mut rng = Rng::new(seed_for(&map_name, opos, game.0.seed));
             let lines = db.0.signs.get("signpost").cloned().unwrap_or_default();
             let town = town_name(map, opos).map(|t| format!("Welcome to {t}.\n")).unwrap_or_default();
-            say(&mut toast, format!("{town}{}", lines.get(rng.range(0, lines.len().max(1) as i32) as usize).cloned().unwrap_or_default()));
+            say(toast, format!("{town}{}", lines.get(rng.range(0, lines.len().max(1) as i32) as usize).cloned().unwrap_or_default()));
         }
         "runestone" | "wreck" | "boulder" | "cannon" | "longship" | "bed" | "forge" | "campfire" | "table" | "well" | "bifrost_node" => match kind.as_str() {
             "well" => {
@@ -182,22 +216,22 @@ fn interact(
                 sfx.write(SfxEvent("splash".into()));
                 let mut rng = Rng::new(game.0.clock.minutes);
                 let lines = db.0.signs.get("well").cloned().unwrap_or_default();
-                say(&mut toast, format!("You drink. (+15 HP)\n{}", lines.get(rng.range(0, lines.len().max(1) as i32) as usize).cloned().unwrap_or_default()));
+                say(toast, format!("You drink. (+15 HP)\n{}", lines.get(rng.range(0, lines.len().max(1) as i32) as usize).cloned().unwrap_or_default()));
             }
             "runestone" => {
                 let mut rng = Rng::new(seed_for(&map_name, opos, game.0.seed));
                 let lines = db.0.signs.get("runestone").cloned().unwrap_or_default();
-                say(&mut toast, lines.get(rng.range(0, lines.len().max(1) as i32) as usize).cloned().unwrap_or_default());
+                say(toast, lines.get(rng.range(0, lines.len().max(1) as i32) as usize).cloned().unwrap_or_default());
             }
             "bed" => {
                 let hp = game.0.players[0].stats.hp as f32 / game.0.players[0].stats.max_hp() as f32;
                 if game.0.clock.is_night() || hp < 0.8 {
                     let out = crate::script::run(&mut game.0, &db.0, &world.0, &[u67_world::script::Step::Sleep]);
                     let _ = out;
-                    say(&mut toast, "You sleep until morning. HP and mana restored.".into());
+                    say(toast, "You sleep until morning. HP and mana restored.".into());
                     sfx.write(SfxEvent("ui_close".into()));
                 } else {
-                    say(&mut toast, "You are not tired.".into());
+                    say(toast, "You are not tired.".into());
                 }
             }
             "forge" | "campfire" | "table" => {
@@ -210,7 +244,7 @@ fn interact(
             "wreck" => {
                 let st = game.0.obj_state.get(&crate::data::obj_key(&map_name, opos.x, opos.y, "wreck")).is_some_and(|s| s.loaded);
                 if st {
-                    say(&mut toast, "Already picked clean.".into());
+                    say(toast, "Already picked clean.".into());
                 } else {
                     let mut rng = Rng::new(seed_for(&map_name, opos, game.0.seed));
                     if let Some(t) = db.0.loot.get("wreck_salvage") {
@@ -219,7 +253,7 @@ fn interact(
                         }
                     }
                     persist::record(&mut game.0, &world.0, &map_name, oi, |s| s.loaded = true);
-                    say(&mut toast, "You salvage what you can from the wreck.".into());
+                    say(toast, "You salvage what you can from the wreck.".into());
                 }
             }
             "cannon" => {
@@ -231,16 +265,16 @@ fn interact(
                         inv.remove("gunpowder", 1);
                         inv.remove("cannon_ball", 1);
                         persist::record(&mut game.0, &world.0, &map_name, oi, |s| s.loaded = true);
-                        say(&mut toast, "Cannon loaded (powder + ball). Press E again to take aim.".into());
+                        say(toast, "Cannon loaded (powder + ball). Press E again to take aim.".into());
                         sfx.write(SfxEvent("reload".into()));
                     } else {
-                        say(&mut toast, "To load a cannon you need 1 gunpowder and 1 cannon ball.".into());
+                        say(toast, "To load a cannon you need 1 gunpowder and 1 cannon ball.".into());
                         sfx.write(SfxEvent("ui_error".into()));
                     }
                 } else {
-                    op.0 = Some(oi);
+                    op.set(Some(oi));
                     rt.cooldown = 0.3;
-                    say(&mut toast, "Aim with the mouse. Click to FIRE. E to step away.".into());
+                    say(toast, "Aim with the mouse. Click to FIRE. E to step away.".into());
                 }
             }
             "longship" => {
@@ -254,7 +288,7 @@ fn interact(
                     game.0.players[0].pos = [s.pos.x as f32 + 0.5, s.pos.y as f32 + 0.5];
                     game.0.flags.insert("boarded_ship".into());
                     dirty.0.insert(s.pos.chunk());
-                    say(&mut toast, "Aboard the longship! Sail with WASD over water, M = star map, E = disembark at a shore.".into());
+                    say(toast, "Aboard the longship! Sail with WASD over water, M = star map, E = disembark at a shore.".into());
                     sfx.write(SfxEvent("ship_creak".into()));
                 }
             }
@@ -294,9 +328,7 @@ fn disembark(game: &mut Game, world: &mut WorldRes, dirty: &mut DirtyChunks, toa
 /// Fire a loaded cannon (while operating) or ship cannons (aboard).
 #[allow(clippy::too_many_arguments)]
 fn cannon_fire(
-    mouse: Res<ButtonInput<MouseButton>>,
-    kb: Res<ButtonInput<KeyCode>>,
-    keys: Res<KeyMap>,
+    intents: Res<Intents>,
     cursor: Res<Cursor>,
     mut game: ResMut<Game>,
     mut world: ResMut<WorldRes>,
@@ -307,22 +339,48 @@ fn cannon_fire(
     mut toast: ResMut<Toast>,
     mut dirty: ResMut<DirtyChunks>,
 ) {
+    for seat in 0..game.0.players.len() {
+        game.0.players.swap(0, seat);
+        op.active = seat;
+        rt.active = seat;
+        cannon_seat(seat, intents.get(seat), &cursor, &mut game, &mut world, &mut op, &mut rt, &mut shots, &mut sfx, &mut toast, &mut dirty);
+        game.0.players.swap(0, seat);
+    }
+    op.active = 0;
+    rt.active = 0;
+}
+
+#[allow(clippy::too_many_arguments)]
+fn cannon_seat(
+    seat: usize,
+    intent: crate::seats::Intent,
+    cursor: &Cursor,
+    game: &mut Game,
+    world: &mut WorldRes,
+    op: &mut Operating,
+    rt: &mut PlayerRt,
+    shots: &mut EventWriter<SpawnProjectile>,
+    sfx: &mut EventWriter<SfxEvent>,
+    toast: &mut Toast,
+    dirty: &mut DirtyChunks,
+) {
+    if rt.downed {
+        return;
+    }
     let map_name = game.0.current_map.clone();
     let pp = Vec2::from(game.0.players[0].pos);
-    if let Some(oi) = op.0 {
+    if let Some(oi) = op.get() {
         let Some(o) = world.0.maps.get(&map_name).and_then(|m| m.objects.get(oi)).cloned() else {
-            op.0 = None;
+            op.set(None);
             return;
         };
         let cpos = Vec2::new(o.pos.x as f32 + 0.5, o.pos.y as f32 + 0.2);
         if cpos.distance(pp) > 3.2 {
-            op.0 = None;
+            op.set(None);
             return;
         }
-        if !cursor.valid {
-            return;
-        }
-        let to = cursor.tile - cpos;
+        let aim_to = if intent.aim != Vec2::ZERO { cpos + intent.aim * 8.0 } else if seat == 0 && cursor.valid { cursor.tile } else { return };
+        let to = aim_to - cpos;
         let dir = to.normalize_or_zero();
         // rotate the barrel toward the aim
         let frame = match crate::combat::aim_dir(dir) {
@@ -336,7 +394,7 @@ fn cannon_fire(
             persist::record(&mut game.0, &world.0, &map_name, oi, |s| s.frame = Some(frame));
             dirty.0.insert(o.pos.chunk());
         }
-        if (mouse.just_pressed(MouseButton::Left) || keys.just_pressed(Action::Attack, &kb)) && rt.cooldown <= 0.0 {
+        if intent.attack && rt.cooldown <= 0.0 {
             let key = crate::data::obj_key(&map_name, o.pos.x, o.pos.y, "cannon");
             if game.0.obj_state.get(&key).is_some_and(|s| s.loaded) {
                 let range = to.length().clamp(3.0, 24.0);
@@ -346,20 +404,21 @@ fn cannon_fire(
                 sfx.write(SfxEvent("cannon_fire".into()));
                 rt.shake = 0.3;
                 rt.cooldown = 0.6;
-                op.0 = None; // must reload
+                op.set(None); // must reload
                 *toast = Toast { text: "BOOM! Reload with E (1 powder + 1 ball).".into(), timer: 2.5 };
             }
         }
         return;
     }
     if let Some(v) = game.0.vehicle.clone() {
-        if mouse.just_pressed(MouseButton::Left) && rt.cooldown <= 0.0 && cursor.valid {
+        let aim_to = if intent.aim != Vec2::ZERO { Some(Vec2::from(v.pos) + intent.aim * 8.0) } else if seat == 0 && cursor.valid { Some(cursor.tile) } else { None };
+        if seat == 0 && intent.attack && rt.cooldown <= 0.0 && aim_to.is_some() {
             let inv = &mut game.0.players[0].inventory;
             if inv.count("gunpowder") > 0 && inv.count("cannon_ball") > 0 {
                 inv.remove("gunpowder", 1);
                 inv.remove("cannon_ball", 1);
                 let from = Vec2::from(v.pos);
-                let to = cursor.tile - from;
+                let to = aim_to.unwrap() - from;
                 let dir = to.normalize_or_zero();
                 let range = to.length().clamp(3.0, 24.0);
                 shots.write(SpawnProjectile { pos: from, vel: dir * 14.0, dmg: 90, friendly: true, range, kind: ProjKind::Cannonball, splash: 0.0, special: String::new(), cannon: true, target: Some(from + dir * range), elem: String::new() });
@@ -421,7 +480,8 @@ fn ship_visuals(mut commands: Commands, game: Res<Game>, sheets: Res<crate::rend
     }
 }
 
-fn map_keys(kb: Res<ButtonInput<KeyCode>>, keys: Res<KeyMap>, game: Res<Game>, mut ui: EventWriter<UiRequest>) {
+fn map_keys(kb: Res<ButtonInput<KeyCode>>, keys: Res<KeyMap>, game: Res<Game>, mut ui: EventWriter<UiRequest>, mut active: ResMut<ActiveSeat>) {
+    active.0 = 0;
     if keys.just_pressed(Action::Map, &kb) {
         if game.0.vehicle.is_some() {
             ui.write(UiRequest::Travel { by_ship: true });
@@ -450,7 +510,7 @@ fn ready(game: Option<Res<Game>>, db: Option<Res<DbRes>>) -> bool {
 pub struct InteractPlugin;
 impl Plugin for InteractPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<Operating>().add_event::<UiRequest>().add_systems(
+        app.add_event::<UiRequest>().add_systems(
             Update,
             (interact, cannon_fire, map_keys).run_if(ready).run_if(in_state(AppState::Playing)),
         );

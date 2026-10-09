@@ -20,6 +20,7 @@ struct Writers<'w> {
     kills: EventWriter<'w, KillEvent>,
     exit: EventWriter<'w, AppExit>,
     ui: EventWriter<'w, crate::interact::UiRequest>,
+    swap: ResMut<'w, crate::seats::SeatSwap>,
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -59,6 +60,7 @@ fn handle_effects(
                 Ok(d) => {
                     world.0 = crate::app::reset_world(&paths, &d);
                     game.0 = d;
+                    w.swap.0 = None;
                     say("loaded".into());
                 }
                 Err(err) => say(format!("load failed: {err}")),
@@ -132,7 +134,7 @@ fn handle_effects(
                 }
             }
             Effect::Cast(id) => {
-                w.cast.write(CastRequest(id.clone()));
+                w.cast.write(CastRequest(id.clone(), 0));
             }
             Effect::ReloadData => match u67_world::db::Db::load(&paths.assets) {
                 Ok(d) => {
@@ -142,7 +144,17 @@ fn handle_effects(
                 Err(err) => say(format!("reload failed: {err}")),
             },
             Effect::ReloadAssets => say("assets reload on restart (hot reload: TODO T3.12)".into()),
-            Effect::Splitscreen(n) => say(format!("splitscreen x{n}: planned (P8)")),
+            Effect::Splitscreen(n) => {
+                let n = (*n as usize).clamp(1, crate::seats::MAX_SEATS);
+                let start = game.0.players[0].pos;
+                while game.0.players.len() < n {
+                    let i = game.0.players.len();
+                    game.0.players.push(crate::data::PlayerData::for_seat(i, [start[0] + i as f32 * 0.8, start[1]]));
+                }
+                game.0.players.truncate(n);
+                game.0.map_dirty = true;
+                say(format!("{n} local player{}. P1: WASD+mouse, P2: arrows (or a gamepad), P3/P4: gamepads.", if n == 1 { "" } else { "s" }));
+            }
             Effect::Sfx(id) => {
                 w.sfx.write(SfxEvent(id.clone()));
             }

@@ -83,6 +83,12 @@ fn spawn_hud(mut commands: Commands, existing: Query<(), With<Hud>>) {
 
 fn update_hud(game: Res<Game>, diag: Res<bevy::diagnostic::DiagnosticsStore>, mut hud: Query<&mut Text, (With<Hud>, Without<ToastText>)>, mut toast_q: Query<&mut Text, (With<ToastText>, Without<Hud>)>, mut toast: ResMut<Toast>, time: Res<Time>) {
     let g = &game.0;
+    if g.players.len() > 1 {
+        if let Ok(mut t) = hud.single_mut() {
+            t.0 = format!("{}  {:02}:{:02}  day {}   |  SPLIT-SCREEN x{}: P1 WASD+mouse | P2 arrows . / , ; ' | pads: stick, RT, A interact, B roll, X reload, Y inventory", g.current_map, g.clock.hour(), g.clock.minute(), g.clock.day() + 1, g.players.len());
+        }
+        return;
+    }
     let p = &g.players[0];
     let fps = diag.get(&bevy::diagnostic::FrameTimeDiagnosticsPlugin::FPS).and_then(|d| d.smoothed()).unwrap_or(0.0);
     let mut s = format!("{}  {:02}:{:02}  day {}  HP {}/{}  Lv {}", g.current_map, g.clock.hour(), g.clock.minute(), g.clock.day() + 1, p.stats.hp, p.stats.max_hp(), p.stats.level);

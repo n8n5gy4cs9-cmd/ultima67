@@ -2,7 +2,8 @@
 //! from the spellbook, hotkeys, or by "singing" a 3-rune laulu sequence.
 use crate::app::{AppState, Game, WorldRes};
 use crate::audio::SfxEvent;
-use crate::combat::{Cursor, PlayerRt, ProjKind, SpawnProjectile};
+use crate::combat::{Cursor, ProjKind, SpawnProjectile};
+use crate::seats::{Intents, PlayerRt};
 use crate::creatures::{self, Creature};
 use crate::data::GameData;
 use crate::db_res::DbRes;
@@ -14,7 +15,7 @@ use u67_world::db::Db;
 use u67_world::spells::{find_by_runes, Effect as Fx, SpellDef};
 
 #[derive(Event, Clone, Debug)]
-pub struct CastRequest(pub String);
+pub struct CastRequest(pub String, pub usize);
 
 #[derive(Event, Clone, Debug)]
 pub struct SingRequest(pub Vec<u8>);
@@ -70,11 +71,12 @@ fn handle_cast(
     mut creatures_q: Query<(Entity, &mut Creature)>,
     mut commands: Commands,
     sheets: Res<Sheets>,
+    active: Res<crate::seats::ActiveSeat>,
 ) {
-    let mut requests: Vec<String> = ev.read().map(|c| c.0.clone()).collect();
+    let mut requests: Vec<(String, usize)> = ev.read().map(|c| (c.0.clone(), c.1.min(game.0.players.len() - 1))).collect();
     for s in sing.read() {
         match find_by_runes(&db.0.spells, &s.0) {
-            Some(sp) => requests.push(sp.id.clone()),
+            Some(sp) => requests.push((sp.id.clone(), active.0.min(game.0.players.len() - 1))),
             None => {
                 // wrong verse: lose a little mana
                 game.0.players[0].stats.mana = (game.0.players[0].stats.mana - 2).max(0);
@@ -83,12 +85,18 @@ fn handle_cast(
             }
         }
     }
-    for id in requests {
+    for (id, seat) in requests {
         let Some(sp) = db.0.spells.iter().find(|s| s.id == id).cloned() else { continue };
+        game.0.players.swap(0, seat);
+        rt.active = seat;
+        'one: {
+        if rt.downed {
+            break 'one;
+        }
         if let Err(e) = can_cast(&game.0, &db.0, &sp) {
             *toast = crate::ui::Toast { text: e, timer: 2.0 };
             sfx.write(SfxEvent("spell_fizzle".into()));
-            continue;
+            break 'one;
         }
         let pos = Vec2::from(game.0.players[0].pos);
         let aim = if cursor.valid { (cursor.tile - (pos - Vec2::new(0.0, 0.5))).normalize_or_zero() } else { Vec2::Y };
@@ -166,14 +174,19 @@ fn handle_cast(
                 *toast = crate::ui::Toast { text: "Your raven's-eye reveals the land around you.".into(), timer: 2.0 };
             }
         }
+        }
+        game.0.players.swap(0, seat);
+        rt.active = 0;
     }
 }
 
-fn hotkeys(kb: Res<ButtonInput<KeyCode>>, game: Res<Game>, mut req: EventWriter<CastRequest>) {
-    for (i, k) in [KeyCode::Digit1, KeyCode::Digit2, KeyCode::Digit3, KeyCode::Digit4].iter().enumerate() {
-        if kb.just_pressed(*k) {
-            if let Some(s) = game.0.players[0].spell_slots.get(i) {
-                req.write(CastRequest(s.clone()));
+fn hotkeys(intents: Res<Intents>, game: Res<Game>, mut req: EventWriter<CastRequest>) {
+    for seat in 0..game.0.players.len() {
+        for (i, pressed) in intents.get(seat).spells.iter().enumerate() {
+            if *pressed {
+                if let Some(s) = game.0.players[seat].spell_slots.get(i) {
+                    req.write(CastRequest(s.clone(), seat));
+                }
             }
         }
     }

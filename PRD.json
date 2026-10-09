@@ -18,7 +18,7 @@
   "done",
   "blocked"
  ],
- "next_action": "P8 splitscreen co-op (T8.1/T8.2), then P4 leftovers (T4.2 U7 importer, T4.3 transformer, T4.6 weather), P3 leftovers (T3.12 hot reload), then P9 polish/packaging. REMEMBER: build/test only at the end of a phase.",
+ "next_action": "Leftovers: T4.6 weather, T3.12 hot reload, T3.13 original asset overrides, then P9 (menus/intro/options, macOS/Windows/Linux packaging scripts, balance, accessibility), then T4.2/T4.3 U7 importer + transformer (user supplies U7 data in assets/original/). Build/test only at phase end.",
  "phases": [
   {
    "id": "P0",
@@ -421,13 +421,13 @@
    "tasks": [
     {
      "id": "T8.1",
-     "title": "Local splitscreen co-op adventure (2-4 players): per-player camera, controller/keyboard assignment, same world, solo or co-op",
-     "status": "todo"
+     "title": "Local splitscreen co-op adventure (2-4 players): per-player camera, controller/keyboard assignment, same world, solo or co-op [seats.rs: 1-4 players, viewports, per-seat input (kbd1 / kbd2 / gamepads), downed+revive; console: splitscreen N]",
+     "status": "done"
     },
     {
      "id": "T8.2",
-     "title": "Splitscreen per-player inventory UI; shared party + shared quest state; drop-in/drop-out join",
-     "status": "todo"
+     "title": "Splitscreen per-player inventory UI; shared party + shared quest state; drop-in/drop-out join [modal screens open for the seat that triggered them; shared quests/flags/world]",
+     "status": "done"
     },
     {
      "id": "T8.4",

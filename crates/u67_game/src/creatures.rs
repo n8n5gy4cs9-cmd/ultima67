@@ -3,6 +3,7 @@ use crate::app::{AppState, Game, WorldRes};
 use crate::combat::{DamageEvent, KillEvent, PlayerHit, ProjKind, SpawnProjectile};
 use crate::db_res::DbRes;
 use crate::render::{self, Sheets, CHAR_COLS};
+use crate::seats::PlayerRt;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use u67_core::{Dir, Rng, TilePos};
@@ -173,10 +174,12 @@ fn spawner(mut commands: Commands, time: Res<Time>, game: Res<Game>, world: Res<
     for t in timers.t.iter_mut() {
         *t = (*t - 1.0).max(0.0);
     }
-    let player = Vec2::from(game.0.players[0].pos);
+    let all_players: Vec<Vec2> = game.0.players.iter().map(|p| Vec2::from(p.pos)).collect();
+    let dist_to_players = |p: Vec2| all_players.iter().map(|q| q.distance(p)).fold(f32::MAX, f32::min);
+    let player = *rng.pick(&all_players);
     // despawn far wilderness creatures
     for (e, c) in &creatures {
-        if c.spawn_idx.is_some_and(|i| db.0.spawns.get(i).is_some_and(|s| s.place == "*")) && c.pos.distance(player) > 60.0 {
+        if c.spawn_idx.is_some_and(|i| db.0.spawns.get(i).is_some_and(|s| s.place == "*")) && dist_to_players(c.pos) > 60.0 {
             commands.entity(e).despawn();
         }
     }
@@ -199,7 +202,7 @@ fn spawner(mut commands: Commands, time: Res<Time>, game: Res<Game>, world: Res<
         } else {
             let Some(pl) = map.places.get(&s.place) else { continue };
             let center = Vec2::new(pl.x as f32 + 0.5, pl.y as f32 + 0.5);
-            if center.distance(player) > 48.0 || alive > 0 || timers.t[i] > 0.0 {
+            if dist_to_players(center) > 48.0 || alive > 0 || timers.t[i] > 0.0 {
                 continue;
             }
             let ukey = format!("dead_{}@{}:{}", s.creature, s.map, s.place);
@@ -229,12 +232,14 @@ fn creature_ai(
     mut dmg: EventWriter<DamageEvent>,
     mut kills: EventWriter<KillEvent>,
     mut rng: Local<Option<Rng>>,
+    rts: Res<PlayerRt>,
 ) {
     let rng = rng.get_or_insert_with(|| Rng::new(7));
     let dt = time.delta_secs();
     let Some(map) = world.0.maps.get(&game.0.current_map) else { return };
-    let player = Vec2::from(game.0.players[0].pos);
     let visible = !game.0.cheats.invisible;
+    let live: Vec<(usize, Vec2)> = game.0.players.iter().enumerate().filter(|(i, p)| p.stats.hp > 0 && !rts.list.get(*i).is_some_and(|r| r.downed)).map(|(i, p)| (i, Vec2::from(p.pos))).collect();
+    let leader = Vec2::from(game.0.players[0].pos);
     // snapshot for ally/enemy targeting
     let snap: Vec<(Entity, Vec2, bool)> = q.iter().map(|(e, c)| (e, c.pos, c.ally)).collect();
     for (e, mut c) in &mut q {
@@ -258,13 +263,16 @@ fn creature_ai(
             continue;
         }
         // choose a target
+        let nearest = live.iter().min_by(|a, b| a.1.distance(c.pos).partial_cmp(&b.1.distance(c.pos)).unwrap()).copied();
+        let player = nearest.map_or(leader, |n| n.1);
+        let player_idx = nearest.map_or(0, |n| n.0);
         let (tpos, tent, t_is_player): (Option<Vec2>, Option<Entity>, bool) = if c.ally {
             let best = snap.iter().filter(|(oe, _, ally)| *oe != e && !*ally).map(|(oe, p, _)| (*oe, *p)).filter(|(_, p)| p.distance(c.pos) < def.sight.max(9.0)).min_by(|a, b| a.1.distance(c.pos).partial_cmp(&b.1.distance(c.pos)).unwrap());
             match best {
                 Some((oe, p)) => (Some(p), Some(oe), false),
                 None => (Some(player), None, true),
             }
-        } else if visible && player.distance(c.pos) < def.sight && (def.ai != Ai::Passive) {
+        } else if visible && nearest.is_some() && player.distance(c.pos) < def.sight && (def.ai != Ai::Passive) {
             (Some(player), None, true)
         } else {
             (None, None, false)
@@ -329,7 +337,7 @@ fn creature_ai(
                         c.cd = def.cooldown;
                         c.attack_anim = 0.35;
                         if t_is_player {
-                            hits.write(PlayerHit { amount: def.damage, from: c.pos, special: String::new() });
+                            hits.write(PlayerHit { target: player_idx, amount: def.damage, from: c.pos, special: String::new() });
                         } else if let Some(te) = tent {
                             dmg.write(DamageEvent { target: te, amount: def.damage, crit: false, by_player: false, special: String::new(), cannon: false });
                         }

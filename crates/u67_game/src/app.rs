@@ -1,6 +1,6 @@
 //! App plumbing: resources, states, startup/boot, top-level plugin.
 use crate::data::GameData;
-use crate::input::{self, Intent, KeyMap};
+use crate::input::{self, KeyMap};
 use crate::settings::{Action, Settings};
 use bevy::prelude::*;
 use std::path::PathBuf;
@@ -151,7 +151,7 @@ pub fn reset_world(paths: &Paths, data: &GameData) -> World {
 }
 
 fn boot_start(mut commands: Commands) {
-    commands.spawn(Camera2d);
+    commands.spawn((Camera2d, crate::player::UiCamera, IsDefaultUiCamera, Camera { order: 100, ..default() }));
     commands.spawn((BootText, Text::new("Generating Midgård..."), TextFont { font_size: 32.0, ..default() }, Node { position_type: PositionType::Absolute, left: Val::Px(40.0), top: Val::Px(40.0), ..default() }));
 }
 
@@ -202,12 +202,19 @@ fn boot_work(mut frames: ResMut<BootFrames>, mut commands: Commands, paths: Res<
 #[derive(Resource)]
 pub struct HasQuicksave(pub bool);
 
-fn state_hotkeys(kb: Res<ButtonInput<KeyCode>>, keys: Res<KeyMap>, state: Res<State<AppState>>, mut next: ResMut<NextState<AppState>>) {
+fn state_hotkeys(kb: Res<ButtonInput<KeyCode>>, keys: Res<KeyMap>, state: Res<State<AppState>>, mut next: ResMut<NextState<AppState>>, intents: Res<crate::seats::Intents>, mut active: ResMut<crate::seats::ActiveSeat>, mut swap: ResMut<crate::seats::SeatSwap>, game: Option<ResMut<Game>>) {
     use AppState::*;
     let s = *state.get();
-    let pause = keys.just_pressed(Action::Pause, &kb);
-    let inv = keys.just_pressed(Action::Inventory, &kb);
+    let pause = intents.list.iter().any(|i| i.pause) || keys.just_pressed(Action::Pause, &kb);
+    let inv_seat = intents.list.iter().position(|i| i.inventory);
+    let inv = inv_seat.is_some();
     let con = keys.just_pressed(Action::Console, &kb);
+    if s == Playing {
+        if let (Some(seat), Some(mut g)) = (inv_seat, game) {
+            active.0 = seat;
+            swap.swap_in(&mut g.0, seat);
+        }
+    }
     match s {
         Playing => {
             if pause {
@@ -241,7 +248,6 @@ impl Plugin for U67Plugin {
         let settings = Settings::load_or_create(&paths.config);
         app.insert_resource(KeyMap::from_settings(&settings))
             .insert_resource(SettingsRes(settings))
-            .init_resource::<Intent>()
             .init_resource::<BootFrames>()
             .insert_resource(Time::<Fixed>::from_hz(30.0))
             .init_state::<AppState>()
