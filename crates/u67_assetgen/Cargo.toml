@@ -5,3 +5,7 @@ edition.workspace = true
 license.workspace = true
 [dependencies]
 u67_core = { path = "../u67_core" }
+u67_world = { path = "../u67_world" }
+serde.workspace = true
+serde_json.workspace = true
+image.workspace = true
