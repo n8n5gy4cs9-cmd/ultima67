@@ -20,6 +20,8 @@
 | UI panels, slots, bars, paperdoll, cursors, runes (name -> rect index) | `ui_index` | `assets/gfx/ui.json` | generated (placeholder) |
 | planets, ship, bifrost gate, starfield | `space` | `assets/gfx/space.png` | generated (placeholder) |
 | planets, ship, bifrost gate, starfield (name -> rect index) | `space_index` | `assets/gfx/space.json` | generated (placeholder) |
+| main menu / intro background (320x180, scaled to the window) | `title` | `assets/gfx/title.png` | generated (placeholder) |
+| application icon (macOS .icns / Windows .ico source, 256x256) | `app_icon` | `assets/icon/icon.png` | generated (placeholder) |
 | walking | `sfx_footstep` | `assets/sfx/footstep.wav` | generated (placeholder) |
 | walking on snow | `sfx_footstep_snow` | `assets/sfx/footstep_snow.wav` | generated (placeholder) |
 | pistol shot | `sfx_gun_pistol` | `assets/sfx/gun_pistol.wav` | generated (placeholder) |
@@ -92,5 +94,5 @@ Art direction: chunky Starbound-like pixel art, 1px dark outline, limited per-ma
 ### Maps
 Not stored in the repo: the game builds Midgard, caves and all planets at startup from seed 67 (`u67_mapgen::generate_world`). `cargo run --release -p u67_mapgen --bin gen_maps` dumps them as `.u67map` files (binary: header, JSON meta, RLE tiles) into `assets/maps/` (git-ignored); if a `.u67map` with the same name exists there the game loads it instead of generating, so you can hand-edit maps (map editor T4.9) or import your own Ultima 7 data (T4.2, local only, never committed).
 
-### Original game data
-If you own Ultima 7 / Ultima 6, put your files in `assets/original/` (git-ignored). Importers use them as optional upgrades; the repository never contains them.
+### Original game data / your own replacements (never committed)
+`assets/original/` is git-ignored. If you put `assets/original/sfx/<id>.ogg|wav` or `assets/original/music/<track>.ogg|wav` there (same ids as the table in section 1, without the `sfx_`/`music_` prefix), the game plays those instead of the generated placeholder. Ultima 7 map data for the importer goes in `assets/original/u7/` (STATIC folder contents). Hot reload: in dev builds changed PNG/audio files under `assets/` reload while the game runs (`hot_reload` in settings.ron).

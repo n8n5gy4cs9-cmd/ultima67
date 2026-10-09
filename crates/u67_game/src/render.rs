@@ -26,6 +26,8 @@ pub struct TerrainPx {
 
 #[derive(Resource)]
 pub struct Sheets {
+    pub terrain_path: std::path::PathBuf,
+    pub terrain_mtime: Option<std::time::SystemTime>,
     pub objects_img: Handle<Image>,
     pub objects_layout: Handle<TextureAtlasLayout>,
     pub chars_img: Handle<Image>,
@@ -73,7 +75,11 @@ pub fn load_sheets(mut commands: Commands, assets: Res<AssetServer>, paths: Res<
     let nitems = u67_world::items::ITEMS.len() as u32;
     let items_layout = layouts.add(TextureAtlasLayout::from_grid(UVec2::splat(16), 8, nitems.div_ceil(8), None, None));
     let img = image::open(paths.assets.join("gfx/terrain.png")).expect("assets/gfx/terrain.png missing - run: cargo run -p u67_assetgen").to_rgba8();
+    let terrain_path = paths.assets.join("gfx/terrain.png");
+    let terrain_mtime = std::fs::metadata(&terrain_path).and_then(|m| m.modified()).ok();
     commands.insert_resource(Sheets {
+        terrain_path,
+        terrain_mtime,
         objects_img: assets.load("gfx/objects.png"),
         objects_layout,
         chars_img: assets.load("gfx/characters.png"),
@@ -216,6 +222,25 @@ fn stream_chunks(
     }
 }
 
+/// Dev hot-reload for the terrain sheet (it is baked into chunk textures, so Bevy's own watcher can't help).
+fn watch_terrain(time: Res<Time>, mut acc: Local<f32>, mut sheets: ResMut<Sheets>, settings: Res<SettingsRes>, loaded: Res<Loaded>, mut dirty: ResMut<DirtyChunks>) {
+    *acc += time.delta_secs();
+    if *acc < 1.5 || !settings.0.hot_reload {
+        return;
+    }
+    *acc = 0.0;
+    let m = std::fs::metadata(&sheets.terrain_path).and_then(|m| m.modified()).ok();
+    if m.is_some() && m != sheets.terrain_mtime {
+        if let Ok(img) = image::open(&sheets.terrain_path) {
+            let img = img.to_rgba8();
+            sheets.terrain = TerrainPx { w: img.width(), data: img.into_raw() };
+            sheets.terrain_mtime = m;
+            dirty.0.extend(loaded.chunks.keys().copied());
+            info!("terrain.png reloaded");
+        }
+    }
+}
+
 fn hide_roofs(game: Res<Game>, world: Res<WorldRes>, mut roofs: Query<(&Roof, &mut Visibility)>) {
     let Some(map) = world.0.maps.get(&game.0.current_map) else { return };
     let inside: HashSet<u16> = game.0.players.iter().filter_map(|p| map.building_at(u67_core::TilePos::new(p.pos[0] as i32, p.pos[1] as i32)).map(|b| b.id)).collect();
@@ -239,7 +264,7 @@ fn animate_objects(time: Res<Time>, mut q: Query<(&Flicker, &mut Sprite)>) {
 pub struct RenderPlugin;
 impl Plugin for RenderPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<DirtyChunks>().init_resource::<Loaded>().init_resource::<ChunkIndex>().add_systems(Startup, load_sheets).add_systems(Update, (stream_chunks, hide_roofs, animate_objects).run_if(game_active));
+        app.init_resource::<DirtyChunks>().init_resource::<Loaded>().init_resource::<ChunkIndex>().add_systems(Startup, load_sheets).add_systems(Update, (stream_chunks, hide_roofs, animate_objects, watch_terrain).run_if(game_active));
     }
 }
 

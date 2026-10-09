@@ -109,6 +109,24 @@
       "notes": "generated together with the sheet"
     },
     {
+      "id": "title",
+      "kind": "image",
+      "path": "gfx/title.png",
+      "use": "main menu / intro background (320x180, scaled to the window)",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "keep the 16:9 ratio"
+    },
+    {
+      "id": "app_icon",
+      "kind": "image",
+      "path": "icon/icon.png",
+      "use": "application icon (macOS .icns / Windows .ico source, 256x256)",
+      "source": "generated",
+      "status": "placeholder",
+      "notes": "used by tools/bundle_macos.sh"
+    },
+    {
       "id": "sfx_footstep",
       "kind": "sfx",
       "path": "sfx/footstep.wav",

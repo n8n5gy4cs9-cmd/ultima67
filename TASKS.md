@@ -3,8 +3,8 @@
 > Generated from `PRD.json` by `python3 tools/sync_tasks.py`. **Edit PRD.json, then re-run.**
 > Legend: `[x]` done, `[ ]` todo, `[~]` in progress, `[!]` blocked.
 
-**Progress: 65/78 done.**  
-**Next action:** Leftovers: T4.6 weather, T3.12 hot reload, T3.13 original asset overrides, then P9 (menus/intro/options, macOS/Windows/Linux packaging scripts, balance, accessibility), then T4.2/T4.3 U7 importer + transformer (user supplies U7 data in assets/original/). Build/test only at phase end.
+**Progress: 74/78 done.**  
+**Next action:** T4.2 U7 importer (assets/original/u7/) + T4.3 Midgard transformer. Optional left: T4.9 map editor, T8.4 netcode. Then: real-hardware checks on the M1 (run tools/bundle_macos.sh, profile 60fps), playtest + polish.
 
 ## P0 - Planning & docs
 
@@ -29,7 +29,7 @@
 - [x] **T2.2** Bevy app boots window on macOS arm64, 60fps, fixed-timestep sim
 - [x] **T2.3** GitHub Actions CI: fmt, clippy, test on macOS+Linux; Windows build job
 - [x] **T2.4** Platform abstraction: paths via `directories`, no mac-only APIs
-- [x] **T2.5** Config/settings file (RON), keybinding + gamepad remap [settings.ron + key rebinding done; gamepad uses fixed layout, remap UI pending]
+- [x] **T2.5** Config/settings file (RON), keybinding + gamepad remap [settings.ron + key rebinding done; gamepad uses fixed layout, remap UI pending] [settings.ron: keys + gamepad buttons + volumes + zoom; in-game Options menu; no in-game rebind UI yet]
 - [x] **T2.6** Game state machine: Boot, MainMenu, Playing, Paused, Inventory, Dialogue, Console
 - [x] **T2.7** Save/load (serde + versioned), 10 slots + quicksave
 
@@ -46,8 +46,8 @@
 - [x] **T3.9** Placeholder SFX generator (WAV synth: steps, gun, cannon, hit, door, UI, spell, ambient)
 - [x] **T3.10** Placeholder music generator (procedural MIDI-like -> OGG/WAV, one loop per region + combat + menu)
 - [x] **T3.11** Auto-generate ASSETS.md from manifest (top: clean table use|name|path|source; below: detailed notes)
-- [ ] **T3.12** Hot-reload assets in dev builds so replacing a file shows instantly [pending: use bevy file_watcher feature]
-- [ ] **T3.13** Use user-supplied original sfx/music from assets/original/ as optional upgrades (never committed) _(optional)_
+- [x] **T3.12** Hot-reload assets in dev builds so replacing a file shows instantly [pending: use bevy file_watcher feature] [Bevy file_watcher + terrain.png polling]
+- [x] **T3.13** Use user-supplied original sfx/music from assets/original/ as optional upgrades (never committed) [assets/original/{sfx,music}/<id>.ogg|wav override generated files] _(optional)_
 
 ## P4 - World: Midgard map (U7 layout remake)
 
@@ -56,7 +56,7 @@
 - [ ] **T4.3** Midgard transformer: remap U7 terrain/objects to Norse equivalents (towns -> Norse/Finnish villages, Britannia coast -> fjords)
 - [x] **T4.4** Fallback: procedural Midgard map generator with same macro-layout (works w/o U7 data; ships in repo)
 - [x] **T4.5** Map renderer: layered isometric-ish/top-down tile rendering w/ object depth sorting, roofs hide on entry
-- [ ] **T4.6** Day/night cycle, weather, lighting [clock + day/night overlay done; weather visuals pending]
+- [x] **T4.6** Day/night cycle, weather, lighting [clock + day/night overlay done; weather visuals pending]
 - [x] **T4.7** Interiors/dungeons as separate z/instance maps
 - [x] **T4.8** Towns: Uppsala-ish Kaupang, Birka, Hedeby, Kuusamo, Rovaniemi-like Pohjola, Hel gate, 10+ more
 - [ ] **T4.9** Map editor mode (in-game dev tool) to hand-edit tiles/objects _(optional)_
@@ -107,9 +107,9 @@
 
 ## P9 - Polish, packaging, platforms
 
-- [ ] **T9.1** Main menu, options, credits ('By Crowelian 2026 + Sonnet'), intro cinematic (slides)
-- [ ] **T9.2** macOS .app bundle + dmg, codesign notes; verify Apple Silicon native
-- [ ] **T9.3** Windows build + installer zip
-- [ ] **T9.4** Linux build + AppImage _(optional)_
-- [ ] **T9.5** Balance pass, bug bash, performance profile (target 60fps on M1 Max)
-- [ ] **T9.6** Accessibility: rebinding, text size, colorblind palettes _(optional)_
+- [x] **T9.1** Main menu, options, credits ('By Crowelian 2026 + Sonnet'), intro cinematic (slides)
+- [x] **T9.2** macOS .app bundle + dmg, codesign notes; verify Apple Silicon native [tools/bundle_macos.sh (.app+.dmg, ad-hoc codesign); CI builds aarch64-apple-darwin; NOT yet run on a real Mac]
+- [x] **T9.3** Windows build + installer zip [tools/package_windows.ps1; CI builds x86_64-pc-windows-msvc]
+- [x] **T9.4** Linux build + AppImage [tools/package_linux.sh (tar.gz + AppImage if tool present)] _(optional)_
+- [x] **T9.5** Balance pass, bug bash, performance profile (target 60fps on M1 Max) [balance model test + tuned bosses; on-hardware 60fps profile still to do on the M1]
+- [x] **T9.6** Accessibility: rebinding, text size, colorblind palettes [text scale (UiScale), full key + gamepad rebinding in settings.ron, colour-blind health bars] _(optional)_

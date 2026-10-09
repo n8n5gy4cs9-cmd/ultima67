@@ -23,5 +23,5 @@ bevy = { version = "=0.16.1", default-features = false, features = [
     "std", "async_executor", "multi_threaded",
     "bevy_asset", "bevy_audio", "bevy_color", "bevy_core_pipeline", "bevy_gilrs", "bevy_log",
     "bevy_render", "bevy_sprite", "bevy_state", "bevy_text", "bevy_ui", "bevy_window", "bevy_winit",
-    "default_font", "png", "wav", "x11", "wayland", "tonemapping_luts"
+    "default_font", "png", "wav", "vorbis", "x11", "wayland", "tonemapping_luts", "file_watcher"
 ] }

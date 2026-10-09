@@ -1,5 +1,5 @@
 //! Sound effects (events) and context-driven music.
-use crate::app::{AppState, Game, SettingsRes};
+use crate::app::{AppState, Game, Paths, SettingsRes};
 use crate::creatures::Creature;
 use crate::db_res::DbRes;
 use bevy::audio::Volume;
@@ -17,7 +17,17 @@ struct MusicState {
     clock: f32,
 }
 
-fn play_sfx(mut ev: EventReader<SfxEvent>, mut commands: Commands, assets: Res<AssetServer>, settings: Res<SettingsRes>) {
+/// Prefer the user's own file in `assets/original/<rel without ext>.{wav,ogg}` over the generated placeholder.
+pub fn resolve_audio(paths: &Paths, rel_noext: &str) -> String {
+    for ext in ["ogg", "wav"] {
+        if paths.assets.join("original").join(format!("{rel_noext}.{ext}")).exists() {
+            return format!("original/{rel_noext}.{ext}");
+        }
+    }
+    format!("{rel_noext}.wav")
+}
+
+fn play_sfx(mut ev: EventReader<SfxEvent>, mut commands: Commands, assets: Res<AssetServer>, settings: Res<SettingsRes>, paths: Res<Paths>) {
     let mut count = 0;
     for SfxEvent(id) in ev.read() {
         count += 1;
@@ -25,7 +35,7 @@ fn play_sfx(mut ev: EventReader<SfxEvent>, mut commands: Commands, assets: Res<A
             break; // avoid piling up identical sounds in one frame
         }
         let v = settings.0.master_volume * settings.0.sfx_volume;
-        commands.spawn((AudioPlayer::new(assets.load(format!("sfx/{id}.wav"))), PlaybackSettings::DESPAWN.with_volume(Volume::Linear(v))));
+        commands.spawn((AudioPlayer::new(assets.load(resolve_audio(&paths, &format!("sfx/{id}")))), PlaybackSettings::DESPAWN.with_volume(Volume::Linear(v))));
     }
 }
 
@@ -55,7 +65,7 @@ pub fn pick_track(map: &str, in_town: bool, combat: bool, boss: bool, state: App
     }
 }
 
-fn music_system(time: Res<Time>, mut st: ResMut<MusicState>, state: Res<State<AppState>>, game: Option<Res<Game>>, db: Option<Res<DbRes>>, world: Option<Res<crate::app::WorldRes>>, creatures: Query<&Creature>, cur: Query<(Entity, &MusicTrack)>, mut commands: Commands, assets: Res<AssetServer>, settings: Res<SettingsRes>) {
+fn music_system(time: Res<Time>, mut st: ResMut<MusicState>, state: Res<State<AppState>>, game: Option<Res<Game>>, db: Option<Res<DbRes>>, world: Option<Res<crate::app::WorldRes>>, creatures: Query<&Creature>, cur: Query<(Entity, &MusicTrack)>, mut commands: Commands, assets: Res<AssetServer>, settings: Res<SettingsRes>, paths: Res<Paths>) {
     st.clock -= time.delta_secs();
     if st.clock > 0.0 {
         return;
@@ -85,7 +95,7 @@ fn music_system(time: Res<Time>, mut st: ResMut<MusicState>, state: Res<State<Ap
         commands.entity(e).despawn();
     }
     let v = settings.0.master_volume * settings.0.music_volume;
-    commands.spawn((MusicTrack(want.to_string()), AudioPlayer::new(assets.load(format!("music/{want}.wav"))), PlaybackSettings::LOOP.with_volume(Volume::Linear(v))));
+    commands.spawn((MusicTrack(want.to_string()), AudioPlayer::new(assets.load(resolve_audio(&paths, &format!("music/{want}")))), PlaybackSettings::LOOP.with_volume(Volume::Linear(v))));
 }
 
 pub struct AudioPlugin;

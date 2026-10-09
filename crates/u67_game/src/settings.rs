@@ -27,6 +27,28 @@ pub enum Action {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PadMap {
+    pub interact: String,
+    pub attack: String,
+    pub attack_alt: String,
+    pub roll: String,
+    pub reload: String,
+    pub inventory: String,
+    pub run: String,
+    pub pause: String,
+    pub spell1: String,
+    pub spell2: String,
+    pub spell3: String,
+}
+
+impl Default for PadMap {
+    fn default() -> Self {
+        let s = |x: &str| x.to_string();
+        Self { interact: s("South"), attack: s("RightTrigger"), attack_alt: s("RightTrigger2"), roll: s("East"), reload: s("West"), inventory: s("North"), run: s("LeftTrigger"), pause: s("Start"), spell1: s("DPadLeft"), spell2: s("DPadUp"), spell3: s("DPadRight") }
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Settings {
     pub fullscreen: bool,
     pub vsync: bool,
@@ -36,8 +58,22 @@ pub struct Settings {
     pub sfx_volume: f32,
     pub gamepad_deadzone: f32,
     pub text_scale: f32,
+    /// Reload changed asset files while the game runs (dev convenience; images/audio).
+    #[serde(default = "default_true")]
+    pub hot_reload: bool,
+    /// Orange/blue health bars instead of red/green.
+    #[serde(default)]
+    pub colorblind: bool,
+    /// Gamepad button names per action (South, East, West, North, LeftTrigger, RightTrigger, LeftTrigger2,
+    /// RightTrigger2, Start, Select, DPadUp, DPadDown, DPadLeft, DPadRight, LeftThumb, RightThumb).
+    #[serde(default)]
+    pub pad: PadMap,
     /// Action -> key names (see `input::key_from_name`). Several keys per action allowed.
     pub keys: BTreeMap<Action, Vec<String>>,
+}
+
+fn default_true() -> bool {
+    true
 }
 
 impl Default for Settings {
@@ -65,7 +101,7 @@ impl Default for Settings {
             (Map, k(&["M"])),
             (Journal, k(&["J"])),
         ]);
-        Self { fullscreen: false, vsync: true, zoom: 3.0, master_volume: 0.8, music_volume: 0.5, sfx_volume: 0.8, gamepad_deadzone: 0.2, text_scale: 1.0, keys }
+        Self { fullscreen: false, vsync: true, zoom: 3.0, master_volume: 0.8, music_volume: 0.5, sfx_volume: 0.8, gamepad_deadzone: 0.2, text_scale: 1.0, hot_reload: true, colorblind: false, pad: PadMap::default(), keys }
     }
 }
 

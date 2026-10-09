@@ -1,7 +1,7 @@
 //! Keyboard/gamepad input -> per-seat `Intent`. Seat 0 keys come from `Settings` (rebindable);
 //! seat 1 can use the second keyboard block (arrows etc.); other seats use gamepads.
 use crate::seats::{assign_devices, Device, Intent, Intents, Seats};
-use crate::settings::{Action, Settings};
+use crate::settings::{Action, PadMap, Settings};
 use bevy::prelude::*;
 use std::collections::BTreeMap;
 
@@ -111,23 +111,48 @@ fn keyboard2(kb: &ButtonInput<KeyCode>) -> Intent {
     }
 }
 
-fn gamepad(pad: &Gamepad, dead: f32) -> Intent {
+pub fn button_from_name(n: &str) -> Option<GamepadButton> {
+    use GamepadButton::*;
+    Some(match n {
+        "South" => South,
+        "East" => East,
+        "West" => West,
+        "North" => North,
+        "LeftTrigger" => LeftTrigger,
+        "RightTrigger" => RightTrigger,
+        "LeftTrigger2" => LeftTrigger2,
+        "RightTrigger2" => RightTrigger2,
+        "Start" => Start,
+        "Select" => Select,
+        "DPadUp" => DPadUp,
+        "DPadDown" => DPadDown,
+        "DPadLeft" => DPadLeft,
+        "DPadRight" => DPadRight,
+        "LeftThumb" => LeftThumb,
+        "RightThumb" => RightThumb,
+        _ => return None,
+    })
+}
+
+fn gamepad(pad: &Gamepad, dead: f32, map: &PadMap) -> Intent {
+    let b = |n: &str| button_from_name(n).unwrap_or(GamepadButton::Mode);
+    let (press, held) = (|n: &str| pad.just_pressed(b(n)), |n: &str| pad.pressed(b(n)));
     let s = pad.left_stick();
     let m = if s.length() > dead { Vec2::new(s.x, -s.y) } else { Vec2::ZERO };
     let r = pad.right_stick();
     let aim = if r.length() > 0.35 { Vec2::new(r.x, -r.y).normalize_or_zero() } else { Vec2::ZERO };
     Intent {
         movement: m.clamp_length_max(1.0),
-        run: pad.pressed(GamepadButton::LeftTrigger),
-        interact: pad.just_pressed(GamepadButton::South),
-        attack: pad.just_pressed(GamepadButton::RightTrigger) || pad.just_pressed(GamepadButton::RightTrigger2),
-        attack_held: pad.pressed(GamepadButton::RightTrigger) || pad.pressed(GamepadButton::RightTrigger2),
-        roll: pad.just_pressed(GamepadButton::East),
-        reload: pad.just_pressed(GamepadButton::West),
-        inventory: pad.just_pressed(GamepadButton::North),
-        pause: pad.just_pressed(GamepadButton::Start),
+        run: held(&map.run),
+        interact: press(&map.interact),
+        attack: press(&map.attack) || press(&map.attack_alt),
+        attack_held: held(&map.attack) || held(&map.attack_alt),
+        roll: press(&map.roll),
+        reload: press(&map.reload),
+        inventory: press(&map.inventory),
+        pause: press(&map.pause),
         aim,
-        spells: [pad.just_pressed(GamepadButton::DPadLeft), pad.just_pressed(GamepadButton::DPadUp), pad.just_pressed(GamepadButton::DPadRight)],
+        spells: [press(&map.spell1), press(&map.spell2), press(&map.spell3)],
     }
 }
 
@@ -170,12 +195,12 @@ pub fn read_intent(
         let mut it = match d {
             Device::Keyboard1 => keyboard1(&kb, &mouse, &keys),
             Device::Keyboard2 => keyboard2(&kb),
-            Device::Gamepad(e) => pads.get(*e).map(|(_, p)| gamepad(p, dead)).unwrap_or_default(),
+            Device::Gamepad(e) => pads.get(*e).map(|(_, p)| gamepad(p, dead, &settings.0.pad)).unwrap_or_default(),
         };
         // single player: a connected gamepad also controls seat 0
         if i == 0 && n == 1 {
             for (_, p) in &pads {
-                it = merge(it, gamepad(p, dead));
+                it = merge(it, gamepad(p, dead, &settings.0.pad));
             }
         }
         intents.list.push(it);
@@ -193,6 +218,13 @@ mod tests {
             for n in names {
                 assert!(key_from_name(n).is_some(), "{a:?}: {n}");
             }
+        }
+    }
+    #[test]
+    fn default_pad_names_resolve() {
+        let m = PadMap::default();
+        for n in [&m.interact, &m.attack, &m.attack_alt, &m.roll, &m.reload, &m.inventory, &m.run, &m.pause, &m.spell1, &m.spell2, &m.spell3] {
+            assert!(button_from_name(n).is_some(), "{n}");
         }
     }
     #[test]

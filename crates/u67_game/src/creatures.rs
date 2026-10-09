@@ -367,7 +367,7 @@ fn creature_ai(
     }
 }
 
-fn sync_creature_sprites(time: Res<Time>, db: Res<DbRes>, mut q: Query<(&Creature, &mut Transform, &mut Sprite, &Children)>, mut bars: Query<(&mut Sprite, &mut Visibility), (With<HpBarFg>, Without<Creature>)>) {
+fn sync_creature_sprites(time: Res<Time>, db: Res<DbRes>, settings: Res<crate::app::SettingsRes>, mut q: Query<(&Creature, &mut Transform, &mut Sprite, &Children)>, mut bars: Query<(&mut Sprite, &mut Visibility), (With<HpBarFg>, Without<Creature>)>) {
     for (c, mut tf, mut sp, children) in &mut q {
         let Some(def) = db.0.creatures.get(&c.def) else { continue };
         let p = render::tile_px(c.pos.x, c.pos.y);
@@ -382,6 +382,7 @@ fn sync_creature_sprites(time: Res<Time>, db: Res<DbRes>, mut q: Query<(&Creatur
         for ch in children.iter() {
             if let Ok((mut bs, mut vis)) = bars.get_mut(ch) {
                 bs.custom_size = Some(Vec2::new(16.0 * (c.hp.max(0) as f32 / c.max_hp as f32), 2.0));
+                bs.color = if settings.0.colorblind { Color::srgb(1.0, 0.65, 0.0) } else { Color::srgb(0.85, 0.15, 0.15) };
                 *vis = if c.hp < c.max_hp { Visibility::Inherited } else { Visibility::Hidden };
             }
         }

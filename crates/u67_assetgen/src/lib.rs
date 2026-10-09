@@ -8,6 +8,7 @@ pub mod manifest;
 pub mod objects;
 pub mod space;
 pub mod terrain;
+pub mod title;
 pub mod ui;
 
 use manifest::{Atlas, Manifest};
@@ -32,6 +33,10 @@ pub fn generate_all(root: &Path) -> Result<Manifest, String> {
     sheet("items", "inventory item icons", "16x16", &icons::sheet)?;
     sheet("ui", "UI panels, slots, bars, paperdoll, cursors, runes", "mixed sizes", &ui::sheet)?;
     sheet("space", "planets, ship, bifrost gate, starfield", "64x64 bodies", &space::sheet)?;
+    title::title().save(&root.join("gfx/title.png"))?;
+    m.add("title", "image", "gfx/title.png", "main menu / intro background (320x180, scaled to the window)", "keep the 16:9 ratio");
+    title::icon().save(&root.join("icon/icon.png"))?;
+    m.add("app_icon", "image", "icon/icon.png", "application icon (macOS .icns / Windows .ico source, 256x256)", "used by tools/bundle_macos.sh");
     std::fs::create_dir_all(root.join("sfx")).map_err(|e| e.to_string())?;
     for s in audio::SFX {
         let mut r = u67_core::Rng::new(0xC0FFEE ^ s.id.len() as u64);

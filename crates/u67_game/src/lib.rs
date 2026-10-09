@@ -1,5 +1,7 @@
 //! Ultima67 game library: pure logic (data, console actions, saves, settings, rules) + Bevy app.
 pub mod app;
+#[cfg(test)]
+mod balance;
 pub mod apply;
 pub mod audio;
 pub mod combat;
@@ -13,6 +15,7 @@ pub mod input;
 pub mod interact;
 pub mod invops;
 pub mod magic;
+pub mod menu;
 pub mod menus;
 pub mod npc;
 pub mod persist;
@@ -23,3 +26,4 @@ pub mod seats;
 pub mod script;
 pub mod settings;
 pub mod ui;
+pub mod weather;

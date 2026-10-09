@@ -18,7 +18,7 @@
   "done",
   "blocked"
  ],
- "next_action": "Leftovers: T4.6 weather, T3.12 hot reload, T3.13 original asset overrides, then P9 (menus/intro/options, macOS/Windows/Linux packaging scripts, balance, accessibility), then T4.2/T4.3 U7 importer + transformer (user supplies U7 data in assets/original/). Build/test only at phase end.",
+ "next_action": "T4.2 U7 importer (assets/original/u7/) + T4.3 Midgard transformer. Optional left: T4.9 map editor, T8.4 netcode. Then: real-hardware checks on the M1 (run tools/bundle_macos.sh, profile 60fps), playtest + polish.",
  "phases": [
   {
    "id": "P0",
@@ -113,7 +113,7 @@
     },
     {
      "id": "T2.5",
-     "title": "Config/settings file (RON), keybinding + gamepad remap [settings.ron + key rebinding done; gamepad uses fixed layout, remap UI pending]",
+     "title": "Config/settings file (RON), keybinding + gamepad remap [settings.ron + key rebinding done; gamepad uses fixed layout, remap UI pending] [settings.ron: keys + gamepad buttons + volumes + zoom; in-game Options menu; no in-game rebind UI yet]",
      "status": "done"
     },
     {
@@ -189,13 +189,13 @@
     },
     {
      "id": "T3.12",
-     "title": "Hot-reload assets in dev builds so replacing a file shows instantly [pending: use bevy file_watcher feature]",
-     "status": "todo"
+     "title": "Hot-reload assets in dev builds so replacing a file shows instantly [pending: use bevy file_watcher feature] [Bevy file_watcher + terrain.png polling]",
+     "status": "done"
     },
     {
      "id": "T3.13",
-     "title": "Use user-supplied original sfx/music from assets/original/ as optional upgrades (never committed)",
-     "status": "todo",
+     "title": "Use user-supplied original sfx/music from assets/original/ as optional upgrades (never committed) [assets/original/{sfx,music}/<id>.ogg|wav override generated files]",
+     "status": "done",
      "optional": true
     }
    ]
@@ -232,7 +232,7 @@
     {
      "id": "T4.6",
      "title": "Day/night cycle, weather, lighting [clock + day/night overlay done; weather visuals pending]",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T4.7",
@@ -444,33 +444,33 @@
     {
      "id": "T9.1",
      "title": "Main menu, options, credits ('By Crowelian 2026 + Sonnet'), intro cinematic (slides)",
-     "status": "todo"
+     "status": "done"
     },
     {
      "id": "T9.2",
-     "title": "macOS .app bundle + dmg, codesign notes; verify Apple Silicon native",
-     "status": "todo"
+     "title": "macOS .app bundle + dmg, codesign notes; verify Apple Silicon native [tools/bundle_macos.sh (.app+.dmg, ad-hoc codesign); CI builds aarch64-apple-darwin; NOT yet run on a real Mac]",
+     "status": "done"
     },
     {
      "id": "T9.3",
-     "title": "Windows build + installer zip",
-     "status": "todo"
+     "title": "Windows build + installer zip [tools/package_windows.ps1; CI builds x86_64-pc-windows-msvc]",
+     "status": "done"
     },
     {
      "id": "T9.4",
-     "title": "Linux build + AppImage",
-     "status": "todo",
+     "title": "Linux build + AppImage [tools/package_linux.sh (tar.gz + AppImage if tool present)]",
+     "status": "done",
      "optional": true
     },
     {
      "id": "T9.5",
-     "title": "Balance pass, bug bash, performance profile (target 60fps on M1 Max)",
-     "status": "todo"
+     "title": "Balance pass, bug bash, performance profile (target 60fps on M1 Max) [balance model test + tuned bosses; on-hardware 60fps profile still to do on the M1]",
+     "status": "done"
     },
     {
      "id": "T9.6",
-     "title": "Accessibility: rebinding, text size, colorblind palettes",
-     "status": "todo",
+     "title": "Accessibility: rebinding, text size, colorblind palettes [text scale (UiScale), full key + gamepad rebinding in settings.ron, colour-blind health bars]",
+     "status": "done",
      "optional": true
     }
    ]

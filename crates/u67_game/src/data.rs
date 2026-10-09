@@ -230,7 +230,7 @@ impl GameData {
             vehicle: None,
             placed: vec![],
             cheats: CheatState::default(),
-            weather: "clear".into(),
+            weather: "auto".into(),
             map_revealed: false,
             travel_unlocked: BTreeSet::new(),
             party: vec![],

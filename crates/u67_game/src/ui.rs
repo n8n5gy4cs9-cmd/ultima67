@@ -22,8 +22,6 @@ struct Hud;
 #[derive(Component)]
 struct ToastText;
 #[derive(Component)]
-struct MenuRoot;
-#[derive(Component)]
 struct PauseRoot;
 #[derive(Component)]
 struct ConsoleRoot;
@@ -36,35 +34,6 @@ fn text_node(left: f32, top: f32) -> Node {
 
 fn overlay(alpha: f32) -> (Node, BackgroundColor) {
     (Node { position_type: PositionType::Absolute, width: Val::Percent(100.0), height: Val::Percent(100.0), flex_direction: FlexDirection::Column, justify_content: JustifyContent::Center, align_items: AlignItems::Center, row_gap: Val::Px(12.0), ..default() }, BackgroundColor(Color::srgba(0.03, 0.02, 0.05, alpha)))
-}
-
-fn spawn_menu(mut commands: Commands, quick: Option<Res<HasQuicksave>>) {
-    let cont = quick.is_some_and(|q| q.0);
-    commands.spawn((MenuRoot, overlay(1.0))).with_children(|p| {
-        p.spawn((Text::new("ULTIMA 67"), TextFont { font_size: 72.0, ..default() }, TextColor(Color::srgb(0.95, 0.78, 0.35))));
-        p.spawn((Text::new("Midgård awaits"), TextFont { font_size: 26.0, ..default() }, TextColor(Color::srgb(0.6, 0.85, 0.95))));
-        p.spawn((Text::new("[Enter] New Game"), TextFont { font_size: 30.0, ..default() }));
-        p.spawn((Text::new(if cont { "[C] Continue (quicksave)" } else { "[C] Continue (no quicksave)" }), TextFont { font_size: 30.0, ..default() }, TextColor(if cont { Color::WHITE } else { Color::srgb(0.5, 0.5, 0.5) })));
-        p.spawn((Text::new("[Q] Quit"), TextFont { font_size: 30.0, ..default() }));
-        p.spawn((Text::new(u67_core::CREDIT), TextFont { font_size: 20.0, ..default() }, TextColor(Color::srgb(0.7, 0.7, 0.7))));
-    });
-}
-
-fn menu_input(kb: Res<ButtonInput<KeyCode>>, mut next: ResMut<NextState<AppState>>, mut exit: EventWriter<AppExit>, paths: Res<Paths>, mut game: ResMut<Game>, mut world: ResMut<WorldRes>, mut toast: ResMut<Toast>) {
-    if kb.just_pressed(KeyCode::Enter) || kb.just_pressed(KeyCode::Space) {
-        next.set(AppState::Playing);
-    } else if kb.just_pressed(KeyCode::KeyC) {
-        match crate::save::read(&paths.saves, None) {
-            Ok(d) => {
-                world.0 = crate::app::reset_world(&paths, &d);
-                game.0 = d;
-                next.set(AppState::Playing);
-            }
-            Err(e) => *toast = Toast { text: format!("no quicksave: {e}"), timer: 3.0 },
-        }
-    } else if kb.just_pressed(KeyCode::KeyQ) {
-        exit.write(AppExit::Success);
-    }
 }
 
 fn despawn_all<T: Component>(mut commands: Commands, q: Query<Entity, With<T>>) {
@@ -111,13 +80,22 @@ fn update_hud(game: Res<Game>, diag: Res<bevy::diagnostic::DiagnosticsStore>, mu
 fn spawn_pause(mut commands: Commands) {
     commands.spawn((PauseRoot, overlay(0.55))).with_children(|p| {
         p.spawn((Text::new("PAUSED"), TextFont { font_size: 56.0, ..default() }));
-        p.spawn((Text::new("[Esc] resume   [F5] quick save   [F9] quick load   [Q] quit to desktop"), TextFont { font_size: 22.0, ..default() }));
+        p.spawn((Text::new("[Esc] resume   [F5] quick save   [F9] quick load   [O] options   [M] main menu   [Q] quit"), TextFont { font_size: 22.0, ..default() }));
     });
 }
 
-fn pause_input(kb: Res<ButtonInput<KeyCode>>, mut exit: EventWriter<AppExit>) {
+fn pause_input(kb: Res<ButtonInput<KeyCode>>, mut exit: EventWriter<AppExit>, mut next: ResMut<NextState<AppState>>, mut sel: ResMut<crate::menu::MenuSel>) {
     if kb.just_pressed(KeyCode::KeyQ) {
         exit.write(AppExit::Success);
+    }
+    if kb.just_pressed(KeyCode::KeyO) {
+        sel.return_to = AppState::Paused;
+        sel.opt = 0;
+        next.set(AppState::Options);
+    }
+    if kb.just_pressed(KeyCode::KeyM) {
+        sel.idx = 0;
+        next.set(AppState::MainMenu);
     }
 }
 
@@ -188,9 +166,6 @@ impl Plugin for UiPlugin {
             .init_resource::<Toast>()
             .add_event::<EffectEvent>()
             .add_plugins(bevy::diagnostic::FrameTimeDiagnosticsPlugin::default())
-            .add_systems(OnEnter(MainMenu), spawn_menu)
-            .add_systems(OnExit(MainMenu), despawn_all::<MenuRoot>)
-            .add_systems(Update, menu_input.run_if(in_state(MainMenu)))
             .add_systems(OnEnter(Playing), spawn_hud)
             .add_systems(Update, update_hud.run_if(resource_exists::<Game>).run_if(not(in_state(Boot))).run_if(not(in_state(MainMenu))))
             .add_systems(OnEnter(Paused), spawn_pause)

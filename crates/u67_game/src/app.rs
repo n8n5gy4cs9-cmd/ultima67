@@ -19,6 +19,9 @@ pub enum AppState {
     Console,
     Menu,
     Dead,
+    Options,
+    Credits,
+    Intro,
 }
 
 #[derive(Resource)]
@@ -254,7 +257,7 @@ impl Plugin for U67Plugin {
             .add_systems(OnEnter(AppState::Boot), boot_start)
             .add_systems(Update, boot_work.run_if(in_state(AppState::Boot)))
             .add_systems(Update, (input::read_intent, state_hotkeys).run_if(not(in_state(AppState::Boot))))
-            .add_plugins((crate::render::RenderPlugin, crate::player::PlayerPlugin, crate::ui::UiPlugin, crate::debug::DebugPlugin, crate::npc::NpcPlugin, crate::creatures::CreaturePlugin, crate::combat::CombatPlugin, crate::interact::InteractPlugin, crate::magic::MagicPlugin, crate::audio::AudioPlugin, crate::gui::GuiPlugin, crate::hazards::HazardPlugin));
+            .add_plugins((crate::render::RenderPlugin, crate::player::PlayerPlugin, crate::ui::UiPlugin, crate::debug::DebugPlugin, crate::npc::NpcPlugin, crate::creatures::CreaturePlugin, crate::combat::CombatPlugin, crate::interact::InteractPlugin, crate::magic::MagicPlugin, crate::audio::AudioPlugin, crate::gui::GuiPlugin, crate::hazards::HazardPlugin, crate::weather::WeatherPlugin, crate::menu::MenuPlugin));
     }
 }
 
@@ -269,7 +272,7 @@ pub fn run() {
         .add_plugins(
             DefaultPlugins
                 .set(ImagePlugin::default_nearest())
-                .set(AssetPlugin { file_path: assets.to_string_lossy().into_owned(), ..default() })
+                .set(AssetPlugin { file_path: assets.to_string_lossy().into_owned(), watch_for_changes_override: Some(settings_probe.hot_reload), ..default() })
                 .set(WindowPlugin {
                     primary_window: Some(Window {
                         title: format!("{} - {}", u67_core::GAME_NAME, u67_core::CREDIT),
