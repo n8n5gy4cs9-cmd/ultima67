@@ -118,26 +118,25 @@ pub fn asset_root() -> PathBuf {
     "assets".into()
 }
 
-/// Load `.u67map` overrides from `<assets>/maps` if present, else generate the whole world.
+/// The generated world, with any `.u67map` files in `<assets>/maps` laid over it (hand-edited or
+/// imported maps replace the generated map of the same name).
 pub fn build_world(assets: &std::path::Path, seed: u64) -> World {
+    let mut w = u67_mapgen::generate_world(seed);
     let dir = assets.join("maps");
-    if dir.join("midgard.u67map").exists() {
-        let mut w = World::default();
-        if let Ok(rd) = std::fs::read_dir(&dir) {
-            for e in rd.flatten() {
-                if e.path().extension().is_some_and(|x| x == "u67map") {
-                    match std::fs::read(e.path()).map_err(|e| e.to_string()).and_then(|b| u67_world::mapio::from_bytes(&b)) {
-                        Ok(m) => w.insert(m),
-                        Err(err) => warn!("bad map {}: {err}", e.path().display()),
+    if let Ok(rd) = std::fs::read_dir(&dir) {
+        for e in rd.flatten() {
+            if e.path().extension().is_some_and(|x| x == "u67map") {
+                match std::fs::read(e.path()).map_err(|e| e.to_string()).and_then(|b| u67_world::mapio::from_bytes(&b)) {
+                    Ok(m) => {
+                        info!("loaded map override {}", m.name);
+                        w.insert(m);
                     }
+                    Err(err) => warn!("bad map {}: {err}", e.path().display()),
                 }
             }
         }
-        if w.maps.contains_key("midgard") {
-            return w;
-        }
     }
-    u67_mapgen::generate_world(seed)
+    w
 }
 
 #[derive(Component)]
@@ -155,10 +154,22 @@ pub fn reset_world(paths: &Paths, data: &GameData) -> World {
 
 fn boot_start(mut commands: Commands) {
     commands.spawn((Camera2d, crate::player::UiCamera, IsDefaultUiCamera, Camera { order: 100, ..default() }));
-    commands.spawn((BootText, Text::new("Generating Midgård..."), TextFont { font_size: 32.0, ..default() }, Node { position_type: PositionType::Absolute, left: Val::Px(40.0), top: Val::Px(40.0), ..default() }));
+    commands.spawn((
+        BootText,
+        Text::new("Generating Midgård..."),
+        TextFont { font_size: 32.0, ..default() },
+        Node { position_type: PositionType::Absolute, left: Val::Px(40.0), top: Val::Px(40.0), ..default() },
+    ));
 }
 
-fn boot_work(mut frames: ResMut<BootFrames>, mut commands: Commands, paths: Res<Paths>, cli: Res<Cli>, mut next: ResMut<NextState<AppState>>, texts: Query<Entity, With<BootText>>) {
+fn boot_work(
+    mut frames: ResMut<BootFrames>,
+    mut commands: Commands,
+    paths: Res<Paths>,
+    cli: Res<Cli>,
+    mut next: ResMut<NextState<AppState>>,
+    texts: Query<Entity, With<BootText>>,
+) {
     frames.0 += 1;
     if frames.0 < 3 {
         return; // let the loading text render first
@@ -205,7 +216,16 @@ fn boot_work(mut frames: ResMut<BootFrames>, mut commands: Commands, paths: Res<
 #[derive(Resource)]
 pub struct HasQuicksave(pub bool);
 
-fn state_hotkeys(kb: Res<ButtonInput<KeyCode>>, keys: Res<KeyMap>, state: Res<State<AppState>>, mut next: ResMut<NextState<AppState>>, intents: Res<crate::seats::Intents>, mut active: ResMut<crate::seats::ActiveSeat>, mut swap: ResMut<crate::seats::SeatSwap>, game: Option<ResMut<Game>>) {
+fn state_hotkeys(
+    kb: Res<ButtonInput<KeyCode>>,
+    keys: Res<KeyMap>,
+    state: Res<State<AppState>>,
+    mut next: ResMut<NextState<AppState>>,
+    intents: Res<crate::seats::Intents>,
+    mut active: ResMut<crate::seats::ActiveSeat>,
+    mut swap: ResMut<crate::seats::SeatSwap>,
+    game: Option<ResMut<Game>>,
+) {
     use AppState::*;
     let s = *state.get();
     let pause = intents.list.iter().any(|i| i.pause) || keys.just_pressed(Action::Pause, &kb);
@@ -257,7 +277,22 @@ impl Plugin for U67Plugin {
             .add_systems(OnEnter(AppState::Boot), boot_start)
             .add_systems(Update, boot_work.run_if(in_state(AppState::Boot)))
             .add_systems(Update, (input::read_intent, state_hotkeys).run_if(not(in_state(AppState::Boot))))
-            .add_plugins((crate::render::RenderPlugin, crate::player::PlayerPlugin, crate::ui::UiPlugin, crate::debug::DebugPlugin, crate::npc::NpcPlugin, crate::creatures::CreaturePlugin, crate::combat::CombatPlugin, crate::interact::InteractPlugin, crate::magic::MagicPlugin, crate::audio::AudioPlugin, crate::gui::GuiPlugin, crate::hazards::HazardPlugin, crate::weather::WeatherPlugin, crate::menu::MenuPlugin));
+            .add_plugins((
+                crate::render::RenderPlugin,
+                crate::player::PlayerPlugin,
+                crate::ui::UiPlugin,
+                crate::debug::DebugPlugin,
+                crate::npc::NpcPlugin,
+                crate::creatures::CreaturePlugin,
+                crate::combat::CombatPlugin,
+                crate::interact::InteractPlugin,
+                crate::magic::MagicPlugin,
+                crate::audio::AudioPlugin,
+                crate::gui::GuiPlugin,
+                crate::hazards::HazardPlugin,
+                crate::weather::WeatherPlugin,
+                crate::menu::MenuPlugin,
+            ));
     }
 }
 
@@ -278,7 +313,11 @@ pub fn run() {
                         title: format!("{} - {}", u67_core::GAME_NAME, u67_core::CREDIT),
                         resolution: (1280.0_f32, 720.0_f32).into(),
                         present_mode: if settings_probe.vsync { bevy::window::PresentMode::AutoVsync } else { bevy::window::PresentMode::AutoNoVsync },
-                        mode: if settings_probe.fullscreen { bevy::window::WindowMode::BorderlessFullscreen(MonitorSelection::Primary) } else { bevy::window::WindowMode::Windowed },
+                        mode: if settings_probe.fullscreen {
+                            bevy::window::WindowMode::BorderlessFullscreen(MonitorSelection::Primary)
+                        } else {
+                            bevy::window::WindowMode::Windowed
+                        },
                         ..default()
                     }),
                     ..default()

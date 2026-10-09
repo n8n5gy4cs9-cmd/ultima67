@@ -4,8 +4,8 @@ use crate::audio::SfxEvent;
 use crate::creatures::{radius, Corpse, Creature};
 use crate::data::{obj_key, GroundItem};
 use crate::db_res::DbRes;
-use crate::seats::{Intent, Intents, Operating, PlayerRt};
 use crate::render::{self, DirtyChunks, Sheets, CHAR_COLS};
+use crate::seats::{Intent, Intents, Operating, PlayerRt};
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use u67_core::{Dir, Rng, TilePos};
@@ -101,7 +101,11 @@ pub struct GroundSprite(pub usize);
 
 pub fn aim_dir(dir: Vec2) -> Dir {
     if dir.x.abs() > dir.y.abs() {
-        if dir.x > 0.0 { Dir::E } else { Dir::W }
+        if dir.x > 0.0 {
+            Dir::E
+        } else {
+            Dir::W
+        }
     } else if dir.y > 0.0 {
         Dir::S
     } else {
@@ -282,7 +286,19 @@ fn attack_seat(
                 let (s, c) = spread.sin_cos();
                 let v = Vec2::new(aim.x * c - aim.y * s, aim.x * s + aim.y * c);
                 let (d, _crit) = pellet_dmg(rng);
-                shots.write(SpawnProjectile { pos: pos - Vec2::new(0.0, 0.5) + v * 0.6, vel: v * gs.speed, dmg: d, friendly: true, range: gs.range, kind: ProjKind::Bullet, splash: 0.0, special: gs.special.to_string(), cannon: false, target: None, elem: String::new() });
+                shots.write(SpawnProjectile {
+                    pos: pos - Vec2::new(0.0, 0.5) + v * 0.6,
+                    vel: v * gs.speed,
+                    dmg: d,
+                    friendly: true,
+                    range: gs.range,
+                    kind: ProjKind::Bullet,
+                    splash: 0.0,
+                    special: gs.special.to_string(),
+                    cannon: false,
+                    target: None,
+                    elem: String::new(),
+                });
             }
             let snd = match w.id {
                 "hunting_shotgun" => "gun_shotgun",
@@ -319,7 +335,14 @@ fn attack_seat(
                     continue;
                 }
                 let (d, crit) = rules::roll_damage(base, stats.str_, rng);
-                dmg.write(DamageEvent { target: e, amount: if cheats.one_hit { 99999 } else { d }, crit, by_player: true, special: if other.is_some_and(|w| w.id == "mjolnir_drone") { "stun".into() } else { String::new() }, cannon: false });
+                dmg.write(DamageEvent {
+                    target: e,
+                    amount: if cheats.one_hit { 99999 } else { d },
+                    crit,
+                    by_player: true,
+                    special: if other.is_some_and(|w| w.id == "mjolnir_drone") { "stun".into() } else { String::new() },
+                    cannon: false,
+                });
                 hit_any = true;
             }
             if hit_any {
@@ -335,16 +358,31 @@ fn spawn_projectiles(mut ev: EventReader<SpawnProjectile>, mut commands: Command
         let (color, size) = match s.kind {
             ProjKind::Bullet => (Color::srgb(1.0, 0.92, 0.5), Vec2::new(5.0, 1.5)),
             ProjKind::Cannonball => (Color::srgb(0.12, 0.12, 0.14), Vec2::new(6.0, 6.0)),
-            ProjKind::Magic => (match s.elem.as_str() {
-                "fire" => Color::srgb(1.0, 0.5, 0.15),
-                "lightning" => Color::srgb(0.7, 0.9, 1.0),
-                _ => Color::srgb(0.7, 0.5, 1.0),
-            }, Vec2::new(7.0, 4.0)),
+            ProjKind::Magic => (
+                match s.elem.as_str() {
+                    "fire" => Color::srgb(1.0, 0.5, 0.15),
+                    "lightning" => Color::srgb(0.7, 0.9, 1.0),
+                    _ => Color::srgb(0.7, 0.5, 1.0),
+                },
+                Vec2::new(7.0, 4.0),
+            ),
             ProjKind::EnemyBolt => (if s.elem == "frost" { Color::srgb(0.5, 0.95, 1.0) } else { Color::srgb(1.0, 0.35, 0.3) }, Vec2::new(6.0, 3.0)),
         };
         let p = render::tile_px(s.pos.x, s.pos.y);
         commands.spawn((
-            Projectile { pos: s.pos, vel: s.vel, dmg: s.dmg, friendly: s.friendly, range_left: s.range, total: s.range.max(0.01), kind: s.kind, splash: s.splash, special: s.special.clone(), cannon: s.cannon, target: s.target },
+            Projectile {
+                pos: s.pos,
+                vel: s.vel,
+                dmg: s.dmg,
+                friendly: s.friendly,
+                range_left: s.range,
+                total: s.range.max(0.01),
+                kind: s.kind,
+                splash: s.splash,
+                special: s.special.clone(),
+                cannon: s.cannon,
+                target: s.target,
+            },
             Sprite { color, custom_size: Some(size), ..default() },
             Transform::from_xyz(p.x, p.y, 3.0).with_rotation(Quat::from_rotation_z(-angle)),
         ));
@@ -367,7 +405,14 @@ fn step_projectiles(
 ) {
     let dt = time.delta_secs();
     let Some(map) = world.0.maps.get(&game.0.current_map) else { return };
-    let player_pos: Vec<(usize, Vec2)> = game.0.players.iter().enumerate().filter(|(i, p)| p.stats.hp > 0 && !rt.list.get(*i).is_some_and(|r| r.downed)).map(|(i, p)| (i, Vec2::from(p.pos) - Vec2::new(0.0, 0.5))).collect();
+    let player_pos: Vec<(usize, Vec2)> = game
+        .0
+        .players
+        .iter()
+        .enumerate()
+        .filter(|(i, p)| p.stats.hp > 0 && !rt.list.get(*i).is_some_and(|r| r.downed))
+        .map(|(i, p)| (i, Vec2::from(p.pos) - Vec2::new(0.0, 0.5)))
+        .collect();
     for (e, mut p, mut tf) in &mut q {
         let step = p.vel * dt;
         p.pos += step;
@@ -426,7 +471,14 @@ fn float_text(commands: &mut Commands, pos: Vec2, text: String, color: Color) {
 }
 
 #[allow(clippy::too_many_arguments)]
-fn apply_damage(mut ev: EventReader<DamageEvent>, mut commands: Commands, mut q: Query<&mut Creature>, db: Res<DbRes>, mut kills: EventWriter<KillEvent>, mut sfx: EventWriter<SfxEvent>) {
+fn apply_damage(
+    mut ev: EventReader<DamageEvent>,
+    mut commands: Commands,
+    mut q: Query<&mut Creature>,
+    db: Res<DbRes>,
+    mut kills: EventWriter<KillEvent>,
+    mut sfx: EventWriter<SfxEvent>,
+) {
     for d in ev.read() {
         let Ok(mut c) = q.get_mut(d.target) else { continue };
         if c.hp <= 0 {
@@ -452,7 +504,17 @@ fn apply_damage(mut ev: EventReader<DamageEvent>, mut commands: Commands, mut q:
 }
 
 #[allow(clippy::too_many_arguments)]
-fn handle_kills(mut ev: EventReader<KillEvent>, mut commands: Commands, mut game: ResMut<Game>, db: Res<DbRes>, q: Query<(&Creature, &Transform, &Sprite)>, sheets: Res<Sheets>, mut toast: ResMut<crate::ui::Toast>, mut sfx: EventWriter<SfxEvent>, mut rng: Local<Option<Rng>>) {
+fn handle_kills(
+    mut ev: EventReader<KillEvent>,
+    mut commands: Commands,
+    mut game: ResMut<Game>,
+    db: Res<DbRes>,
+    q: Query<(&Creature, &Transform, &Sprite)>,
+    sheets: Res<Sheets>,
+    mut toast: ResMut<crate::ui::Toast>,
+    mut sfx: EventWriter<SfxEvent>,
+    mut rng: Local<Option<Rng>>,
+) {
     let rng = rng.get_or_insert_with(|| Rng::new(555));
     for k in ev.read() {
         let Ok((c, tf, _)) = q.get(k.entity) else { continue };
@@ -488,14 +550,26 @@ fn handle_kills(mut ev: EventReader<KillEvent>, mut commands: Commands, mut game
         let row = render::character_row(&def.arch).unwrap_or(0);
         commands.spawn((
             Corpse(8.0),
-            Sprite { image: sheets.chars_img.clone(), texture_atlas: Some(TextureAtlas { layout: sheets.chars_layout.clone(), index: ((row * 4 + c.facing.index() as u32) * CHAR_COLS + 10) as usize }), anchor: Anchor::Custom(Vec2::new(0.0, -0.5 + 1.5 / 24.0)), ..default() },
+            Sprite {
+                image: sheets.chars_img.clone(),
+                texture_atlas: Some(TextureAtlas { layout: sheets.chars_layout.clone(), index: ((row * 4 + c.facing.index() as u32) * CHAR_COLS + 10) as usize }),
+                anchor: Anchor::Custom(Vec2::new(0.0, -0.5 + 1.5 / 24.0)),
+                ..default()
+            },
             Transform::from_translation(Vec3::new(tf.translation.x, tf.translation.y, 1.5)).with_scale(Vec3::splat(def.scale)),
         ));
         commands.entity(k.entity).despawn();
     }
 }
 
-fn apply_player_hit(mut ev: EventReader<PlayerHit>, mut game: ResMut<Game>, mut rt: ResMut<PlayerRt>, mut sfx: EventWriter<SfxEvent>, mut next: ResMut<NextState<AppState>>, mut toast: ResMut<crate::ui::Toast>) {
+fn apply_player_hit(
+    mut ev: EventReader<PlayerHit>,
+    mut game: ResMut<Game>,
+    mut rt: ResMut<PlayerRt>,
+    mut sfx: EventWriter<SfxEvent>,
+    mut next: ResMut<NextState<AppState>>,
+    mut toast: ResMut<crate::ui::Toast>,
+) {
     for h in ev.read() {
         let i = h.target.min(game.0.players.len() - 1);
         if rt.list[i].iframes > 0.0 || game.0.cheats.god || rt.list[i].downed {
@@ -562,7 +636,11 @@ fn explosions(
     for b in ev.read() {
         // visual
         let p = render::tile_px(b.pos.x, b.pos.y);
-        commands.spawn((Fx { t: 0.0, max: 0.45, grow: b.radius * render::T * 2.2 }, Sprite { color: Color::srgba(1.0, 0.6, 0.2, 0.85), custom_size: Some(Vec2::splat(6.0)), ..default() }, Transform::from_xyz(p.x, p.y, 15.0)));
+        commands.spawn((
+            Fx { t: 0.0, max: 0.45, grow: b.radius * render::T * 2.2 },
+            Sprite { color: Color::srgba(1.0, 0.6, 0.2, 0.85), custom_size: Some(Vec2::splat(6.0)), ..default() },
+            Transform::from_xyz(p.x, p.y, 15.0),
+        ));
         sfx.write(SfxEvent(if b.cannon { "explosion".into() } else { "hit_metal".into() }));
         for (e, c) in &creatures {
             let d = c.pos.distance(b.pos);
@@ -615,7 +693,12 @@ fn explosions(
     }
 }
 
-fn fx_update(mut commands: Commands, time: Res<Time>, mut q: Query<(Entity, &mut Fx, &mut Sprite)>, mut f: Query<(Entity, &mut Floating, &mut Transform, &mut TextColor)>) {
+fn fx_update(
+    mut commands: Commands,
+    time: Res<Time>,
+    mut q: Query<(Entity, &mut Fx, &mut Sprite)>,
+    mut f: Query<(Entity, &mut Floating, &mut Transform, &mut TextColor)>,
+) {
     let dt = time.delta_secs();
     for (e, mut fx, mut s) in &mut q {
         fx.t += dt;
@@ -660,7 +743,16 @@ fn sync_ground(mut commands: Commands, game: Res<Game>, sheets: Res<Sheets>, mut
     }
     for (i, g) in here {
         let p = render::tile_px(g.pos[0], g.pos[1]);
-        commands.spawn((GroundSprite(i), Sprite { image: sheets.items_img.clone(), texture_atlas: Some(TextureAtlas { layout: sheets.items_layout.clone(), index: item_index(&g.item.id) }), anchor: Anchor::BottomCenter, ..default() }, Transform::from_xyz(p.x, p.y - 4.0, 1.2 + g.pos[1] * 0.001)));
+        commands.spawn((
+            GroundSprite(i),
+            Sprite {
+                image: sheets.items_img.clone(),
+                texture_atlas: Some(TextureAtlas { layout: sheets.items_layout.clone(), index: item_index(&g.item.id) }),
+                anchor: Anchor::BottomCenter,
+                ..default()
+            },
+            Transform::from_xyz(p.x, p.y - 4.0, 1.2 + g.pos[1] * 0.001),
+        ));
     }
 }
 
@@ -747,7 +839,10 @@ impl Plugin for CombatPlugin {
             .add_systems(Update, (fx_update, sync_ground).run_if(game_ready).run_if(not(in_state(AppState::Boot))).run_if(not(in_state(AppState::MainMenu))))
             .add_systems(
                 FixedUpdate,
-                (roll_move, spawn_projectiles, step_projectiles, explosions, apply_damage, handle_kills, apply_player_hit, auto_revive, auto_pickup).chain().run_if(game_ready).run_if(in_state(AppState::Playing)),
+                (roll_move, spawn_projectiles, step_projectiles, explosions, apply_damage, handle_kills, apply_player_hit, auto_revive, auto_pickup)
+                    .chain()
+                    .run_if(game_ready)
+                    .run_if(in_state(AppState::Playing)),
             );
     }
 }

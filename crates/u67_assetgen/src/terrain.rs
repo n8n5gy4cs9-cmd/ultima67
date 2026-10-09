@@ -8,7 +8,11 @@ pub const VARIANTS: i32 = 4;
 
 fn jitter(c: Col, x: i32, y: i32, seed: u64, amt: f32) -> Col {
     let n = noise(x, y, seed) - 0.5;
-    if n > 0.0 { lighten(c, n * amt) } else { darken(c, -n * amt) }
+    if n > 0.0 {
+        lighten(c, n * amt)
+    } else {
+        darken(c, -n * amt)
+    }
 }
 
 pub fn tile(id: usize, variant: i32) -> Canvas {

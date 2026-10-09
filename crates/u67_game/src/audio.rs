@@ -65,7 +65,20 @@ pub fn pick_track(map: &str, in_town: bool, combat: bool, boss: bool, state: App
     }
 }
 
-fn music_system(time: Res<Time>, mut st: ResMut<MusicState>, state: Res<State<AppState>>, game: Option<Res<Game>>, db: Option<Res<DbRes>>, world: Option<Res<crate::app::WorldRes>>, creatures: Query<&Creature>, cur: Query<(Entity, &MusicTrack)>, mut commands: Commands, assets: Res<AssetServer>, settings: Res<SettingsRes>, paths: Res<Paths>) {
+fn music_system(
+    time: Res<Time>,
+    mut st: ResMut<MusicState>,
+    state: Res<State<AppState>>,
+    game: Option<Res<Game>>,
+    db: Option<Res<DbRes>>,
+    world: Option<Res<crate::app::WorldRes>>,
+    creatures: Query<&Creature>,
+    cur: Query<(Entity, &MusicTrack)>,
+    mut commands: Commands,
+    assets: Res<AssetServer>,
+    settings: Res<SettingsRes>,
+    paths: Res<Paths>,
+) {
     st.clock -= time.delta_secs();
     if st.clock > 0.0 {
         return;
@@ -76,7 +89,8 @@ fn music_system(time: Res<Time>, mut st: ResMut<MusicState>, state: Res<State<Ap
         map_name = g.0.current_map.clone();
         let p = g.0.players[0].pos;
         if let Some(m) = w.0.maps.get(&map_name) {
-            in_town = crate::npc::TOWN_IDS.iter().filter_map(|t| m.places.get(*t)).any(|c| (c.x as f32 - p[0]).abs() < 16.0 && (c.y as f32 - p[1]).abs() < 16.0) && m.building_at(TilePos::new(0, 0)).is_none();
+            in_town = crate::npc::TOWN_IDS.iter().filter_map(|t| m.places.get(*t)).any(|c| (c.x as f32 - p[0]).abs() < 16.0 && (c.y as f32 - p[1]).abs() < 16.0)
+                && m.building_at(TilePos::new(0, 0)).is_none();
         }
         for c in &creatures {
             if c.aggro && !c.ally && c.pos.distance(Vec2::from(p)) < 14.0 {
@@ -95,7 +109,11 @@ fn music_system(time: Res<Time>, mut st: ResMut<MusicState>, state: Res<State<Ap
         commands.entity(e).despawn();
     }
     let v = settings.0.master_volume * settings.0.music_volume;
-    commands.spawn((MusicTrack(want.to_string()), AudioPlayer::new(assets.load(resolve_audio(&paths, &format!("music/{want}")))), PlaybackSettings::LOOP.with_volume(Volume::Linear(v))));
+    commands.spawn((
+        MusicTrack(want.to_string()),
+        AudioPlayer::new(assets.load(resolve_audio(&paths, &format!("music/{want}")))),
+        PlaybackSettings::LOOP.with_volume(Volume::Linear(v)),
+    ));
 }
 
 pub struct AudioPlugin;

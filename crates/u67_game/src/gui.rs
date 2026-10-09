@@ -10,8 +10,8 @@ use crate::magic::{CastRequest, SingRequest};
 use crate::menus::{self, Row};
 use crate::npc::Npcs;
 use crate::render::{self, Sheets, CHAR_COLS};
-use crate::seats::{ActiveSeat, SeatSwap};
 use crate::script;
+use crate::seats::{ActiveSeat, SeatSwap};
 use crate::ui::{EffectEvent, Toast};
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::input::mouse::MouseWheel;
@@ -69,9 +69,16 @@ fn panel_node(left: f32, top: f32, w: f32, h: f32) -> Node {
 pub enum MenuKind {
     #[default]
     None,
-    Shop { shop: String, selling: bool },
-    Craft { station: String },
-    Travel { by_ship: bool },
+    Shop {
+        shop: String,
+        selling: bool,
+    },
+    Craft {
+        station: String,
+    },
+    Travel {
+        by_ship: bool,
+    },
     Journal,
     Spells,
     Laulu,
@@ -292,7 +299,20 @@ fn build_dialogue(mut commands: Commands, mut dlg: ResMut<DialogueRt>, game: Res
     let input = dlg.input.clone();
     let name = dlg.npc_name.clone();
     commands
-        .spawn((DlgRoot, Node { position_type: PositionType::Absolute, left: Val::Px(0.0), bottom: Val::Px(0.0), width: Val::Percent(100.0), height: Val::Px(300.0), padding: UiRect::all(Val::Px(14.0)), column_gap: Val::Px(16.0), ..default() }, BackgroundColor(Color::srgba(0.07, 0.05, 0.04, 0.95))))
+        .spawn((
+            DlgRoot,
+            Node {
+                position_type: PositionType::Absolute,
+                left: Val::Px(0.0),
+                bottom: Val::Px(0.0),
+                width: Val::Percent(100.0),
+                height: Val::Px(300.0),
+                padding: UiRect::all(Val::Px(14.0)),
+                column_gap: Val::Px(16.0),
+                ..default()
+            },
+            BackgroundColor(Color::srgba(0.07, 0.05, 0.04, 0.95)),
+        ))
         .with_children(|p| {
             p.spawn((
                 Node { width: Val::Px(144.0), height: Val::Px(144.0), border: UiRect::all(Val::Px(3.0)), ..default() },
@@ -304,12 +324,22 @@ fn build_dialogue(mut commands: Commands, mut dlg: ResMut<DialogueRt>, game: Res
                 c.spawn((Text::new(text), TextFont { font_size: 19.0, ..default() }));
                 c.spawn(Node { flex_wrap: FlexWrap::Wrap, column_gap: Val::Px(8.0), row_gap: Val::Px(6.0), ..default() }).with_children(|k| {
                     for kw in kws {
-                        k.spawn((Button, KeywordBtn(kw.clone()), Node { padding: UiRect::axes(Val::Px(10.0), Val::Px(4.0)), ..default() }, BackgroundColor(Color::srgb(0.3, 0.22, 0.12)))).with_children(|b| {
+                        k.spawn((
+                            Button,
+                            KeywordBtn(kw.clone()),
+                            Node { padding: UiRect::axes(Val::Px(10.0), Val::Px(4.0)), ..default() },
+                            BackgroundColor(Color::srgb(0.3, 0.22, 0.12)),
+                        ))
+                        .with_children(|b| {
                             b.spawn((Text::new(kw), TextFont { font_size: 18.0, ..default() }, TextColor(Color::srgb(1.0, 0.92, 0.7))));
                         });
                     }
                 });
-                c.spawn((Text::new(format!("> {input}_   (click a word or type + Enter; Esc to leave)")), TextFont { font_size: 16.0, ..default() }, TextColor(Color::srgb(0.6, 0.85, 0.7))));
+                c.spawn((
+                    Text::new(format!("> {input}_   (click a word or type + Enter; Esc to leave)")),
+                    TextFont { font_size: 16.0, ..default() },
+                    TextColor(Color::srgb(0.6, 0.85, 0.7)),
+                ));
             });
         });
 }
@@ -370,10 +400,8 @@ fn dialogue_input(
                 dlg.input.pop();
                 dlg.dirty = true;
             }
-            Key::Enter => {
-                if !dlg.input.trim().is_empty() {
-                    word = Some(std::mem::take(&mut dlg.input));
-                }
+            Key::Enter if !dlg.input.trim().is_empty() => {
+                word = Some(std::mem::take(&mut dlg.input));
             }
             _ => {}
         }
@@ -430,11 +458,32 @@ fn slot_to_equip(name: &str) -> Slot {
 }
 
 fn spawn_slot(p: &mut ChildSpawnerCommands, ui: &UiAtlas, sheets: &Sheets, left: f32, top: f32, size: f32, r: SlotRef, item: Option<&Item>) {
-    p.spawn((Button, SlotUi(r), Node { position_type: PositionType::Absolute, left: Val::Px(left), top: Val::Px(top), width: Val::Px(size), height: Val::Px(size), ..default() }, ui.node("slot"))).with_children(|s| {
+    p.spawn((
+        Button,
+        SlotUi(r),
+        Node { position_type: PositionType::Absolute, left: Val::Px(left), top: Val::Px(top), width: Val::Px(size), height: Val::Px(size), ..default() },
+        ui.node("slot"),
+    ))
+    .with_children(|s| {
         if let Some(it) = item {
-            s.spawn((Node { position_type: PositionType::Absolute, left: Val::Px(3.0), top: Val::Px(3.0), width: Val::Px(size - 6.0), height: Val::Px(size - 6.0), ..default() }, item_icon(sheets, &it.id)));
+            s.spawn((
+                Node {
+                    position_type: PositionType::Absolute,
+                    left: Val::Px(3.0),
+                    top: Val::Px(3.0),
+                    width: Val::Px(size - 6.0),
+                    height: Val::Px(size - 6.0),
+                    ..default()
+                },
+                item_icon(sheets, &it.id),
+            ));
             if it.qty > 1 {
-                s.spawn((Text::new(it.qty.to_string()), TextFont { font_size: 14.0, ..default() }, TextColor(Color::WHITE), Node { position_type: PositionType::Absolute, right: Val::Px(2.0), bottom: Val::Px(0.0), ..default() }));
+                s.spawn((
+                    Text::new(it.qty.to_string()),
+                    TextFont { font_size: 14.0, ..default() },
+                    TextColor(Color::WHITE),
+                    Node { position_type: PositionType::Absolute, right: Val::Px(2.0), bottom: Val::Px(0.0), ..default() },
+                ));
             }
         }
     });
@@ -448,7 +497,12 @@ fn grid_panel(p: &mut ChildSpawnerCommands, ui: &UiAtlas, sheets: &Sheets, left:
     let w = cols as f32 * (slot + 2.0) + 20.0;
     let h = rows as f32 * (slot + 2.0) + 46.0;
     p.spawn((panel_node(left, top, w, h), BackgroundColor(Color::srgb(0.24, 0.17, 0.11)), BorderColor(Color::srgb(0.88, 0.7, 0.3)))).with_children(|g| {
-        g.spawn((Text::new(title.to_string()), TextFont { font_size: 18.0, ..default() }, TextColor(Color::srgb(1.0, 0.92, 0.7)), Node { position_type: PositionType::Absolute, left: Val::Px(10.0), top: Val::Px(8.0), ..default() }));
+        g.spawn((
+            Text::new(title.to_string()),
+            TextFont { font_size: 18.0, ..default() },
+            TextColor(Color::srgb(1.0, 0.92, 0.7)),
+            Node { position_type: PositionType::Absolute, left: Val::Px(10.0), top: Val::Px(8.0), ..default() },
+        ));
         for i in 0..rows * cols {
             let (c, r) = (i % cols, i / cols);
             let item = items_in.get(i);
@@ -461,7 +515,15 @@ fn grid_panel(p: &mut ChildSpawnerCommands, ui: &UiAtlas, sheets: &Sheets, left:
 }
 
 #[allow(clippy::too_many_arguments)]
-fn build_inventory(mut commands: Commands, mut inv: ResMut<InvUi>, game: Res<Game>, world: Res<WorldRes>, ui: Res<UiAtlas>, sheets: Res<Sheets>, roots: Query<Entity, With<InvRoot>>) {
+fn build_inventory(
+    mut commands: Commands,
+    mut inv: ResMut<InvUi>,
+    game: Res<Game>,
+    world: Res<WorldRes>,
+    ui: Res<UiAtlas>,
+    sheets: Res<Sheets>,
+    roots: Query<Entity, With<InvRoot>>,
+) {
     if !inv.dirty {
         return;
     }
@@ -473,53 +535,94 @@ fn build_inventory(mut commands: Commands, mut inv: ResMut<InvUi>, game: Res<Gam
     let open = inv.open.clone();
     let object = inv.object;
     let map = world.0.maps.get(&game.0.current_map);
-    commands.spawn((InvRoot, Node { position_type: PositionType::Absolute, width: Val::Percent(100.0), height: Val::Percent(100.0), ..default() }, BackgroundColor(Color::srgba(0.02, 0.02, 0.04, 0.82)))).with_children(|root| {
-        root.spawn((Text::new("INVENTORY    drag items (left click)  |  right click: use / open / equip  |  shift-click: quick move  |  click outside: drop  |  I / Esc: close"), TextFont { font_size: 16.0, ..default() }, TextColor(Color::srgb(0.8, 0.8, 0.7)), Node { position_type: PositionType::Absolute, left: Val::Px(20.0), top: Val::Px(10.0), ..default() }));
-        // paperdoll
-        let (pl, pt) = (24.0, 50.0);
-        root.spawn((panel_node(pl, pt, 80.0 * S, 96.0 * S), ui.node("paperdoll"))).with_children(|doll| {
-            for (name, x, y) in u67_assetgen::ui::PAPERDOLL_SLOTS {
-                let slot = slot_to_equip(name);
-                spawn_slot(doll, &ui, &sheets, *x as f32 * S, *y as f32 * S, 18.0 * S, SlotRef::Paper(slot), p0.inventory.equipped.get(&slot));
-            }
-        });
-        // stats
-        let st = &p0.stats;
-        root.spawn((
-            Text::new(format!(
-                "{}\nLevel {}   XP {}\nHP {}/{}   Mana {}/{}\nSTR {}  DEX {}  INT {}  VAKI {}\nWeight {:.1}/{:.1}\nSilver {}",
-                p0.name, st.level, st.xp, st.hp, st.max_hp(), st.mana, st.max_mana(), st.str_, st.dex, st.int, st.vaki, p0.inventory.total_weight(), p0.inventory.max_weight, p0.inventory.count("silver")
-            )),
-            TextFont { font_size: 17.0, ..default() },
-            Node { position_type: PositionType::Absolute, left: Val::Px(24.0), top: Val::Px(50.0 + 96.0 * S + 12.0), ..default() },
-        ));
-        // pack root + opened containers
-        let mut x = 24.0 + 80.0 * S + 24.0;
-        let w = grid_panel(root, &ui, &sheets, x, 50.0, "Carried", &p0.inventory.pack, &|i| SlotRef::Pack { container: vec![], index: i });
-        x += w + 16.0;
-        let mut top = 50.0;
-        for path in &open {
-            if let Some(it) = p0.inventory.get(path) {
-                if items::get(&it.id).is_some_and(|d| d.capacity > 0.0) {
-                    let name = items::get(&it.id).map_or("Container", |d| d.name);
-                    let pth = path.clone();
-                    let w = grid_panel(root, &ui, &sheets, x, top, name, &it.contents, &move |i| SlotRef::Pack { container: pth.clone(), index: i });
-                    top += 40.0 + (it.contents.len() + 1).div_ceil(6).max(3) as f32 * (18.0 * S + 2.0) + 12.0;
-                    if top > 500.0 {
-                        top = 50.0;
-                        x += w + 16.0;
+    commands
+        .spawn((
+            InvRoot,
+            Node { position_type: PositionType::Absolute, width: Val::Percent(100.0), height: Val::Percent(100.0), ..default() },
+            BackgroundColor(Color::srgba(0.02, 0.02, 0.04, 0.82)),
+        ))
+        .with_children(|root| {
+            root.spawn((
+                Text::new(
+                    "INVENTORY    drag items (left click)  |  right click: use / open / equip  |  shift-click: quick move  |  click outside: drop  |  I / Esc: close",
+                ),
+                TextFont { font_size: 16.0, ..default() },
+                TextColor(Color::srgb(0.8, 0.8, 0.7)),
+                Node { position_type: PositionType::Absolute, left: Val::Px(20.0), top: Val::Px(10.0), ..default() },
+            ));
+            // paperdoll
+            let (pl, pt) = (24.0, 50.0);
+            root.spawn((panel_node(pl, pt, 80.0 * S, 96.0 * S), ui.node("paperdoll"))).with_children(|doll| {
+                for (name, x, y) in u67_assetgen::ui::PAPERDOLL_SLOTS {
+                    let slot = slot_to_equip(name);
+                    spawn_slot(doll, &ui, &sheets, *x as f32 * S, *y as f32 * S, 18.0 * S, SlotRef::Paper(slot), p0.inventory.equipped.get(&slot));
+                }
+            });
+            // stats
+            let st = &p0.stats;
+            root.spawn((
+                Text::new(format!(
+                    "{}\nLevel {}   XP {}\nHP {}/{}   Mana {}/{}\nSTR {}  DEX {}  INT {}  VAKI {}\nWeight {:.1}/{:.1}\nSilver {}",
+                    p0.name,
+                    st.level,
+                    st.xp,
+                    st.hp,
+                    st.max_hp(),
+                    st.mana,
+                    st.max_mana(),
+                    st.str_,
+                    st.dex,
+                    st.int,
+                    st.vaki,
+                    p0.inventory.total_weight(),
+                    p0.inventory.max_weight,
+                    p0.inventory.count("silver")
+                )),
+                TextFont { font_size: 17.0, ..default() },
+                Node { position_type: PositionType::Absolute, left: Val::Px(24.0), top: Val::Px(50.0 + 96.0 * S + 12.0), ..default() },
+            ));
+            // pack root + opened containers
+            let mut x = 24.0 + 80.0 * S + 24.0;
+            let w = grid_panel(root, &ui, &sheets, x, 50.0, "Carried", &p0.inventory.pack, &|i| SlotRef::Pack { container: vec![], index: i });
+            x += w + 16.0;
+            let mut top = 50.0;
+            for path in &open {
+                if let Some(it) = p0.inventory.get(path) {
+                    if items::get(&it.id).is_some_and(|d| d.capacity > 0.0) {
+                        let name = items::get(&it.id).map_or("Container", |d| d.name);
+                        let pth = path.clone();
+                        let w = grid_panel(root, &ui, &sheets, x, top, name, &it.contents, &move |i| SlotRef::Pack { container: pth.clone(), index: i });
+                        top += 40.0 + (it.contents.len() + 1).div_ceil(6).max(3) as f32 * (18.0 * S + 2.0) + 12.0;
+                        if top > 500.0 {
+                            top = 50.0;
+                            x += w + 16.0;
+                        }
                     }
                 }
             }
-        }
-        if let (Some(oi), Some(m)) = (object, map) {
-            if let Some(o) = m.objects.get(oi) {
-                let contents = o.contents.clone().unwrap_or_default();
-                grid_panel(root, &ui, &sheets, x.max(24.0 + 80.0 * S + 24.0 + 6.0 * 56.0 + 60.0), 50.0, &format!("{} (in the world)", o.kind), &contents, &move |i| SlotRef::Obj { idx: oi, index: i });
+            if let (Some(oi), Some(m)) = (object, map) {
+                if let Some(o) = m.objects.get(oi) {
+                    let contents = o.contents.clone().unwrap_or_default();
+                    grid_panel(
+                        root,
+                        &ui,
+                        &sheets,
+                        x.max(24.0 + 80.0 * S + 24.0 + 6.0 * 56.0 + 60.0),
+                        50.0,
+                        &format!("{} (in the world)", o.kind),
+                        &contents,
+                        &move |i| SlotRef::Obj { idx: oi, index: i },
+                    );
+                }
             }
-        }
-        root.spawn((InfoText, Text::new(""), TextFont { font_size: 18.0, ..default() }, TextColor(Color::srgb(0.7, 1.0, 0.8)), Node { position_type: PositionType::Absolute, left: Val::Px(24.0), bottom: Val::Px(14.0), ..default() }));
-    });
+            root.spawn((
+                InfoText,
+                Text::new(""),
+                TextFont { font_size: 18.0, ..default() },
+                TextColor(Color::srgb(0.7, 1.0, 0.8)),
+                Node { position_type: PositionType::Absolute, left: Val::Px(24.0), bottom: Val::Px(14.0), ..default() },
+            ));
+        });
 }
 
 fn slot_item<'a>(game: &'a GameData, world: &'a u67_world::map::World, s: &SlotRef) -> Option<&'a Item> {
@@ -668,11 +771,14 @@ fn inventory_mouse(
                     }
                 }
                 Err((e, back)) => {
-                    *toast = Toast { text: match e {
-                        u67_world::inventory::InvError::TooHeavy => "That will not fit / is too heavy.".into(),
-                        u67_world::inventory::InvError::SlotMismatch => "That does not go there.".into(),
-                        other => format!("Cannot: {other:?}"),
-                    }, timer: 1.8 };
+                    *toast = Toast {
+                        text: match e {
+                            u67_world::inventory::InvError::TooHeavy => "That will not fit / is too heavy.".into(),
+                            u67_world::inventory::InvError::SlotMismatch => "That does not go there.".into(),
+                            other => format!("Cannot: {other:?}"),
+                        },
+                        timer: 1.8,
+                    };
                     sfx.write(SfxEvent("ui_error".into()));
                     if invops::put(&mut game.0, &mut world.0, &from, back.clone()).is_err() {
                         game.0.players[0].inventory.pack.push(back);
@@ -711,11 +817,18 @@ fn enter_inventory(mut inv: ResMut<InvUi>, mut commands: Commands, ui: Res<UiAtl
         }
     }
     // keep paths valid
-    let valid: Vec<Vec<usize>> = inv.open.iter().filter(|p| game.0.players[0].inventory.get(p).is_some_and(|it| items::get(&it.id).is_some_and(|d| d.capacity > 0.0))).cloned().collect();
+    let valid: Vec<Vec<usize>> =
+        inv.open.iter().filter(|p| game.0.players[0].inventory.get(p).is_some_and(|it| items::get(&it.id).is_some_and(|d| d.capacity > 0.0))).cloned().collect();
     inv.open = valid;
     let _ = &mut game;
     let id = game.0.players[0].inventory.pack.first().map(|i| i.id.clone()).unwrap_or_else(|| "rope".into());
-    commands.spawn((Ghost, Node { position_type: PositionType::Absolute, width: Val::Px(48.0), height: Val::Px(48.0), ..default() }, item_icon(&sheets, &id), Visibility::Hidden, ZIndex(100)));
+    commands.spawn((
+        Ghost,
+        Node { position_type: PositionType::Absolute, width: Val::Px(48.0), height: Val::Px(48.0), ..default() },
+        item_icon(&sheets, &id),
+        Visibility::Hidden,
+        ZIndex(100),
+    ));
     let _ = &ui;
 }
 
@@ -761,24 +874,58 @@ fn build_menu(mut commands: Commands, mut menu: ResMut<MenuState>, kind: Res<Men
     let map_img = menu.map_img.clone();
     let more = menu.rows.len() > menu.scroll + VISIBLE_ROWS;
     commands
-        .spawn((MenuRoot, Node { position_type: PositionType::Absolute, width: Val::Percent(100.0), height: Val::Percent(100.0), justify_content: JustifyContent::Center, align_items: AlignItems::Center, ..default() }, BackgroundColor(Color::srgba(0.02, 0.02, 0.04, 0.85))))
+        .spawn((
+            MenuRoot,
+            Node {
+                position_type: PositionType::Absolute,
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                ..default()
+            },
+            BackgroundColor(Color::srgba(0.02, 0.02, 0.04, 0.85)),
+        ))
         .with_children(|root| {
-            root.spawn((Node { flex_direction: FlexDirection::Column, padding: UiRect::all(Val::Px(18.0)), row_gap: Val::Px(4.0), min_width: Val::Px(760.0), ..default() }, BackgroundColor(Color::srgb(0.17, 0.12, 0.08)), BorderColor(Color::srgb(0.88, 0.7, 0.3)))).with_children(|panel| {
+            root.spawn((
+                Node { flex_direction: FlexDirection::Column, padding: UiRect::all(Val::Px(18.0)), row_gap: Val::Px(4.0), min_width: Val::Px(760.0), ..default() },
+                BackgroundColor(Color::srgb(0.17, 0.12, 0.08)),
+                BorderColor(Color::srgb(0.88, 0.7, 0.3)),
+            ))
+            .with_children(|panel| {
                 match &kind {
                     MenuKind::Laulu => {
                         panel.spawn((Text::new("SING A LAULU - choose 3 runes"), TextFont { font_size: 26.0, ..default() }, TextColor(Color::srgb(0.95, 0.78, 0.35))));
-                        panel.spawn(Node { flex_wrap: FlexWrap::Wrap, column_gap: Val::Px(8.0), row_gap: Val::Px(8.0), max_width: Val::Px(560.0), ..default() }).with_children(|g| {
-                            for i in 0..24u8 {
-                                g.spawn((Button, RuneBtn(i), Node { width: Val::Px(56.0), height: Val::Px(72.0), ..default() }, ui.node(&format!("rune_{i}")), BackgroundColor(Color::srgb(0.1, 0.1, 0.2))));
-                            }
-                        });
-                        panel.spawn((Text::new(format!("Verse: {}", seq.iter().map(|r| format!("[{r}]")).collect::<Vec<_>>().join(" "))), TextFont { font_size: 24.0, ..default() }, TextColor(Color::srgb(0.5, 1.0, 1.0))));
+                        panel
+                            .spawn(Node { flex_wrap: FlexWrap::Wrap, column_gap: Val::Px(8.0), row_gap: Val::Px(8.0), max_width: Val::Px(560.0), ..default() })
+                            .with_children(|g| {
+                                for i in 0..24u8 {
+                                    g.spawn((
+                                        Button,
+                                        RuneBtn(i),
+                                        Node { width: Val::Px(56.0), height: Val::Px(72.0), ..default() },
+                                        ui.node(&format!("rune_{i}")),
+                                        BackgroundColor(Color::srgb(0.1, 0.1, 0.2)),
+                                    ));
+                                }
+                            });
+                        panel.spawn((
+                            Text::new(format!("Verse: {}", seq.iter().map(|r| format!("[{r}]")).collect::<Vec<_>>().join(" "))),
+                            TextFont { font_size: 24.0, ..default() },
+                            TextColor(Color::srgb(0.5, 1.0, 1.0)),
+                        ));
                     }
                     MenuKind::Map => {
                         if let Some(img) = map_img {
                             panel.spawn((Node { width: Val::Px(640.0), height: Val::Px(640.0), ..default() }, ImageNode::new(img)));
                         }
-                        panel.spawn((Text::new(format!("MAP - {}   (you: tile {:.0},{:.0})   Esc to close", game.0.current_map, game.0.players[0].pos[0], game.0.players[0].pos[1])), TextFont { font_size: 18.0, ..default() }));
+                        panel.spawn((
+                            Text::new(format!(
+                                "MAP - {}   (you: tile {:.0},{:.0})   Esc to close",
+                                game.0.current_map, game.0.players[0].pos[0], game.0.players[0].pos[1]
+                            )),
+                            TextFont { font_size: 18.0, ..default() },
+                        ));
                     }
                     _ => {
                         for r in rows {
@@ -786,13 +933,24 @@ fn build_menu(mut commands: Commands, mut menu: ResMut<MenuState>, kind: Res<Men
                                 panel.spawn((Text::new(r.label), TextFont { font_size: 22.0, ..default() }, TextColor(Color::srgb(0.95, 0.78, 0.35))));
                             } else {
                                 let col = if r.enabled { Color::srgb(0.95, 0.92, 0.8) } else { Color::srgb(0.5, 0.48, 0.44) };
-                                panel.spawn((Button, MenuRow(if r.enabled { r.tag.clone() } else { String::new() }), Node { padding: UiRect::axes(Val::Px(8.0), Val::Px(3.0)), ..default() }, BackgroundColor(Color::srgba(1.0, 1.0, 1.0, 0.04)))).with_children(|b| {
-                                    b.spawn((Text::new(r.label), TextFont { font_size: 18.0, ..default() }, TextColor(col)));
-                                });
+                                panel
+                                    .spawn((
+                                        Button,
+                                        MenuRow(if r.enabled { r.tag.clone() } else { String::new() }),
+                                        Node { padding: UiRect::axes(Val::Px(8.0), Val::Px(3.0)), ..default() },
+                                        BackgroundColor(Color::srgba(1.0, 1.0, 1.0, 0.04)),
+                                    ))
+                                    .with_children(|b| {
+                                        b.spawn((Text::new(r.label), TextFont { font_size: 18.0, ..default() }, TextColor(col)));
+                                    });
                             }
                         }
                         if more {
-                            panel.spawn((Text::new("... scroll with the mouse wheel / PageDown ..."), TextFont { font_size: 15.0, ..default() }, TextColor(Color::srgb(0.6, 0.6, 0.6))));
+                            panel.spawn((
+                                Text::new("... scroll with the mouse wheel / PageDown ..."),
+                                TextFont { font_size: 15.0, ..default() },
+                                TextColor(Color::srgb(0.6, 0.6, 0.6)),
+                            ));
                         }
                     }
                 }
@@ -924,13 +1082,36 @@ fn menu_input(
 struct DeadRoot;
 
 fn spawn_dead(mut commands: Commands) {
-    commands.spawn((DeadRoot, Node { position_type: PositionType::Absolute, width: Val::Percent(100.0), height: Val::Percent(100.0), flex_direction: FlexDirection::Column, justify_content: JustifyContent::Center, align_items: AlignItems::Center, row_gap: Val::Px(14.0), ..default() }, BackgroundColor(Color::srgba(0.25, 0.0, 0.0, 0.7)))).with_children(|p| {
-        p.spawn((Text::new("YOU HAVE FALLEN"), TextFont { font_size: 64.0, ..default() }, TextColor(Color::srgb(1.0, 0.8, 0.7))));
-        p.spawn((Text::new("[Enter] rise again at Kaupang      [L] load quicksave"), TextFont { font_size: 26.0, ..default() }));
-    });
+    commands
+        .spawn((
+            DeadRoot,
+            Node {
+                position_type: PositionType::Absolute,
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                flex_direction: FlexDirection::Column,
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                row_gap: Val::Px(14.0),
+                ..default()
+            },
+            BackgroundColor(Color::srgba(0.25, 0.0, 0.0, 0.7)),
+        ))
+        .with_children(|p| {
+            p.spawn((Text::new("YOU HAVE FALLEN"), TextFont { font_size: 64.0, ..default() }, TextColor(Color::srgb(1.0, 0.8, 0.7))));
+            p.spawn((Text::new("[Enter] rise again at Kaupang      [L] load quicksave"), TextFont { font_size: 26.0, ..default() }));
+        });
 }
 
-fn dead_input(kb: Res<ButtonInput<KeyCode>>, mut game: ResMut<Game>, world: Res<WorldRes>, paths: Res<Paths>, mut next: ResMut<NextState<AppState>>, mut toast: ResMut<Toast>, mut rts: ResMut<crate::seats::PlayerRt>) {
+fn dead_input(
+    kb: Res<ButtonInput<KeyCode>>,
+    mut game: ResMut<Game>,
+    world: Res<WorldRes>,
+    paths: Res<Paths>,
+    mut next: ResMut<NextState<AppState>>,
+    mut toast: ResMut<Toast>,
+    mut rts: ResMut<crate::seats::PlayerRt>,
+) {
     if kb.just_pressed(KeyCode::Enter) {
         let s = world.0.maps["midgard"].places.get("start").copied().unwrap_or_default();
         let g = &mut game.0;
@@ -969,10 +1150,26 @@ fn spawn_hud2(mut commands: Commands, q: Query<(), With<Hud2>>) {
     if q.iter().next().is_some() {
         return;
     }
-    commands.spawn((Hud2, Text::new(""), TextFont { font_size: 17.0, ..default() }, TextColor(Color::srgb(1.0, 0.95, 0.8)), Node { position_type: PositionType::Absolute, right: Val::Px(12.0), top: Val::Px(8.0), ..default() }));
+    commands.spawn((
+        Hud2,
+        Text::new(""),
+        TextFont { font_size: 17.0, ..default() },
+        TextColor(Color::srgb(1.0, 0.95, 0.8)),
+        Node { position_type: PositionType::Absolute, right: Val::Px(12.0), top: Val::Px(8.0), ..default() },
+    ));
 }
 
-fn update_hud2(game: Res<Game>, db: Res<DbRes>, npcs: Res<Npcs>, rt: Res<crate::seats::PlayerRt>, op: Res<crate::seats::Operating>, cursor: Res<crate::combat::Cursor>, creatures: Query<&crate::creatures::Creature>, world: Res<WorldRes>, mut q: Query<&mut Text, With<Hud2>>) {
+fn update_hud2(
+    game: Res<Game>,
+    db: Res<DbRes>,
+    npcs: Res<Npcs>,
+    rt: Res<crate::seats::PlayerRt>,
+    op: Res<crate::seats::Operating>,
+    cursor: Res<crate::combat::Cursor>,
+    creatures: Query<&crate::creatures::Creature>,
+    world: Res<WorldRes>,
+    mut q: Query<&mut Text, With<Hud2>>,
+) {
     let Ok(mut t) = q.single_mut() else { return };
     if game.0.players.len() > 1 {
         t.0 = String::new();
@@ -984,7 +1181,13 @@ fn update_hud2(game: Res<Game>, db: Res<DbRes>, npcs: Res<Npcs>, rt: Res<crate::
         if let Some(gs) = u67_world::combat::gun_stats(w.id) {
             let loaded = p.loaded.get(w.id).copied().unwrap_or(0);
             let reserve = p.inventory.count(w.ammo.unwrap_or(""));
-            s += &format!("{}  {}/{}  (+{})", w.name, if game.0.cheats.infinite_ammo { "inf".into() } else { loaded.to_string() }, gs.mag, if game.0.cheats.infinite_ammo { "inf".into() } else { reserve.to_string() });
+            s += &format!(
+                "{}  {}/{}  (+{})",
+                w.name,
+                if game.0.cheats.infinite_ammo { "inf".into() } else { loaded.to_string() },
+                gs.mag,
+                if game.0.cheats.infinite_ammo { "inf".into() } else { reserve.to_string() }
+            );
             if rt.reload.is_some() {
                 s += "  RELOADING";
             }
@@ -1004,7 +1207,12 @@ fn update_hud2(game: Res<Game>, db: Res<DbRes>, npcs: Res<Npcs>, rt: Res<crate::
     for n in npcs.list.iter().filter(|n| n.in_party) {
         s += &format!("\n+ {}", n.name);
     }
-    if let Some((q, st)) = db.0.quests.iter().filter(|q| q.category == u67_world::quests::Category::Main).find_map(|q| game.0.quests.get(&q.id).filter(|p| p.state == QuestState::Active).map(|p| (q, p.step))) {
+    if let Some((q, st)) =
+        db.0.quests
+            .iter()
+            .filter(|q| q.category == u67_world::quests::Category::Main)
+            .find_map(|q| game.0.quests.get(&q.id).filter(|p| p.state == QuestState::Active).map(|p| (q, p.step)))
+    {
         s += &format!("\n\nQUEST: {}\n{}", q.title, q.steps.get(st as usize).map_or("", |x| x.text.as_str()));
     }
     if game.0.cheats.inspect && cursor.valid {
@@ -1047,7 +1255,14 @@ struct SeatHud(usize);
 
 /// One compact HUD per seat inside its own viewport (split-screen).
 #[allow(clippy::too_many_arguments)]
-fn seat_huds(mut commands: Commands, game: Res<Game>, rts: Res<crate::seats::PlayerRt>, cams: Query<(Entity, &crate::player::SeatCam)>, mut huds: Query<(Entity, &SeatHud, &mut Text)>, ops: Res<crate::seats::Operating>) {
+fn seat_huds(
+    mut commands: Commands,
+    game: Res<Game>,
+    rts: Res<crate::seats::PlayerRt>,
+    cams: Query<(Entity, &crate::player::SeatCam)>,
+    mut huds: Query<(Entity, &SeatHud, &mut Text)>,
+    ops: Res<crate::seats::Operating>,
+) {
     let n = game.0.players.len();
     if n < 2 {
         for (e, _, _) in &huds {
@@ -1060,7 +1275,14 @@ fn seat_huds(mut commands: Commands, game: Res<Game>, rts: Res<crate::seats::Pla
             commands.entity(e).despawn();
         }
         for (cam, sc) in &cams {
-            commands.spawn((SeatHud(sc.0), Text::new(""), TextFont { font_size: 16.0, ..default() }, TextColor(Color::srgb(1.0, 0.95, 0.8)), Node { position_type: PositionType::Absolute, left: Val::Px(8.0), bottom: Val::Px(6.0), ..default() }, bevy::ui::UiTargetCamera(cam)));
+            commands.spawn((
+                SeatHud(sc.0),
+                Text::new(""),
+                TextFont { font_size: 16.0, ..default() },
+                TextColor(Color::srgb(1.0, 0.95, 0.8)),
+                Node { position_type: PositionType::Absolute, left: Val::Px(8.0), bottom: Val::Px(6.0), ..default() },
+                bevy::ui::UiTargetCamera(cam),
+            ));
         }
         return;
     }
@@ -1068,9 +1290,30 @@ fn seat_huds(mut commands: Commands, game: Res<Game>, rts: Res<crate::seats::Pla
         let Some(p) = game.0.players.get(h.0) else { continue };
         let st = &p.stats;
         let w = p.inventory.equipped.get(&Slot::HandR).and_then(|i| items::get(&i.id));
-        let ammo = w.and_then(|w| u67_world::combat::gun_stats(w.id).map(|gs| format!("{}/{} (+{})", p.loaded.get(w.id).copied().unwrap_or(0), gs.mag, p.inventory.count(w.ammo.unwrap_or(""))))).unwrap_or_default();
+        let ammo = w
+            .and_then(|w| {
+                u67_world::combat::gun_stats(w.id)
+                    .map(|gs| format!("{}/{} (+{})", p.loaded.get(w.id).copied().unwrap_or(0), gs.mag, p.inventory.count(w.ammo.unwrap_or(""))))
+            })
+            .unwrap_or_default();
         let down = rts.list.get(h.0).is_some_and(|r| r.downed);
-        t.0 = format!("P{} {}  HP {}/{}  Lv {}  {}  {}{}", h.0 + 1, p.name, st.hp, st.max_hp(), st.level, w.map_or("Unarmed", |w| w.name), ammo, if down { "  DOWN - ally: press interact to revive!" } else if ops.list.get(h.0).copied().flatten().is_some() { "  [at cannon]" } else { "" });
+        t.0 = format!(
+            "P{} {}  HP {}/{}  Lv {}  {}  {}{}",
+            h.0 + 1,
+            p.name,
+            st.hp,
+            st.max_hp(),
+            st.level,
+            w.map_or("Unarmed", |w| w.name),
+            ammo,
+            if down {
+                "  DOWN - ally: press interact to revive!"
+            } else if ops.list.get(h.0).copied().flatten().is_some() {
+                "  [at cannon]"
+            } else {
+                ""
+            }
+        );
     }
 }
 
@@ -1080,7 +1323,15 @@ fn ready(game: Option<Res<Game>>, db: Option<Res<DbRes>>, sheets: Option<Res<She
 }
 
 /// Periodic game-logic ticks: quests + visits (twice a second).
-fn progress_tick(time: Res<Time>, mut acc: Local<f32>, mut game: ResMut<Game>, world: Res<WorldRes>, db: Res<DbRes>, mut toast: ResMut<Toast>, mut fx: EventWriter<EffectEvent>) {
+fn progress_tick(
+    time: Res<Time>,
+    mut acc: Local<f32>,
+    mut game: ResMut<Game>,
+    world: Res<WorldRes>,
+    db: Res<DbRes>,
+    mut toast: ResMut<Toast>,
+    mut fx: EventWriter<EffectEvent>,
+) {
     *acc += time.delta_secs();
     if *acc < 0.5 {
         return;

@@ -54,7 +54,11 @@ impl Canvas {
         Self { w, h, px: vec![c; (w * h) as usize] }
     }
     pub fn get(&self, x: i32, y: i32) -> Col {
-        if x < 0 || y < 0 || x >= self.w || y >= self.h { CLEAR } else { self.px[(y * self.w + x) as usize] }
+        if x < 0 || y < 0 || x >= self.w || y >= self.h {
+            CLEAR
+        } else {
+            self.px[(y * self.w + x) as usize]
+        }
     }
     pub fn set(&mut self, x: i32, y: i32, c: Col) {
         if x >= 0 && y >= 0 && x < self.w && y < self.h {

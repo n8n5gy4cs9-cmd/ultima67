@@ -14,11 +14,25 @@ fn main() {
                 img.put_pixel((i as i32 % m.width) as u32, (i as i32 / m.width) as u32, image::Rgb(c));
             }
             for o in &m.objects {
-                let c = match o.kind.as_str() { "pine_tree" => [20, 70, 40], "birch_tree" => [110, 150, 50], "runestone" | "bifrost_node" => [120, 240, 255], "longhouse_roof" | "door_wood" => [90, 50, 30], _ => continue };
+                let c = match o.kind.as_str() {
+                    "pine_tree" => [20, 70, 40],
+                    "birch_tree" => [110, 150, 50],
+                    "runestone" | "bifrost_node" => [120, 240, 255],
+                    "longhouse_roof" | "door_wood" => [90, 50, 30],
+                    _ => continue,
+                };
                 img.put_pixel(o.pos.x as u32, o.pos.y as u32, image::Rgb(c));
             }
             for (k, p) in &m.places {
-                if !k.contains('_') { for d in -2..=2 { for e in -2..=2 { if (p.x + d) >= 0 && (p.y + e) >= 0 && p.x + d < m.width && p.y + e < m.height { img.put_pixel((p.x + d) as u32, (p.y + e) as u32, image::Rgb([255, 0, 0])); } } } }
+                if !k.contains('_') {
+                    for d in -2..=2 {
+                        for e in -2..=2 {
+                            if (p.x + d) >= 0 && (p.y + e) >= 0 && p.x + d < m.width && p.y + e < m.height {
+                                img.put_pixel((p.x + d) as u32, (p.y + e) as u32, image::Rgb([255, 0, 0]));
+                            }
+                        }
+                    }
+                }
             }
             img.save(out.join(format!("{name}.png"))).unwrap();
         }

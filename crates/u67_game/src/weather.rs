@@ -33,9 +33,19 @@ pub fn auto_weather(map: &str, north: f32, day: u64, hour: u32, seed: u64) -> Wx
     match map {
         "midgard" => {
             if north < 0.25 {
-                if night && roll > 0.55 { Wx::Aurora } else if roll > 0.35 { Wx::Snow } else { Wx::Clear }
+                if night && roll > 0.55 {
+                    Wx::Aurora
+                } else if roll > 0.35 {
+                    Wx::Snow
+                } else {
+                    Wx::Clear
+                }
             } else if north < 0.4 {
-                if roll > 0.8 { Wx::Snow } else { Wx::Clear }
+                if roll > 0.8 {
+                    Wx::Snow
+                } else {
+                    Wx::Clear
+                }
             } else if roll > 0.93 {
                 Wx::Storm
             } else if roll > 0.78 {
@@ -45,17 +55,33 @@ pub fn auto_weather(map: &str, north: f32, day: u64, hour: u32, seed: u64) -> Wx
             }
         }
         "pohjola" => {
-            if night { Wx::Aurora } else { Wx::Snow }
+            if night {
+                Wx::Aurora
+            } else {
+                Wx::Snow
+            }
         }
         "jotunheimr" | "niflheimr" => Wx::Snow,
         "vanaheimr" => {
-            if roll > 0.7 { Wx::Storm } else { Wx::Rain }
+            if roll > 0.7 {
+                Wx::Storm
+            } else {
+                Wx::Rain
+            }
         }
         "ilma" => {
-            if roll > 0.5 { Wx::Storm } else { Wx::Clear }
+            if roll > 0.5 {
+                Wx::Storm
+            } else {
+                Wx::Clear
+            }
         }
         "tuonela" => {
-            if roll > 0.5 { Wx::Rain } else { Wx::Clear }
+            if roll > 0.5 {
+                Wx::Rain
+            } else {
+                Wx::Clear
+            }
         }
         _ => Wx::Clear,
     }
@@ -100,11 +126,20 @@ fn spawn_particles(mut commands: Commands, cams: Query<Entity, (With<SeatCam>, W
         commands.entity(cam).insert(HasParticles).with_children(|c| {
             for i in 0..140 {
                 let r = |k: u32| noise::hash(i, k as i32, 91);
-                c.spawn((Particle { vel: Vec2::ZERO, phase: r(1) * 6.28, pos: Vec2::new((r(2) - 0.5) * 2.0, (r(3) - 0.5) * 2.0) }, Sprite { color: Color::NONE, custom_size: Some(Vec2::new(1.0, 4.0)), ..default() }, Transform::from_xyz(0.0, 0.0, 400.0), Visibility::Hidden));
+                c.spawn((
+                    Particle { vel: Vec2::ZERO, phase: r(1) * std::f32::consts::TAU, pos: Vec2::new((r(2) - 0.5) * 2.0, (r(3) - 0.5) * 2.0) },
+                    Sprite { color: Color::NONE, custom_size: Some(Vec2::new(1.0, 4.0)), ..default() },
+                    Transform::from_xyz(0.0, 0.0, 400.0),
+                    Visibility::Hidden,
+                ));
             }
             c.spawn((Lightning, Sprite { color: Color::NONE, custom_size: Some(Vec2::splat(6000.0)), ..default() }, Transform::from_xyz(0.0, 0.0, 500.0)));
             for k in 0..3 {
-                c.spawn((AuroraBand(k as f32), Sprite { color: Color::NONE, custom_size: Some(Vec2::new(2400.0, 60.0 + k as f32 * 20.0)), ..default() }, Transform::from_xyz(0.0, 220.0 - k as f32 * 36.0, 300.0)));
+                c.spawn((
+                    AuroraBand(k as f32),
+                    Sprite { color: Color::NONE, custom_size: Some(Vec2::new(2400.0, 60.0 + k as f32 * 20.0)), ..default() },
+                    Transform::from_xyz(0.0, 220.0 - k as f32 * 36.0, 300.0),
+                ));
             }
         });
     }

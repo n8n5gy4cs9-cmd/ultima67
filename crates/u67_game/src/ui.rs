@@ -1,5 +1,5 @@
 //! UI: main menu, HUD, pause menu, console overlay, inventory placeholder, toasts.
-use crate::app::{AppState, Cli, Game, HasQuicksave, Paths, WorldRes};
+use crate::app::{AppState, Cli, Game, WorldRes};
 use crate::apply;
 use bevy::input::keyboard::{Key, KeyboardInput};
 use bevy::prelude::*;
@@ -33,7 +33,19 @@ fn text_node(left: f32, top: f32) -> Node {
 }
 
 fn overlay(alpha: f32) -> (Node, BackgroundColor) {
-    (Node { position_type: PositionType::Absolute, width: Val::Percent(100.0), height: Val::Percent(100.0), flex_direction: FlexDirection::Column, justify_content: JustifyContent::Center, align_items: AlignItems::Center, row_gap: Val::Px(12.0), ..default() }, BackgroundColor(Color::srgba(0.03, 0.02, 0.05, alpha)))
+    (
+        Node {
+            position_type: PositionType::Absolute,
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            flex_direction: FlexDirection::Column,
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            row_gap: Val::Px(12.0),
+            ..default()
+        },
+        BackgroundColor(Color::srgba(0.03, 0.02, 0.05, alpha)),
+    )
 }
 
 fn despawn_all<T: Component>(mut commands: Commands, q: Query<Entity, With<T>>) {
@@ -50,17 +62,40 @@ fn spawn_hud(mut commands: Commands, existing: Query<(), With<Hud>>) {
     commands.spawn((ToastText, Text::new(""), TextFont { font_size: 26.0, ..default() }, TextColor(Color::srgb(0.6, 1.0, 0.8)), text_node(10.0, 60.0)));
 }
 
-fn update_hud(game: Res<Game>, diag: Res<bevy::diagnostic::DiagnosticsStore>, mut hud: Query<&mut Text, (With<Hud>, Without<ToastText>)>, mut toast_q: Query<&mut Text, (With<ToastText>, Without<Hud>)>, mut toast: ResMut<Toast>, time: Res<Time>) {
+fn update_hud(
+    game: Res<Game>,
+    diag: Res<bevy::diagnostic::DiagnosticsStore>,
+    mut hud: Query<&mut Text, (With<Hud>, Without<ToastText>)>,
+    mut toast_q: Query<&mut Text, (With<ToastText>, Without<Hud>)>,
+    mut toast: ResMut<Toast>,
+    time: Res<Time>,
+) {
     let g = &game.0;
     if g.players.len() > 1 {
         if let Ok(mut t) = hud.single_mut() {
-            t.0 = format!("{}  {:02}:{:02}  day {}   |  SPLIT-SCREEN x{}: P1 WASD+mouse | P2 arrows . / , ; ' | pads: stick, RT, A interact, B roll, X reload, Y inventory", g.current_map, g.clock.hour(), g.clock.minute(), g.clock.day() + 1, g.players.len());
+            t.0 = format!(
+                "{}  {:02}:{:02}  day {}   |  SPLIT-SCREEN x{}: P1 WASD+mouse | P2 arrows . / , ; ' | pads: stick, RT, A interact, B roll, X reload, Y inventory",
+                g.current_map,
+                g.clock.hour(),
+                g.clock.minute(),
+                g.clock.day() + 1,
+                g.players.len()
+            );
         }
         return;
     }
     let p = &g.players[0];
     let fps = diag.get(&bevy::diagnostic::FrameTimeDiagnosticsPlugin::FPS).and_then(|d| d.smoothed()).unwrap_or(0.0);
-    let mut s = format!("{}  {:02}:{:02}  day {}  HP {}/{}  Lv {}", g.current_map, g.clock.hour(), g.clock.minute(), g.clock.day() + 1, p.stats.hp, p.stats.max_hp(), p.stats.level);
+    let mut s = format!(
+        "{}  {:02}:{:02}  day {}  HP {}/{}  Lv {}",
+        g.current_map,
+        g.clock.hour(),
+        g.clock.minute(),
+        g.clock.day() + 1,
+        p.stats.hp,
+        p.stats.max_hp(),
+        p.stats.level
+    );
     if g.cheats.fps {
         s += &format!("  {fps:.0} fps  @{:.1},{:.1}", p.pos[0], p.pos[1]);
     }
@@ -100,9 +135,15 @@ fn pause_input(kb: Res<ButtonInput<KeyCode>>, mut exit: EventWriter<AppExit>, mu
 }
 
 fn spawn_console(mut commands: Commands) {
-    commands.spawn((ConsoleRoot, Node { position_type: PositionType::Absolute, width: Val::Percent(100.0), height: Val::Percent(46.0), padding: UiRect::all(Val::Px(10.0)), ..default() }, BackgroundColor(Color::srgba(0.02, 0.03, 0.08, 0.88)))).with_children(|p| {
-        p.spawn((ConsoleText, Text::new(""), TextFont { font_size: 18.0, ..default() }, TextColor(Color::srgb(0.75, 1.0, 0.85))));
-    });
+    commands
+        .spawn((
+            ConsoleRoot,
+            Node { position_type: PositionType::Absolute, width: Val::Percent(100.0), height: Val::Percent(46.0), padding: UiRect::all(Val::Px(10.0)), ..default() },
+            BackgroundColor(Color::srgba(0.02, 0.03, 0.08, 0.88)),
+        ))
+        .with_children(|p| {
+            p.spawn((ConsoleText, Text::new(""), TextFont { font_size: 18.0, ..default() }, TextColor(Color::srgb(0.75, 1.0, 0.85))));
+        });
 }
 
 fn console_input(mut ev: EventReader<KeyboardInput>, mut con: ResMut<ConsoleRes>, mut game: ResMut<Game>, world: Res<WorldRes>, mut fx: EventWriter<EffectEvent>) {
@@ -143,7 +184,7 @@ fn console_view(con: Res<ConsoleRes>, time: Res<Time>, mut q: Query<&mut Text, W
     let Ok(mut t) = q.single_mut() else { return };
     let n = con.0.scrollback.len();
     let mut s = con.0.scrollback[n.saturating_sub(15)..].join("\n");
-    let cursor = if (time.elapsed_secs() * 2.0) as u32 % 2 == 0 { "_" } else { " " };
+    let cursor = if ((time.elapsed_secs() * 2.0) as u32).is_multiple_of(2) { "_" } else { " " };
     s += &format!("\n> {}{cursor}", con.0.input);
     t.0 = s;
 }
@@ -174,8 +215,7 @@ impl Plugin for UiPlugin {
             .add_systems(Update, quick_keys.run_if(in_state(Playing)))
             .add_systems(OnEnter(Console), spawn_console)
             .add_systems(OnExit(Console), despawn_all::<ConsoleRoot>)
-            .add_systems(Update, (console_input, console_view).chain().run_if(in_state(Console)))
-;
+            .add_systems(Update, (console_input, console_view).chain().run_if(in_state(Console)));
         let _ = Cli::default;
     }
 }

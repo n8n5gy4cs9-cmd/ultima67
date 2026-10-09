@@ -13,17 +13,8 @@ pub enum Cheat {
 }
 
 impl Cheat {
-    pub const ALL: [Cheat; 9] = [
-        Cheat::God,
-        Cheat::InfiniteAmmo,
-        Cheat::Noclip,
-        Cheat::Fast,
-        Cheat::Invisible,
-        Cheat::OneHit,
-        Cheat::Fps,
-        Cheat::DebugColliders,
-        Cheat::Inspect,
-    ];
+    pub const ALL: [Cheat; 9] =
+        [Cheat::God, Cheat::InfiniteAmmo, Cheat::Noclip, Cheat::Fast, Cheat::Invisible, Cheat::OneHit, Cheat::Fps, Cheat::DebugColliders, Cheat::Inspect];
     pub fn command(self) -> &'static str {
         match self {
             Cheat::God => "god",

@@ -3,8 +3,8 @@
 > Generated from `PRD.json` by `python3 tools/sync_tasks.py`. **Edit PRD.json, then re-run.**
 > Legend: `[x]` done, `[ ]` todo, `[~]` in progress, `[!]` blocked.
 
-**Progress: 74/78 done.**  
-**Next action:** T4.2 U7 importer (assets/original/u7/) + T4.3 Midgard transformer. Optional left: T4.9 map editor, T8.4 netcode. Then: real-hardware checks on the M1 (run tools/bundle_macos.sh, profile 60fps), playtest + polish.
+**Progress: 76/78 done.**  
+**Next action:** Waiting for the user to provide Ultima 7 data in assets/original/u7/ to tune the importer (run import_u7). Optional: T4.9 map editor, T8.4 netcode. Verify on real M1: tools/bundle_macos.sh + 60fps profile.
 
 ## P0 - Planning & docs
 
@@ -52,8 +52,8 @@
 ## P4 - World: Midgard map (U7 layout remake)
 
 - [x] **T4.1** World model: map grid, 16x16 chunks, interiors as separate maps (z via portals)
-- [ ] **T4.2** U7 importer: read the USER-OWNED Ultima 7 data from assets/original/ (port ideas/format readers from exult); output Midgard-remapped map. Never commit data.
-- [ ] **T4.3** Midgard transformer: remap U7 terrain/objects to Norse equivalents (towns -> Norse/Finnish villages, Britannia coast -> fjords)
+- [x] **T4.2** U7 importer: crates/u67_import reads the USER-OWNED Ultima 7 STATIC files from assets/original/u7/ (Flex, u7map/u7chunks/u7ifix, shapes.vga flats, palettes, text.flx names, tfa.dat) [verified on synthetic data only; tune assets/original/u7_rules.json against real data]; docs/formats/u7.md
+- [x] **T4.3** Midgard transformer (u67_import::norse): town clusters -> Norse towns + places, arctic north, then the same hotspot/cave extras as the generator
 - [x] **T4.4** Fallback: procedural Midgard map generator with same macro-layout (works w/o U7 data; ships in repo)
 - [x] **T4.5** Map renderer: layered isometric-ish/top-down tile rendering w/ object depth sorting, roofs hide on entry
 - [x] **T4.6** Day/night cycle, weather, lighting [clock + day/night overlay done; weather visuals pending]

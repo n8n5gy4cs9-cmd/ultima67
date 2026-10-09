@@ -102,7 +102,11 @@ fn slide(map: &Map, def: &CreatureDef, p: Vec2, d: Vec2) -> (Vec2, bool) {
 
 fn dir_of(v: Vec2) -> Dir {
     if v.x.abs() > v.y.abs() {
-        if v.x > 0.0 { Dir::E } else { Dir::W }
+        if v.x > 0.0 {
+            Dir::E
+        } else {
+            Dir::W
+        }
     } else if v.y > 0.0 {
         Dir::S
     } else {
@@ -111,7 +115,30 @@ fn dir_of(v: Vec2) -> Dir {
 }
 
 pub fn new_creature(def: &CreatureDef, pos: Vec2, spawn_idx: Option<usize>, unique_key: Option<String>) -> Creature {
-    Creature { def: def.id.clone(), pos, hp: def.hp, max_hp: def.hp, cd: 0.5, special_cd: 3.0, home: pos, wander: 0.0, wander_dir: Vec2::ZERO, stun: 0.0, fear: 0.0, frozen: 0.0, ally: false, life: None, spawn_idx, unique_key, facing: Dir::S, moving: false, attack_anim: 0.0, flash: 0.0, charge: 0.0, aggro: false }
+    Creature {
+        def: def.id.clone(),
+        pos,
+        hp: def.hp,
+        max_hp: def.hp,
+        cd: 0.5,
+        special_cd: 3.0,
+        home: pos,
+        wander: 0.0,
+        wander_dir: Vec2::ZERO,
+        stun: 0.0,
+        fear: 0.0,
+        frozen: 0.0,
+        ally: false,
+        life: None,
+        spawn_idx,
+        unique_key,
+        facing: Dir::S,
+        moving: false,
+        attack_anim: 0.0,
+        flash: 0.0,
+        charge: 0.0,
+        aggro: false,
+    }
 }
 
 pub fn spawn_creature_entity(commands: &mut Commands, sheets: &Sheets, def: &CreatureDef, c: Creature) -> Entity {
@@ -120,13 +147,25 @@ pub fn spawn_creature_entity(commands: &mut Commands, sheets: &Sheets, def: &Cre
     let e = commands
         .spawn((
             c,
-            Sprite { image: sheets.chars_img.clone(), texture_atlas: Some(TextureAtlas { layout: sheets.chars_layout.clone(), index: (row * 4 * CHAR_COLS + 2 * CHAR_COLS) as usize }), anchor: Anchor::Custom(Vec2::new(0.0, -0.5 + 1.5 / 24.0)), ..default() },
+            Sprite {
+                image: sheets.chars_img.clone(),
+                texture_atlas: Some(TextureAtlas { layout: sheets.chars_layout.clone(), index: (row * 4 * CHAR_COLS + 2 * CHAR_COLS) as usize }),
+                anchor: Anchor::Custom(Vec2::new(0.0, -0.5 + 1.5 / 24.0)),
+                ..default()
+            },
             Transform::from_xyz(0.0, 0.0, 2.0).with_scale(Vec3::splat(scale)),
         ))
         .id();
     commands.entity(e).with_children(|p| {
-        p.spawn((Sprite { color: Color::srgba(0.0, 0.0, 0.0, 0.7), custom_size: Some(Vec2::new(18.0, 3.0)), anchor: Anchor::CenterLeft, ..default() }, Transform::from_xyz(-9.0, 26.0, 0.1).with_scale(Vec3::splat(1.0 / scale))));
-        p.spawn((HpBarFg, Sprite { color: Color::srgb(0.85, 0.15, 0.15), custom_size: Some(Vec2::new(16.0, 2.0)), anchor: Anchor::CenterLeft, ..default() }, Transform::from_xyz(-8.0, 26.0, 0.2).with_scale(Vec3::splat(1.0 / scale))));
+        p.spawn((
+            Sprite { color: Color::srgba(0.0, 0.0, 0.0, 0.7), custom_size: Some(Vec2::new(18.0, 3.0)), anchor: Anchor::CenterLeft, ..default() },
+            Transform::from_xyz(-9.0, 26.0, 0.1).with_scale(Vec3::splat(1.0 / scale)),
+        ));
+        p.spawn((
+            HpBarFg,
+            Sprite { color: Color::srgb(0.85, 0.15, 0.15), custom_size: Some(Vec2::new(16.0, 2.0)), anchor: Anchor::CenterLeft, ..default() },
+            Transform::from_xyz(-8.0, 26.0, 0.2).with_scale(Vec3::splat(1.0 / scale)),
+        ));
     });
     e
 }
@@ -156,7 +195,17 @@ fn near_town(map: &Map, p: Vec2) -> bool {
 }
 
 #[allow(clippy::too_many_arguments)]
-fn spawner(mut commands: Commands, time: Res<Time>, game: Res<Game>, world: Res<WorldRes>, db: Res<DbRes>, sheets: Res<Sheets>, mut timers: ResMut<SpawnTimers>, creatures: Query<(Entity, &Creature)>, mut rng: Local<Option<Rng>>) {
+fn spawner(
+    mut commands: Commands,
+    time: Res<Time>,
+    game: Res<Game>,
+    world: Res<WorldRes>,
+    db: Res<DbRes>,
+    sheets: Res<Sheets>,
+    mut timers: ResMut<SpawnTimers>,
+    creatures: Query<(Entity, &Creature)>,
+    mut rng: Local<Option<Rng>>,
+) {
     let rng = rng.get_or_insert_with(|| Rng::new(4242));
     let Some(map) = world.0.maps.get(&game.0.current_map) else { return };
     if timers.map != game.0.current_map || timers.t.len() != db.0.spawns.len() {
@@ -238,7 +287,8 @@ fn creature_ai(
     let dt = time.delta_secs();
     let Some(map) = world.0.maps.get(&game.0.current_map) else { return };
     let visible = !game.0.cheats.invisible;
-    let live: Vec<(usize, Vec2)> = game.0.players.iter().enumerate().filter(|(i, p)| p.stats.hp > 0 && !rts.list.get(*i).is_some_and(|r| r.downed)).map(|(i, p)| (i, Vec2::from(p.pos))).collect();
+    let live: Vec<(usize, Vec2)> =
+        game.0.players.iter().enumerate().filter(|(i, p)| p.stats.hp > 0 && !rts.list.get(*i).is_some_and(|r| r.downed)).map(|(i, p)| (i, Vec2::from(p.pos))).collect();
     let leader = Vec2::from(game.0.players[0].pos);
     // snapshot for ally/enemy targeting
     let snap: Vec<(Entity, Vec2, bool)> = q.iter().map(|(e, c)| (e, c.pos, c.ally)).collect();
@@ -267,7 +317,12 @@ fn creature_ai(
         let player = nearest.map_or(leader, |n| n.1);
         let player_idx = nearest.map_or(0, |n| n.0);
         let (tpos, tent, t_is_player): (Option<Vec2>, Option<Entity>, bool) = if c.ally {
-            let best = snap.iter().filter(|(oe, _, ally)| *oe != e && !*ally).map(|(oe, p, _)| (*oe, *p)).filter(|(_, p)| p.distance(c.pos) < def.sight.max(9.0)).min_by(|a, b| a.1.distance(c.pos).partial_cmp(&b.1.distance(c.pos)).unwrap());
+            let best = snap
+                .iter()
+                .filter(|(oe, _, ally)| *oe != e && !*ally)
+                .map(|(oe, p, _)| (*oe, *p))
+                .filter(|(_, p)| p.distance(c.pos) < def.sight.max(9.0))
+                .min_by(|a, b| a.1.distance(c.pos).partial_cmp(&b.1.distance(c.pos)).unwrap());
             match best {
                 Some((oe, p)) => (Some(p), Some(oe), false),
                 None => (Some(player), None, true),
@@ -307,12 +362,29 @@ fn creature_ai(
                     if dist <= def.range && los && c.cd <= 0.0 {
                         c.cd = def.cooldown;
                         c.attack_anim = 0.3;
-                        let n = if def.ai == Ai::Boss && c.special_cd <= 0.0 { c.special_cd = 4.0; 5 } else { 1 };
+                        let n = if def.ai == Ai::Boss && c.special_cd <= 0.0 {
+                            c.special_cd = 4.0;
+                            5
+                        } else {
+                            1
+                        };
                         for k in 0..n {
                             let spread = (k as f32 - (n as f32 - 1.0) / 2.0) * 0.18 + (rng.f32() - 0.5) * 0.08;
                             let (s, co) = spread.sin_cos();
                             let v = Vec2::new(dir.x * co - dir.y * s, dir.x * s + dir.y * co);
-                            shots.write(SpawnProjectile { pos: c.pos - Vec2::new(0.0, 0.5), vel: v * 13.0, dmg: def.damage, friendly: c.ally, range: def.range + 4.0, kind: ProjKind::EnemyBolt, splash: 0.0, special: String::new(), cannon: false, target: None, elem: if def.arch == "louhi" { "frost".into() } else { String::new() } });
+                            shots.write(SpawnProjectile {
+                                pos: c.pos - Vec2::new(0.0, 0.5),
+                                vel: v * 13.0,
+                                dmg: def.damage,
+                                friendly: c.ally,
+                                range: def.range + 4.0,
+                                kind: ProjKind::EnemyBolt,
+                                splash: 0.0,
+                                special: String::new(),
+                                cannon: false,
+                                target: None,
+                                elem: if def.arch == "louhi" { "frost".into() } else { String::new() },
+                            });
                         }
                     }
                 } else {
@@ -367,18 +439,38 @@ fn creature_ai(
     }
 }
 
-fn sync_creature_sprites(time: Res<Time>, db: Res<DbRes>, settings: Res<crate::app::SettingsRes>, mut q: Query<(&Creature, &mut Transform, &mut Sprite, &Children)>, mut bars: Query<(&mut Sprite, &mut Visibility), (With<HpBarFg>, Without<Creature>)>) {
+fn sync_creature_sprites(
+    time: Res<Time>,
+    db: Res<DbRes>,
+    settings: Res<crate::app::SettingsRes>,
+    mut q: Query<(&Creature, &mut Transform, &mut Sprite, &Children)>,
+    mut bars: Query<(&mut Sprite, &mut Visibility), (With<HpBarFg>, Without<Creature>)>,
+) {
     for (c, mut tf, mut sp, children) in &mut q {
         let Some(def) = db.0.creatures.get(&c.def) else { continue };
         let p = render::tile_px(c.pos.x, c.pos.y);
         let air = if def.flies { 6.0 } else { 0.0 };
         tf.translation = Vec3::new(p.x.round(), p.y.round() + air, 2.0 + c.pos.y * 0.001);
         let row = render::character_row(&def.arch).unwrap_or(0);
-        let frame = if c.attack_anim > 0.0 { 5 + ((0.35 - c.attack_anim).max(0.0) * 8.0) as u32 % 3 } else if c.moving { 1 + ((time.elapsed_secs() * 8.0) as u32 % 4) } else { 0 };
+        let frame = if c.attack_anim > 0.0 {
+            5 + ((0.35 - c.attack_anim).max(0.0) * 8.0) as u32 % 3
+        } else if c.moving {
+            1 + ((time.elapsed_secs() * 8.0) as u32 % 4)
+        } else {
+            0
+        };
         if let Some(a) = &mut sp.texture_atlas {
             a.index = ((row * 4 + c.facing.index() as u32) * CHAR_COLS + frame) as usize;
         }
-        sp.color = if c.flash > 0.0 { Color::srgb(1.6, 0.5, 0.5) } else if c.frozen > 0.0 { Color::srgb(0.6, 0.8, 1.4) } else if c.ally { Color::srgb(0.7, 1.2, 1.2) } else { Color::WHITE };
+        sp.color = if c.flash > 0.0 {
+            Color::srgb(1.6, 0.5, 0.5)
+        } else if c.frozen > 0.0 {
+            Color::srgb(0.6, 0.8, 1.4)
+        } else if c.ally {
+            Color::srgb(0.7, 1.2, 1.2)
+        } else {
+            Color::WHITE
+        };
         for ch in children.iter() {
             if let Ok((mut bs, mut vis)) = bars.get_mut(ch) {
                 bs.custom_size = Some(Vec2::new(16.0 * (c.hp.max(0) as f32 / c.max_hp as f32), 2.0));
@@ -407,7 +499,9 @@ fn active(game: Option<Res<Game>>, db: Option<Res<DbRes>>, sheets: Option<Res<Sh
 pub struct CreaturePlugin;
 impl Plugin for CreaturePlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<SpawnTimers>().add_systems(FixedUpdate, (spawner, creature_ai).chain().run_if(active).run_if(in_state(AppState::Playing))).add_systems(Update, (sync_creature_sprites, corpses).run_if(active).run_if(not(in_state(AppState::Boot))).run_if(not(in_state(AppState::MainMenu))));
+        app.init_resource::<SpawnTimers>()
+            .add_systems(FixedUpdate, (spawner, creature_ai).chain().run_if(active).run_if(in_state(AppState::Playing)))
+            .add_systems(Update, (sync_creature_sprites, corpses).run_if(active).run_if(not(in_state(AppState::Boot))).run_if(not(in_state(AppState::MainMenu))));
     }
 }
 

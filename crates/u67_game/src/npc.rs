@@ -12,7 +12,8 @@ use u67_world::npcs::NpcDef;
 use u67_world::pathfind::find_path;
 use u67_world::schedule::{Activity, Schedule};
 
-pub const TOWN_IDS: &[&str] = &["kaupang", "birka", "hedeby", "sigtuna", "nidaros", "bjorgvin", "visby", "turku", "savo", "kuusamo", "rovala", "aldeigja", "reyk", "helgate", "jorvik", "mimir"];
+pub const TOWN_IDS: &[&str] =
+    &["kaupang", "birka", "hedeby", "sigtuna", "nidaros", "bjorgvin", "visby", "turku", "savo", "kuusamo", "rovala", "aldeigja", "reyk", "helgate", "jorvik", "mimir"];
 
 #[derive(Clone, Debug)]
 pub struct Npc {
@@ -118,7 +119,8 @@ pub fn build_npcs(db: &Db, world: &World, map_name: &str, player: [f32; 2], part
                 let female = rng.chance(0.5);
                 let name = if female { *rng.pick(FEMALE) } else { *rng.pick(MALE) };
                 let home = map.places.get(&format!("{town}_house_{}", 1 + k + (rng.range(0, 2)))).copied().unwrap_or(center);
-                let opts = [map.places.get(&format!("{town}_market")).copied().unwrap_or(center), map.places.get(&format!("{town}_forge")).copied().unwrap_or(center), center];
+                let opts =
+                    [map.places.get(&format!("{town}_market")).copied().unwrap_or(center), map.places.get(&format!("{town}_forge")).copied().unwrap_or(center), center];
                 let work = *rng.pick(&opts);
                 let tavern = map.places.get(&format!("{town}_tavern")).copied().unwrap_or(center);
                 let mut schedule = Schedule::townsperson(home, work, tavern);
@@ -204,7 +206,17 @@ fn walk_path(n: &mut Npc, dt: f32, speed: f32) {
         n.pos[1] += dy / dist * step;
     }
     n.moving = true;
-    n.facing = if dx.abs() > dy.abs() { if dx > 0.0 { Dir::E } else { Dir::W } } else if dy > 0.0 { Dir::S } else { Dir::N };
+    n.facing = if dx.abs() > dy.abs() {
+        if dx > 0.0 {
+            Dir::E
+        } else {
+            Dir::W
+        }
+    } else if dy > 0.0 {
+        Dir::S
+    } else {
+        Dir::N
+    };
 }
 
 /// Advance one NPC. `player` is the leader position for party members.
@@ -276,11 +288,15 @@ pub fn update_npc(n: &mut Npc, map: &Map, clock: &GameClock, dt: f32, player: [f
 
 /// Which NPC (index) can the player talk to near `pos`?
 pub fn npc_near(npcs: &[Npc], pos: [f32; 2], reach: f32) -> Option<usize> {
-    npcs.iter().enumerate().filter(|(_, n)| (n.pos[0] - pos[0]).powi(2) + (n.pos[1] - pos[1]).powi(2) <= reach * reach).min_by(|(_, a), (_, b)| {
-        let da = (a.pos[0] - pos[0]).powi(2) + (a.pos[1] - pos[1]).powi(2);
-        let db = (b.pos[0] - pos[0]).powi(2) + (b.pos[1] - pos[1]).powi(2);
-        da.partial_cmp(&db).unwrap()
-    }).map(|(i, _)| i)
+    npcs.iter()
+        .enumerate()
+        .filter(|(_, n)| (n.pos[0] - pos[0]).powi(2) + (n.pos[1] - pos[1]).powi(2) <= reach * reach)
+        .min_by(|(_, a), (_, b)| {
+            let da = (a.pos[0] - pos[0]).powi(2) + (a.pos[1] - pos[1]).powi(2);
+            let db = (b.pos[0] - pos[0]).powi(2) + (b.pos[1] - pos[1]).powi(2);
+            da.partial_cmp(&db).unwrap()
+        })
+        .map(|(i, _)| i)
 }
 
 // ------------------------------------------------------------------ Bevy glue
@@ -289,7 +305,8 @@ pub fn npc_near(npcs: &[Npc], pos: [f32; 2], reach: f32) -> Option<usize> {
 pub struct NpcSprite(pub String);
 
 fn rebuild_npcs(mut npcs: ResMut<Npcs>, game: Res<Game>, world: Res<WorldRes>, db: Res<DbRes>) {
-    let party_changed = npcs.list.iter().filter(|n| n.in_party).map(|n| n.id.clone()).collect::<std::collections::BTreeSet<_>>() != game.0.party.iter().cloned().collect();
+    let party_changed =
+        npcs.list.iter().filter(|n| n.in_party).map(|n| n.id.clone()).collect::<std::collections::BTreeSet<_>>() != game.0.party.iter().cloned().collect();
     if npcs.map == game.0.current_map && !party_changed {
         return;
     }
@@ -322,7 +339,15 @@ fn simulate_npcs(time: Res<Time>, game: Res<Game>, world: Res<WorldRes>, mut npc
 #[derive(Resource, Default)]
 struct SpawnedEpoch(u32);
 
-fn sync_npc_sprites(mut commands: Commands, npcs: Res<Npcs>, sheets: Res<Sheets>, mut epoch: ResMut<SpawnedEpoch>, existing: Query<Entity, With<NpcSprite>>, mut q: Query<(&NpcSprite, &mut Transform, &mut Sprite)>, time: Res<Time>) {
+fn sync_npc_sprites(
+    mut commands: Commands,
+    npcs: Res<Npcs>,
+    sheets: Res<Sheets>,
+    mut epoch: ResMut<SpawnedEpoch>,
+    existing: Query<Entity, With<NpcSprite>>,
+    mut q: Query<(&NpcSprite, &mut Transform, &mut Sprite)>,
+    time: Res<Time>,
+) {
     if epoch.0 != npcs.epoch {
         epoch.0 = npcs.epoch;
         for e in &existing {
@@ -332,7 +357,12 @@ fn sync_npc_sprites(mut commands: Commands, npcs: Res<Npcs>, sheets: Res<Sheets>
             let row = render::character_row(&n.arch).unwrap_or(0);
             commands.spawn((
                 NpcSprite(n.id.clone()),
-                Sprite { image: sheets.chars_img.clone(), texture_atlas: Some(TextureAtlas { layout: sheets.chars_layout.clone(), index: (row * 4 * CHAR_COLS + 2 * CHAR_COLS) as usize }), anchor: Anchor::Custom(Vec2::new(0.0, -0.5 + 1.5 / 24.0)), ..default() },
+                Sprite {
+                    image: sheets.chars_img.clone(),
+                    texture_atlas: Some(TextureAtlas { layout: sheets.chars_layout.clone(), index: (row * 4 * CHAR_COLS + 2 * CHAR_COLS) as usize }),
+                    anchor: Anchor::Custom(Vec2::new(0.0, -0.5 + 1.5 / 24.0)),
+                    ..default()
+                },
                 Transform::from_xyz(0.0, 0.0, 2.0),
             ));
         }
@@ -355,7 +385,14 @@ fn active(game: Option<Res<Game>>, db: Option<Res<DbRes>>, state: Res<State<AppS
 }
 
 /// Party members shoot/strike the nearest hostile creature in range.
-fn party_combat(time: Res<Time>, game: Res<Game>, mut npcs: ResMut<Npcs>, creatures: Query<(Entity, &crate::creatures::Creature)>, mut dmg: EventWriter<crate::combat::DamageEvent>, mut sfx: EventWriter<crate::audio::SfxEvent>) {
+fn party_combat(
+    time: Res<Time>,
+    game: Res<Game>,
+    mut npcs: ResMut<Npcs>,
+    creatures: Query<(Entity, &crate::creatures::Creature)>,
+    mut dmg: EventWriter<crate::combat::DamageEvent>,
+    mut sfx: EventWriter<crate::audio::SfxEvent>,
+) {
     let dt = time.delta_secs();
     let lvl = game.0.players[0].stats.level as f32;
     for n in npcs.list.iter_mut().filter(|n| n.in_party) {
@@ -376,7 +413,10 @@ fn party_combat(time: Res<Time>, game: Res<Game>, mut npcs: ResMut<Npcs>, creatu
 pub struct NpcPlugin;
 impl Plugin for NpcPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<Npcs>().init_resource::<SpawnedEpoch>().add_systems(Update, (rebuild_npcs, simulate_npcs.run_if(in_state(AppState::Playing)), sync_npc_sprites).chain().run_if(active)).add_systems(FixedUpdate, party_combat.run_if(active).run_if(in_state(AppState::Playing)));
+        app.init_resource::<Npcs>()
+            .init_resource::<SpawnedEpoch>()
+            .add_systems(Update, (rebuild_npcs, simulate_npcs.run_if(in_state(AppState::Playing)), sync_npc_sprites).chain().run_if(active))
+            .add_systems(FixedUpdate, party_combat.run_if(active).run_if(in_state(AppState::Playing)));
     }
 }
 
@@ -389,7 +429,20 @@ mod tests {
         let mut m = Map::new("t", 60, 60, tiles::GRASS);
         m.places.insert("home".into(), TilePos::new(5, 5));
         m.places.insert("work".into(), TilePos::new(20, 5));
-        let def = NpcDef { id: "x".into(), name: "X".into(), arch: "villager_m".into(), town: "t".into(), home: "home".into(), work: "work".into(), tavern: None, work_activity: Some(Activity::Forge), dialogue: None, shop: None, recruitable: false, map: None };
+        let def = NpcDef {
+            id: "x".into(),
+            name: "X".into(),
+            arch: "villager_m".into(),
+            town: "t".into(),
+            home: "home".into(),
+            work: "work".into(),
+            tavern: None,
+            work_activity: Some(Activity::Forge),
+            dialogue: None,
+            shop: None,
+            recruitable: false,
+            map: None,
+        };
         let n = def_to_npc(&def, &m, false).unwrap();
         (m, n)
     }

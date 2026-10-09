@@ -9,9 +9,30 @@ use u67_world::items;
 
 /// (creature id, recommended level)
 const RECOMMENDED: &[(&str, u32)] = &[
-    ("wolf", 1), ("draugr", 1), ("ice_wolf", 2), ("merc", 2), ("troll", 3), ("fenrir", 4), ("barrow_king", 4), ("merc_captain", 5), ("svartalf", 5),
-    ("jotun", 6), ("gleipnir_smith", 6), ("fenrir_prime", 7), ("fire_giant", 8), ("hel_hound", 8), ("surtr", 9), ("jormungandr", 10), ("hel_queen", 11),
-    ("nidhogg", 12), ("kalevala_guardian", 12), ("louhi_guard", 13), ("surma", 13), ("ukko_storm", 14), ("sampo_golem", 14), ("louhi", 16),
+    ("wolf", 1),
+    ("draugr", 1),
+    ("ice_wolf", 2),
+    ("merc", 2),
+    ("troll", 3),
+    ("fenrir", 4),
+    ("barrow_king", 4),
+    ("merc_captain", 5),
+    ("svartalf", 5),
+    ("jotun", 6),
+    ("gleipnir_smith", 6),
+    ("fenrir_prime", 7),
+    ("fire_giant", 8),
+    ("hel_hound", 8),
+    ("surtr", 9),
+    ("jormungandr", 10),
+    ("hel_queen", 11),
+    ("nidhogg", 12),
+    ("kalevala_guardian", 12),
+    ("louhi_guard", 13),
+    ("surma", 13),
+    ("ukko_storm", 14),
+    ("sampo_golem", 14),
+    ("louhi", 16),
 ];
 
 struct Kit {

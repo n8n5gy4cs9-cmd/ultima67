@@ -49,7 +49,11 @@ impl Map {
         (p.y * self.width + p.x) as usize
     }
     pub fn tile(&self, p: TilePos) -> TileId {
-        if self.in_bounds(p) { self.tiles[self.idx(p)] } else { tiles::VOID }
+        if self.in_bounds(p) {
+            self.tiles[self.idx(p)]
+        } else {
+            tiles::VOID
+        }
     }
     pub fn set_tile(&mut self, p: TilePos, t: TileId) {
         if self.in_bounds(p) {

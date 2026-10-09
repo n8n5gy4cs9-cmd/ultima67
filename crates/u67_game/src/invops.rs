@@ -11,9 +11,15 @@ use u67_world::map::World;
 pub enum SlotRef {
     Paper(Slot),
     /// container path inside the pack (empty = backpack root) + index in that container
-    Pack { container: Vec<usize>, index: usize },
+    Pack {
+        container: Vec<usize>,
+        index: usize,
+    },
     /// world container object idx + index
-    Obj { idx: usize, index: usize },
+    Obj {
+        idx: usize,
+        index: usize,
+    },
 }
 
 fn obj_items<'a>(d: &GameData, world: &'a mut World, idx: usize) -> Option<&'a mut Vec<Item>> {
@@ -31,7 +37,11 @@ pub fn take(d: &mut GameData, world: &mut World, s: &SlotRef) -> Option<Item> {
         }
         SlotRef::Obj { idx, index } => {
             let v = obj_items(d, world, *idx)?;
-            if *index < v.len() { Some(v.remove(*index)) } else { None }
+            if *index < v.len() {
+                Some(v.remove(*index))
+            } else {
+                None
+            }
         }
     }
 }
@@ -138,8 +148,8 @@ pub fn use_item(d: &mut GameData, path: &[usize]) -> UseResult {
         return match d.players[0].inventory.equip(path) {
             Ok(()) => UseResult::Equipped(def.name.to_string()),
             Err(InvError::SlotOccupied) => {
-                // swap with the occupant
-                let slot = def.slot.unwrap();
+                // swap with the occupant (equip only fails for items that have a slot)
+                let Some(slot) = def.slot else { return UseResult::Nothing };
                 let new = d.players[0].inventory.take(path).unwrap();
                 if let Some(old) = d.players[0].inventory.equipped.insert(slot, new) {
                     d.players[0].inventory.pack.push(old);

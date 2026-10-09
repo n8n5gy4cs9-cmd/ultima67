@@ -95,7 +95,16 @@ impl PlayerData {
         }
         let mut loaded = BTreeMap::new();
         loaded.insert("rune_pistol".to_string(), 12u16);
-        Self { name: name.into(), pos, facing: Dir::S, stats, inventory, skills: BTreeMap::new(), loaded, spell_slots: vec!["parane".into(), "ukon_nuoli".into(), "valo".into()] }
+        Self {
+            name: name.into(),
+            pos,
+            facing: Dir::S,
+            stats,
+            inventory,
+            skills: BTreeMap::new(),
+            loaded,
+            spell_slots: vec!["parane".into(), "ukon_nuoli".into(), "valo".into()],
+        }
     }
 }
 
@@ -252,8 +261,7 @@ mod tests {
         assert_eq!(level_for_xp(100), 2);
         assert_eq!(level_for_xp(399), 2);
         assert_eq!(level_for_xp(400), 3);
-        let mut s = Stats::default();
-        s.hp = 1;
+        let mut s = Stats { hp: 1, ..Stats::default() };
         assert_eq!(s.add_xp(450), 2);
         assert_eq!(s.hp, s.max_hp());
     }

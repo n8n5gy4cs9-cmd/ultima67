@@ -134,10 +134,13 @@ mod tests {
         }
     }
     fn def() -> DialogueDef {
-        serde_json::from_str(r#"{"id":"x","name":"Eirik","greeting":[{"when":{"is":"flag","flag":"met"},"text":"Again!"},{"text":"Hail."}],
+        serde_json::from_str(
+            r#"{"id":"x","name":"Eirik","greeting":[{"when":{"is":"flag","flag":"met"},"text":"Again!"},{"text":"Hail."}],
         "topics":[{"keys":["name"],"text":"I am Eirik.","reveals":["gate"]},{"keys":["job"],"text":"Skald."},
         {"keys":["gate"],"text":"It hums.","then":[{"op":"set_flag","flag":"heard_gate"}],"reveals":["Bifrost"]},
-        {"keys":["Bifrost"],"when":{"is":"flag","flag":"met"},"text":"Rainbow bridge."}]}"#).unwrap()
+        {"keys":["Bifrost"],"when":{"is":"flag","flag":"met"},"text":"Rainbow bridge."}]}"#,
+        )
+        .unwrap()
     }
     #[test]
     fn greet_variants_and_topics() {

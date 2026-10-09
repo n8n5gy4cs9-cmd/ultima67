@@ -2,7 +2,7 @@
 use crate::app::{AppState, Game, HasQuicksave, Paths, SettingsRes, WorldRes};
 use crate::data::{GameData, PlayerData};
 use crate::player::Zoom;
-use crate::seats::{MAX_SEATS};
+use crate::seats::MAX_SEATS;
 use bevy::prelude::*;
 use bevy::window::{MonitorSelection, WindowMode};
 
@@ -48,24 +48,46 @@ pub const SLIDES: [&str; 6] = [
 ];
 
 fn full_screen(bg: Color) -> (Node, BackgroundColor) {
-    (Node { position_type: PositionType::Absolute, width: Val::Percent(100.0), height: Val::Percent(100.0), flex_direction: FlexDirection::Column, justify_content: JustifyContent::FlexEnd, align_items: AlignItems::Center, padding: UiRect::bottom(Val::Px(50.0)), row_gap: Val::Px(6.0), ..default() }, BackgroundColor(bg))
+    (
+        Node {
+            position_type: PositionType::Absolute,
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            flex_direction: FlexDirection::Column,
+            justify_content: JustifyContent::FlexEnd,
+            align_items: AlignItems::Center,
+            padding: UiRect::bottom(Val::Px(50.0)),
+            row_gap: Val::Px(6.0),
+            ..default()
+        },
+        BackgroundColor(bg),
+    )
 }
 
 fn spawn_main(mut commands: Commands, assets: Res<AssetServer>, quick: Option<Res<HasQuicksave>>) {
     let _ = quick;
-    commands
-        .spawn((MainRoot, full_screen(Color::BLACK), ImageNode::new(assets.load("gfx/title.png"))))
-        .with_children(|p| {
-            p.spawn((Node { flex_direction: FlexDirection::Column, align_items: AlignItems::Center, padding: UiRect::axes(Val::Px(40.0), Val::Px(10.0)), ..default() }, BackgroundColor(Color::srgba(0.02, 0.02, 0.08, 0.62)))).with_children(|col| {
-                for (i, _) in ITEMS.iter().enumerate() {
-                    col.spawn((Button, MainItem(i), Node { padding: UiRect::axes(Val::Px(18.0), Val::Px(3.0)), ..default() }, BackgroundColor(Color::NONE))).with_children(|b| {
+    commands.spawn((MainRoot, full_screen(Color::BLACK), ImageNode::new(assets.load("gfx/title.png")))).with_children(|p| {
+        p.spawn((
+            Node { flex_direction: FlexDirection::Column, align_items: AlignItems::Center, padding: UiRect::axes(Val::Px(40.0), Val::Px(10.0)), ..default() },
+            BackgroundColor(Color::srgba(0.02, 0.02, 0.08, 0.62)),
+        ))
+        .with_children(|col| {
+            for (i, _) in ITEMS.iter().enumerate() {
+                col.spawn((Button, MainItem(i), Node { padding: UiRect::axes(Val::Px(18.0), Val::Px(3.0)), ..default() }, BackgroundColor(Color::NONE))).with_children(
+                    |b| {
                         b.spawn((Text::new(""), TextFont { font_size: 28.0, ..default() }, TextColor(Color::WHITE)));
-                    });
-                }
-            });
-            p.spawn((Text::new(u67_core::CREDIT), TextFont { font_size: 16.0, ..default() }, TextColor(Color::srgb(0.75, 0.75, 0.8)), Node { margin: UiRect::top(Val::Px(10.0)), ..default() }));
-            p.spawn((Text::new("Up/Down: choose   Enter: select   Left/Right: players"), TextFont { font_size: 14.0, ..default() }, TextColor(Color::srgb(0.55, 0.55, 0.6))));
+                    },
+                );
+            }
         });
+        p.spawn((
+            Text::new(u67_core::CREDIT),
+            TextFont { font_size: 16.0, ..default() },
+            TextColor(Color::srgb(0.75, 0.75, 0.8)),
+            Node { margin: UiRect::top(Val::Px(10.0)), ..default() },
+        ));
+        p.spawn((Text::new("Up/Down: choose   Enter: select   Left/Right: players"), TextFont { font_size: 14.0, ..default() }, TextColor(Color::srgb(0.55, 0.55, 0.6))));
+    });
 }
 
 /// Replace the world and game state with a fresh new game for `players` seats.
@@ -131,9 +153,21 @@ fn main_menu(
         for ch in children.iter() {
             if let Ok((mut t, mut c)) = texts.get_mut(ch) {
                 let selected = sel.idx == it.0;
-                let label = if it.0 == 1 { format!("Players: < {} >{}", sel.players, if sel.players > 1 { "  (split-screen co-op)" } else { "" }) } else { ITEMS[it.0].to_string() };
+                let label = if it.0 == 1 {
+                    format!("Players: < {} >{}", sel.players, if sel.players > 1 { "  (split-screen co-op)" } else { "" })
+                } else {
+                    ITEMS[it.0].to_string()
+                };
                 t.0 = if selected { format!("> {label} <") } else { format!("  {label}  ") };
-                c.0 = if selected { if blink { Color::srgb(1.0, 0.85, 0.4) } else { Color::srgb(1.0, 0.95, 0.7) } } else { Color::srgb(0.85, 0.85, 0.9) };
+                c.0 = if selected {
+                    if blink {
+                        Color::srgb(1.0, 0.85, 0.4)
+                    } else {
+                        Color::srgb(1.0, 0.95, 0.7)
+                    }
+                } else {
+                    Color::srgb(0.85, 0.85, 0.9)
+                };
             }
         }
     }
@@ -169,7 +203,8 @@ fn main_menu(
 }
 
 // ---------------------------------------------------------------- options
-pub const OPT_LABELS: [&str; 9] = ["Master volume", "Music volume", "Effects volume", "Zoom", "Fullscreen", "Text size", "Hot-reload assets", "Colour-blind safe bars", "Back"];
+pub const OPT_LABELS: [&str; 9] =
+    ["Master volume", "Music volume", "Effects volume", "Zoom", "Fullscreen", "Text size", "Hot-reload assets", "Colour-blind safe bars", "Back"];
 
 pub fn opt_value(s: &crate::settings::Settings, i: usize) -> String {
     match i {
@@ -217,15 +252,34 @@ pub fn opt_change(s: &mut crate::settings::Settings, i: usize, dir: i32) -> bool
 }
 
 fn spawn_options(mut commands: Commands) {
-    commands.spawn((OptRoot, Node { position_type: PositionType::Absolute, width: Val::Percent(100.0), height: Val::Percent(100.0), flex_direction: FlexDirection::Column, justify_content: JustifyContent::Center, align_items: AlignItems::Center, row_gap: Val::Px(8.0), ..default() }, BackgroundColor(Color::srgba(0.03, 0.02, 0.06, 0.97)))).with_children(|p| {
-        p.spawn((Text::new("OPTIONS"), TextFont { font_size: 48.0, ..default() }, TextColor(Color::srgb(0.95, 0.78, 0.35))));
-        for i in 0..OPT_LABELS.len() {
-            p.spawn((Button, OptItem(i), Node { padding: UiRect::axes(Val::Px(18.0), Val::Px(3.0)), ..default() })).with_children(|b| {
-                b.spawn((Text::new(""), TextFont { font_size: 24.0, ..default() }));
-            });
-        }
-        p.spawn((Text::new("Up/Down choose - Left/Right change - Esc back.   Keys: edit settings.ron (rebind keys & gamepad buttons)"), TextFont { font_size: 15.0, ..default() }, TextColor(Color::srgb(0.6, 0.6, 0.65))));
-    });
+    commands
+        .spawn((
+            OptRoot,
+            Node {
+                position_type: PositionType::Absolute,
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                flex_direction: FlexDirection::Column,
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                row_gap: Val::Px(8.0),
+                ..default()
+            },
+            BackgroundColor(Color::srgba(0.03, 0.02, 0.06, 0.97)),
+        ))
+        .with_children(|p| {
+            p.spawn((Text::new("OPTIONS"), TextFont { font_size: 48.0, ..default() }, TextColor(Color::srgb(0.95, 0.78, 0.35))));
+            for i in 0..OPT_LABELS.len() {
+                p.spawn((Button, OptItem(i), Node { padding: UiRect::axes(Val::Px(18.0), Val::Px(3.0)), ..default() })).with_children(|b| {
+                    b.spawn((Text::new(""), TextFont { font_size: 24.0, ..default() }));
+                });
+            }
+            p.spawn((
+                Text::new("Up/Down choose - Left/Right change - Esc back.   Keys: edit settings.ron (rebind keys & gamepad buttons)"),
+                TextFont { font_size: 15.0, ..default() },
+                TextColor(Color::srgb(0.6, 0.6, 0.65)),
+            ));
+        });
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -284,7 +338,11 @@ fn options_input(
             if let Ok((mut t, mut c)) = texts.get_mut(ch) {
                 let v = opt_value(&settings.0, it.0);
                 let selected = sel.opt == it.0;
-                t.0 = if v.is_empty() { format!("{}{}", if selected { "> " } else { "  " }, OPT_LABELS[it.0]) } else { format!("{}{:<24} < {} >", if selected { "> " } else { "  " }, OPT_LABELS[it.0], v) };
+                t.0 = if v.is_empty() {
+                    format!("{}{}", if selected { "> " } else { "  " }, OPT_LABELS[it.0])
+                } else {
+                    format!("{}{:<24} < {} >", if selected { "> " } else { "  " }, OPT_LABELS[it.0], v)
+                };
                 c.0 = if selected { Color::srgb(1.0, 0.9, 0.5) } else { Color::srgb(0.85, 0.85, 0.9) };
             }
         }
@@ -313,13 +371,44 @@ fn credits_input(kb: Res<ButtonInput<KeyCode>>, mouse: Res<ButtonInput<MouseButt
 // ---------------------------------------------------------------- intro
 fn spawn_intro(mut commands: Commands, assets: Res<AssetServer>, mut sel: ResMut<MenuSel>) {
     sel.slide = 0;
-    commands.spawn((IntroRoot, Node { position_type: PositionType::Absolute, width: Val::Percent(100.0), height: Val::Percent(100.0), justify_content: JustifyContent::Center, align_items: AlignItems::Center, ..default() }, BackgroundColor(Color::BLACK), ImageNode::new(assets.load("gfx/title.png")).with_color(Color::srgba(0.35, 0.35, 0.45, 1.0)))).with_children(|p| {
-        p.spawn((IntroText, Text::new(SLIDES[0]), TextFont { font_size: 34.0, ..default() }, TextColor(Color::srgb(0.95, 0.92, 0.8)), TextLayout::new_with_justify(JustifyText::Center)));
-        p.spawn((Text::new("[Space] continue    [Esc] skip"), TextFont { font_size: 16.0, ..default() }, TextColor(Color::srgb(0.6, 0.6, 0.65)), Node { position_type: PositionType::Absolute, bottom: Val::Px(20.0), ..default() }));
-    });
+    commands
+        .spawn((
+            IntroRoot,
+            Node {
+                position_type: PositionType::Absolute,
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                ..default()
+            },
+            BackgroundColor(Color::BLACK),
+            ImageNode::new(assets.load("gfx/title.png")).with_color(Color::srgba(0.35, 0.35, 0.45, 1.0)),
+        ))
+        .with_children(|p| {
+            p.spawn((
+                IntroText,
+                Text::new(SLIDES[0]),
+                TextFont { font_size: 34.0, ..default() },
+                TextColor(Color::srgb(0.95, 0.92, 0.8)),
+                TextLayout::new_with_justify(JustifyText::Center),
+            ));
+            p.spawn((
+                Text::new("[Space] continue    [Esc] skip"),
+                TextFont { font_size: 16.0, ..default() },
+                TextColor(Color::srgb(0.6, 0.6, 0.65)),
+                Node { position_type: PositionType::Absolute, bottom: Val::Px(20.0), ..default() },
+            ));
+        });
 }
 
-fn intro_input(kb: Res<ButtonInput<KeyCode>>, mouse: Res<ButtonInput<MouseButton>>, mut sel: ResMut<MenuSel>, mut next: ResMut<NextState<AppState>>, mut q: Query<&mut Text, With<IntroText>>) {
+fn intro_input(
+    kb: Res<ButtonInput<KeyCode>>,
+    mouse: Res<ButtonInput<MouseButton>>,
+    mut sel: ResMut<MenuSel>,
+    mut next: ResMut<NextState<AppState>>,
+    mut q: Query<&mut Text, With<IntroText>>,
+) {
     if kb.just_pressed(KeyCode::Escape) {
         next.set(AppState::Playing);
         return;

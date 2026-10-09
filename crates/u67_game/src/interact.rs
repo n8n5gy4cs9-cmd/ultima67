@@ -2,13 +2,13 @@
 use crate::app::{AppState, Game, WorldRes};
 use crate::audio::SfxEvent;
 use crate::combat::{Cursor, ProjKind, SpawnProjectile};
-use crate::seats::{ActiveSeat, Intents, Operating, PlayerRt};
 use crate::data::{ObjState, Vehicle};
 use crate::db_res::DbRes;
 use crate::input::KeyMap;
 use crate::npc::{self, Npcs};
 use crate::persist;
 use crate::render::{ChunkIndex, DirtyChunks};
+use crate::seats::{ActiveSeat, Intents, Operating, PlayerRt};
 use crate::settings::Action;
 use crate::ui::{EffectEvent, Toast};
 use bevy::prelude::*;
@@ -31,7 +31,24 @@ pub enum UiRequest {
     Cheats,
 }
 
-pub const INTERACTIVE: &[&str] = &["door_wood", "door_open", "chest", "barrel", "crate", "signpost", "runestone", "well", "bed", "forge", "campfire", "table", "bifrost_node", "wreck", "cannon", "longship"];
+pub const INTERACTIVE: &[&str] = &[
+    "door_wood",
+    "door_open",
+    "chest",
+    "barrel",
+    "crate",
+    "signpost",
+    "runestone",
+    "well",
+    "bed",
+    "forge",
+    "campfire",
+    "table",
+    "bifrost_node",
+    "wreck",
+    "cannon",
+    "longship",
+];
 const REACH: f32 = 1.9;
 
 /// Nearest interactive object to `pos` among `candidates`.
@@ -67,7 +84,11 @@ pub fn roll_container(db: &u67_world::db::Db, kind: &str, map: &str, p: TilePos,
     let mut rng = Rng::new(seed_for(map, p, seed));
     let table = match kind {
         "chest" => {
-            if map != "midgard" && rng.chance(0.45) || rng.chance(0.12) { "chest_rare" } else { "chest_common" }
+            if map != "midgard" && rng.chance(0.45) || rng.chance(0.12) {
+                "chest_rare"
+            } else {
+                "chest_common"
+            }
         }
         "barrel" => "barrel_common",
         _ => "crate_common",
@@ -149,11 +170,20 @@ fn interact_seat(
     let (pcx, pcy) = TilePos::new(p.x as i32, p.y as i32).chunk();
     let cands: Vec<usize> = (-1..=1).flat_map(|dy| (-1..=1).map(move |dx| (pcx + dx, pcy + dy))).filter_map(|k| index.by_chunk.get(&k)).flatten().copied().collect();
     let obj_i = world.0.maps.get(&map_name).and_then(|m| nearest_object(m, cands.into_iter(), p, REACH));
-    let obj_d = obj_i.and_then(|i| world.0.maps.get(&map_name).map(|m| Vec2::new(m.objects[i].pos.x as f32 + 0.5, m.objects[i].pos.y as f32 + 0.5).distance(p))).unwrap_or(99.0);
-    let ground_i = game.0.ground.iter().enumerate().filter(|(_, g)| g.map == map_name).map(|(i, g)| (i, Vec2::new(g.pos[0], g.pos[1]).distance(p))).filter(|(_, d)| *d <= 1.3).min_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+    let obj_d =
+        obj_i.and_then(|i| world.0.maps.get(&map_name).map(|m| Vec2::new(m.objects[i].pos.x as f32 + 0.5, m.objects[i].pos.y as f32 + 0.5).distance(p))).unwrap_or(99.0);
+    let ground_i = game
+        .0
+        .ground
+        .iter()
+        .enumerate()
+        .filter(|(_, g)| g.map == map_name)
+        .map(|(i, g)| (i, Vec2::new(g.pos[0], g.pos[1]).distance(p)))
+        .filter(|(_, d)| *d <= 1.3)
+        .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
     let ground_d = ground_i.map_or(99.0, |(_, d)| d);
-    if npc_i.is_some() && npc_d <= obj_d && npc_d <= ground_d {
-        ui.write(UiRequest::Dialogue(npc_i.unwrap()));
+    if let Some(ni) = npc_i.filter(|_| npc_d <= obj_d && npc_d <= ground_d) {
+        ui.write(UiRequest::Dialogue(ni));
         return;
     }
     if let Some((gi, gd)) = ground_i {
@@ -249,7 +279,11 @@ fn interact_seat(
                     let mut rng = Rng::new(seed_for(&map_name, opos, game.0.seed));
                     if let Some(t) = db.0.loot.get("wreck_salvage") {
                         for (id, n) in t.roll(&mut rng) {
-                            game.0.ground.push(crate::data::GroundItem { map: map_name.clone(), pos: [opos.x as f32 + 0.5 + rng.f32() - 0.5, opos.y as f32 + 1.2 + rng.f32() * 0.5], item: u67_world::inventory::Item::new(&id, n) });
+                            game.0.ground.push(crate::data::GroundItem {
+                                map: map_name.clone(),
+                                pos: [opos.x as f32 + 0.5 + rng.f32() - 0.5, opos.y as f32 + 1.2 + rng.f32() * 0.5],
+                                item: u67_world::inventory::Item::new(&id, n),
+                            });
                         }
                     }
                     persist::record(&mut game.0, &world.0, &map_name, oi, |s| s.loaded = true);
@@ -379,7 +413,13 @@ fn cannon_seat(
             op.set(None);
             return;
         }
-        let aim_to = if intent.aim != Vec2::ZERO { cpos + intent.aim * 8.0 } else if seat == 0 && cursor.valid { cursor.tile } else { return };
+        let aim_to = if intent.aim != Vec2::ZERO {
+            cpos + intent.aim * 8.0
+        } else if seat == 0 && cursor.valid {
+            cursor.tile
+        } else {
+            return;
+        };
         let to = aim_to - cpos;
         let dir = to.normalize_or_zero();
         // rotate the barrel toward the aim
@@ -399,7 +439,19 @@ fn cannon_seat(
             if game.0.obj_state.get(&key).is_some_and(|s| s.loaded) {
                 let range = to.length().clamp(3.0, 24.0);
                 let tgt = cpos + dir * range;
-                shots.write(SpawnProjectile { pos: cpos, vel: dir * 14.0, dmg: 90, friendly: true, range, kind: ProjKind::Cannonball, splash: 0.0, special: String::new(), cannon: true, target: Some(tgt), elem: String::new() });
+                shots.write(SpawnProjectile {
+                    pos: cpos,
+                    vel: dir * 14.0,
+                    dmg: 90,
+                    friendly: true,
+                    range,
+                    kind: ProjKind::Cannonball,
+                    splash: 0.0,
+                    special: String::new(),
+                    cannon: true,
+                    target: Some(tgt),
+                    elem: String::new(),
+                });
                 persist::record(&mut game.0, &world.0, &map_name, oi, |s| s.loaded = false);
                 sfx.write(SfxEvent("cannon_fire".into()));
                 rt.shake = 0.3;
@@ -411,17 +463,35 @@ fn cannon_seat(
         return;
     }
     if let Some(v) = game.0.vehicle.clone() {
-        let aim_to = if intent.aim != Vec2::ZERO { Some(Vec2::from(v.pos) + intent.aim * 8.0) } else if seat == 0 && cursor.valid { Some(cursor.tile) } else { None };
-        if seat == 0 && intent.attack && rt.cooldown <= 0.0 && aim_to.is_some() {
+        let aim_to = if intent.aim != Vec2::ZERO {
+            Some(Vec2::from(v.pos) + intent.aim * 8.0)
+        } else if seat == 0 && cursor.valid {
+            Some(cursor.tile)
+        } else {
+            None
+        };
+        if let (true, Some(aim_target)) = (seat == 0 && intent.attack && rt.cooldown <= 0.0, aim_to) {
             let inv = &mut game.0.players[0].inventory;
             if inv.count("gunpowder") > 0 && inv.count("cannon_ball") > 0 {
                 inv.remove("gunpowder", 1);
                 inv.remove("cannon_ball", 1);
                 let from = Vec2::from(v.pos);
-                let to = aim_to.unwrap() - from;
+                let to = aim_target - from;
                 let dir = to.normalize_or_zero();
                 let range = to.length().clamp(3.0, 24.0);
-                shots.write(SpawnProjectile { pos: from, vel: dir * 14.0, dmg: 90, friendly: true, range, kind: ProjKind::Cannonball, splash: 0.0, special: String::new(), cannon: true, target: Some(from + dir * range), elem: String::new() });
+                shots.write(SpawnProjectile {
+                    pos: from,
+                    vel: dir * 14.0,
+                    dmg: 90,
+                    friendly: true,
+                    range,
+                    kind: ProjKind::Cannonball,
+                    splash: 0.0,
+                    special: String::new(),
+                    cannon: true,
+                    target: Some(from + dir * range),
+                    elem: String::new(),
+                });
                 sfx.write(SfxEvent("cannon_fire".into()));
                 rt.shake = 0.35;
                 rt.cooldown = 1.4;
@@ -452,14 +522,29 @@ pub fn boat_step(map: &Map, pos: Vec2, delta: Vec2) -> Vec2 {
 #[derive(Component)]
 struct ShipSprite;
 
-fn ship_visuals(mut commands: Commands, game: Res<Game>, sheets: Res<crate::render::Sheets>, mut q: Query<(Entity, &mut Transform, &mut Sprite), With<ShipSprite>>, mut players: Query<&mut Visibility, With<crate::player::Player>>) {
+fn ship_visuals(
+    mut commands: Commands,
+    game: Res<Game>,
+    sheets: Res<crate::render::Sheets>,
+    mut q: Query<(Entity, &mut Transform, &mut Sprite), With<ShipSprite>>,
+    mut players: Query<&mut Visibility, With<crate::player::Player>>,
+) {
     for mut v in &mut players {
         *v = if game.0.vehicle.is_some() { Visibility::Hidden } else { Visibility::Inherited };
     }
     let row = u67_world::objects::OBJECTS.iter().position(|o| o.id == "longship").unwrap_or(0) as u32;
     match (&game.0.vehicle, q.iter_mut().next()) {
         (Some(v), None) => {
-            commands.spawn((ShipSprite, Sprite { image: sheets.objects_img.clone(), texture_atlas: Some(TextureAtlas { layout: sheets.objects_layout.clone(), index: (row * 4 + 1) as usize }), anchor: bevy::sprite::Anchor::BottomCenter, ..default() }, Transform::from_xyz(0.0, 0.0, 2.0)));
+            commands.spawn((
+                ShipSprite,
+                Sprite {
+                    image: sheets.objects_img.clone(),
+                    texture_atlas: Some(TextureAtlas { layout: sheets.objects_layout.clone(), index: (row * 4 + 1) as usize }),
+                    anchor: bevy::sprite::Anchor::BottomCenter,
+                    ..default()
+                },
+                Transform::from_xyz(0.0, 0.0, 2.0),
+            ));
             let _ = v;
         }
         (Some(v), Some((_, mut tf, mut sp))) => {
@@ -510,11 +595,11 @@ fn ready(game: Option<Res<Game>>, db: Option<Res<DbRes>>) -> bool {
 pub struct InteractPlugin;
 impl Plugin for InteractPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<UiRequest>().add_systems(
+        app.add_event::<UiRequest>().add_systems(Update, (interact, cannon_fire, map_keys).run_if(ready).run_if(in_state(AppState::Playing)));
+        app.add_systems(
             Update,
-            (interact, cannon_fire, map_keys).run_if(ready).run_if(in_state(AppState::Playing)),
+            ship_visuals.run_if(ready).run_if(not(in_state(AppState::Boot))).run_if(not(in_state(AppState::MainMenu))).run_if(resource_exists::<crate::render::Sheets>),
         );
-        app.add_systems(Update, ship_visuals.run_if(ready).run_if(not(in_state(AppState::Boot))).run_if(not(in_state(AppState::MainMenu))).run_if(resource_exists::<crate::render::Sheets>));
     }
 }
 

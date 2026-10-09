@@ -1,0 +1,17 @@
+[package]
+name = "u67_import"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Imports the user's own Ultima 7 map data and converts it into Midgard (never ships any original data)."
+
+[dependencies]
+u67_core = { path = "../u67_core" }
+u67_world = { path = "../u67_world" }
+u67_mapgen = { path = "../u67_mapgen" }
+serde.workspace = true
+serde_json.workspace = true
+
+[[bin]]
+name = "import_u7"
+path = "src/bin/import_u7.rs"

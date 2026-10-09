@@ -24,7 +24,13 @@ pub fn icon(idx: usize) -> Canvas {
     let mut c = Canvas::new(I, I);
     match d.kind {
         Kind::Gun => {
-            let len = if d.weight > 4.0 { 13 } else if d.weight > 2.5 { 11 } else { 7 };
+            let len = if d.weight > 4.0 {
+                13
+            } else if d.weight > 2.5 {
+                11
+            } else {
+                7
+            };
             let x0 = 8 - len / 2;
             if d.id == "vainamoinen_gun" {
                 // kantele-shaped rifle: wooden body, gold strings

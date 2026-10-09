@@ -208,7 +208,13 @@ fn stream_chunks(
             continue;
         }
         budget -= 1;
-        let img = Image::new(Extent3d { width: side, height: side, depth_or_array_layers: 1 }, TextureDimension::D2, chunk_rgba(map, cx, cy, &sheets.terrain), TextureFormat::Rgba8UnormSrgb, RenderAssetUsages::default());
+        let img = Image::new(
+            Extent3d { width: side, height: side, depth_or_array_layers: 1 },
+            TextureDimension::D2,
+            chunk_rgba(map, cx, cy, &sheets.terrain),
+            TextureFormat::Rgba8UnormSrgb,
+            RenderAssetUsages::default(),
+        );
         let p = tile_px((cx * CHUNK) as f32, (cy * CHUNK) as f32);
         let mut ents = vec![commands.spawn((Sprite { image: images.add(img), anchor: Anchor::TopLeft, ..default() }, Transform::from_xyz(p.x, p.y, 0.0))).id()];
         if let Some(list) = index.by_chunk.get(&(cx, cy)) {
@@ -264,7 +270,11 @@ fn animate_objects(time: Res<Time>, mut q: Query<(&Flicker, &mut Sprite)>) {
 pub struct RenderPlugin;
 impl Plugin for RenderPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<DirtyChunks>().init_resource::<Loaded>().init_resource::<ChunkIndex>().add_systems(Startup, load_sheets).add_systems(Update, (stream_chunks, hide_roofs, animate_objects, watch_terrain).run_if(game_active));
+        app.init_resource::<DirtyChunks>()
+            .init_resource::<Loaded>()
+            .init_resource::<ChunkIndex>()
+            .add_systems(Startup, load_sheets)
+            .add_systems(Update, (stream_chunks, hide_roofs, animate_objects, watch_terrain).run_if(game_active));
     }
 }
 

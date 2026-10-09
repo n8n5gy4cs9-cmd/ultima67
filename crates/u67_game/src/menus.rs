@@ -181,7 +181,13 @@ pub fn travel_rows(d: &GameData, by_ship: bool) -> Vec<Row> {
             last = b.system;
         }
         let ok = can_travel(d, b.id, by_ship) && d.current_map != b.id;
-        let suffix = if d.current_map == b.id { "  (you are here)" } else if !can_travel(d, b.id, by_ship) { "  (locked)" } else { "" };
+        let suffix = if d.current_map == b.id {
+            "  (you are here)"
+        } else if !can_travel(d, b.id, by_ship) {
+            "  (locked)"
+        } else {
+            ""
+        };
         rows.push(row(format!("{}{}", b.name, suffix), format!("go:{}", b.id), ok));
     }
     rows
@@ -276,7 +282,11 @@ pub fn spell_rows(d: &GameData, db: &Db) -> Vec<Row> {
         let known = spell_known(d, db, &s.id);
         let rg: Vec<String> = s.reagents.iter().map(|(r, n)| format!("{n} {}", name(r))).collect();
         rows.push(row(
-            if known { format!("[{}] {} - {} mana ({})", s.circle, s.name, s.mana, if rg.is_empty() { "no reagents".into() } else { rg.join(", ") }) } else { format!("[{}] ??? (not learned)", s.circle) },
+            if known {
+                format!("[{}] {} - {} mana ({})", s.circle, s.name, s.mana, if rg.is_empty() { "no reagents".into() } else { rg.join(", ") })
+            } else {
+                format!("[{}] ??? (not learned)", s.circle)
+            },
             format!("cast:{}", s.id),
             known,
         ));

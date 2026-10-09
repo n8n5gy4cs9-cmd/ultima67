@@ -58,7 +58,15 @@ pub fn hazard(map: &str, tile: &TileDef, inv: &Inventory) -> (f32, &'static str)
 }
 
 #[allow(clippy::too_many_arguments)]
-fn tick(time: Res<Time>, mut acc: Local<f32>, mut game: ResMut<Game>, world: Res<WorldRes>, mut rts: ResMut<PlayerRt>, mut toast: ResMut<Toast>, mut next: ResMut<NextState<AppState>>) {
+fn tick(
+    time: Res<Time>,
+    mut acc: Local<f32>,
+    mut game: ResMut<Game>,
+    world: Res<WorldRes>,
+    mut rts: ResMut<PlayerRt>,
+    mut toast: ResMut<Toast>,
+    mut next: ResMut<NextState<AppState>>,
+) {
     *acc += time.delta_secs();
     if *acc < 1.0 {
         return;

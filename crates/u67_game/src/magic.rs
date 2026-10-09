@@ -3,12 +3,12 @@
 use crate::app::{AppState, Game, WorldRes};
 use crate::audio::SfxEvent;
 use crate::combat::{Cursor, ProjKind, SpawnProjectile};
-use crate::seats::{Intents, PlayerRt};
 use crate::creatures::{self, Creature};
 use crate::data::GameData;
 use crate::db_res::DbRes;
 use crate::menus::spell_known;
 use crate::render::Sheets;
+use crate::seats::{Intents, PlayerRt};
 use bevy::prelude::*;
 use u67_core::TilePos;
 use u67_world::db::Db;
@@ -90,90 +90,114 @@ fn handle_cast(
         game.0.players.swap(0, seat);
         rt.active = seat;
         'one: {
-        if rt.downed {
-            break 'one;
-        }
-        if let Err(e) = can_cast(&game.0, &db.0, &sp) {
-            *toast = crate::ui::Toast { text: e, timer: 2.0 };
-            sfx.write(SfxEvent("spell_fizzle".into()));
-            break 'one;
-        }
-        let pos = Vec2::from(game.0.players[0].pos);
-        let aim = if cursor.valid { (cursor.tile - (pos - Vec2::new(0.0, 0.5))).normalize_or_zero() } else { Vec2::Y };
-        let aim = if aim == Vec2::ZERO { Vec2::Y } else { aim };
-        let power = spell_power(&game.0);
-        pay(&mut game.0, &sp);
-        sfx.write(SfxEvent("spell_cast".into()));
-        match &sp.effect {
-            Fx::Bolt { damage, speed, range, splash, element } => {
-                shots.write(SpawnProjectile { pos: pos - Vec2::new(0.0, 0.5) + aim * 0.6, vel: aim * *speed, dmg: (*damage as f32 * power) as i32, friendly: true, range: *range, kind: ProjKind::Magic, splash: *splash, special: String::new(), cannon: false, target: None, elem: element.clone() });
+            if rt.downed {
+                break 'one;
             }
-            Fx::Heal { amount } => {
-                let max = game.0.players[0].stats.max_hp();
-                game.0.players[0].stats.hp = (game.0.players[0].stats.hp + (*amount as f32 * power) as i32).min(max);
+            if let Err(e) = can_cast(&game.0, &db.0, &sp) {
+                *toast = crate::ui::Toast { text: e, timer: 2.0 };
+                sfx.write(SfxEvent("spell_fizzle".into()));
+                break 'one;
             }
-            Fx::Light { seconds } => rt.light = *seconds,
-            Fx::Haste { seconds } => rt.haste = *seconds,
-            Fx::Protect { amount, seconds } => rt.protect = (*amount, *seconds),
-            Fx::Cure => game.0.players[0].stats.hp = (game.0.players[0].stats.hp + 5).min(game.0.players[0].stats.max_hp()),
-            Fx::Blink { range } => {
-                if let Some(map) = world.0.maps.get(&game.0.current_map) {
-                    let mut dest = pos;
-                    let mut d = 0.5;
-                    while d <= *range {
-                        let p = pos + aim * d;
-                        if map.walkable(TilePos::new(p.x.floor() as i32, p.y.floor() as i32)) {
-                            dest = p;
-                        } else {
-                            break;
+            let pos = Vec2::from(game.0.players[0].pos);
+            let aim = if cursor.valid { (cursor.tile - (pos - Vec2::new(0.0, 0.5))).normalize_or_zero() } else { Vec2::Y };
+            let aim = if aim == Vec2::ZERO { Vec2::Y } else { aim };
+            let power = spell_power(&game.0);
+            pay(&mut game.0, &sp);
+            sfx.write(SfxEvent("spell_cast".into()));
+            match &sp.effect {
+                Fx::Bolt { damage, speed, range, splash, element } => {
+                    shots.write(SpawnProjectile {
+                        pos: pos - Vec2::new(0.0, 0.5) + aim * 0.6,
+                        vel: aim * *speed,
+                        dmg: (*damage as f32 * power) as i32,
+                        friendly: true,
+                        range: *range,
+                        kind: ProjKind::Magic,
+                        splash: *splash,
+                        special: String::new(),
+                        cannon: false,
+                        target: None,
+                        elem: element.clone(),
+                    });
+                }
+                Fx::Heal { amount } => {
+                    let max = game.0.players[0].stats.max_hp();
+                    game.0.players[0].stats.hp = (game.0.players[0].stats.hp + (*amount as f32 * power) as i32).min(max);
+                }
+                Fx::Light { seconds } => rt.light = *seconds,
+                Fx::Haste { seconds } => rt.haste = *seconds,
+                Fx::Protect { amount, seconds } => rt.protect = (*amount, *seconds),
+                Fx::Cure => game.0.players[0].stats.hp = (game.0.players[0].stats.hp + 5).min(game.0.players[0].stats.max_hp()),
+                Fx::Blink { range } => {
+                    if let Some(map) = world.0.maps.get(&game.0.current_map) {
+                        let mut dest = pos;
+                        let mut d = 0.5;
+                        while d <= *range {
+                            let p = pos + aim * d;
+                            if map.walkable(TilePos::new(p.x.floor() as i32, p.y.floor() as i32)) {
+                                dest = p;
+                            } else {
+                                break;
+                            }
+                            d += 0.5;
                         }
-                        d += 0.5;
-                    }
-                    game.0.players[0].pos = dest.into();
-                    game.0.map_dirty = true;
-                }
-            }
-            Fx::Summon { creature, count, seconds } => {
-                for k in 0..*count {
-                    let off = Vec2::new(0.8 + k as f32 * 0.6, 0.2);
-                    creatures::spawn_by_id(&mut commands, &sheets, &db.0, creature, pos + off, true, Some(*seconds));
-                }
-            }
-            Fx::Fear { radius, seconds } => {
-                for (_, mut c) in &mut creatures_q {
-                    if !c.ally && c.pos.distance(pos) <= *radius {
-                        c.fear = *seconds;
+                        game.0.players[0].pos = dest.into();
+                        game.0.map_dirty = true;
                     }
                 }
-            }
-            Fx::Freeze { radius, seconds } => {
-                for (_, mut c) in &mut creatures_q {
-                    if !c.ally && c.pos.distance(pos) <= *radius {
-                        c.frozen = *seconds;
+                Fx::Summon { creature, count, seconds } => {
+                    for k in 0..*count {
+                        let off = Vec2::new(0.8 + k as f32 * 0.6, 0.2);
+                        creatures::spawn_by_id(&mut commands, &sheets, &db.0, creature, pos + off, true, Some(*seconds));
                     }
                 }
-            }
-            Fx::Missiles { count, damage, range } => {
-                let mut targets: Vec<Vec2> = creatures_q.iter().filter(|(_, c)| !c.ally && c.pos.distance(pos) <= *range).map(|(_, c)| c.pos).collect();
-                targets.sort_by(|a, b| a.distance(pos).partial_cmp(&b.distance(pos)).unwrap());
-                for k in 0..*count as usize {
-                    let dir = targets.get(k % targets.len().max(1)).map(|t| (*t - pos).normalize_or_zero()).unwrap_or(aim);
-                    let jitter = Vec2::new(-dir.y, dir.x) * ((k as f32) - (*count as f32) / 2.0) * 0.12;
-                    shots.write(SpawnProjectile { pos: pos - Vec2::new(0.0, 0.5) + jitter, vel: (dir + jitter * 0.3).normalize_or_zero() * 20.0, dmg: (*damage as f32 * power) as i32, friendly: true, range: *range, kind: ProjKind::Magic, splash: 0.0, special: String::new(), cannon: false, target: None, elem: "arcane".into() });
-                }
-            }
-            Fx::Reveal { radius } => {
-                let (cx, cy) = TilePos::new(pos.x as i32, pos.y as i32).chunk();
-                let r = (*radius / 16.0).ceil() as i32;
-                let map = game.0.current_map.clone();
-                for dy in -r..=r {
-                    for dx in -r..=r {
-                        game.0.explored.insert(format!("{map}:{}:{}", cx + dx, cy + dy));
+                Fx::Fear { radius, seconds } => {
+                    for (_, mut c) in &mut creatures_q {
+                        if !c.ally && c.pos.distance(pos) <= *radius {
+                            c.fear = *seconds;
+                        }
                     }
                 }
-                *toast = crate::ui::Toast { text: "Your raven's-eye reveals the land around you.".into(), timer: 2.0 };
+                Fx::Freeze { radius, seconds } => {
+                    for (_, mut c) in &mut creatures_q {
+                        if !c.ally && c.pos.distance(pos) <= *radius {
+                            c.frozen = *seconds;
+                        }
+                    }
+                }
+                Fx::Missiles { count, damage, range } => {
+                    let mut targets: Vec<Vec2> = creatures_q.iter().filter(|(_, c)| !c.ally && c.pos.distance(pos) <= *range).map(|(_, c)| c.pos).collect();
+                    targets.sort_by(|a, b| a.distance(pos).partial_cmp(&b.distance(pos)).unwrap());
+                    for k in 0..*count as usize {
+                        let dir = targets.get(k % targets.len().max(1)).map(|t| (*t - pos).normalize_or_zero()).unwrap_or(aim);
+                        let jitter = Vec2::new(-dir.y, dir.x) * ((k as f32) - (*count as f32) / 2.0) * 0.12;
+                        shots.write(SpawnProjectile {
+                            pos: pos - Vec2::new(0.0, 0.5) + jitter,
+                            vel: (dir + jitter * 0.3).normalize_or_zero() * 20.0,
+                            dmg: (*damage as f32 * power) as i32,
+                            friendly: true,
+                            range: *range,
+                            kind: ProjKind::Magic,
+                            splash: 0.0,
+                            special: String::new(),
+                            cannon: false,
+                            target: None,
+                            elem: "arcane".into(),
+                        });
+                    }
+                }
+                Fx::Reveal { radius } => {
+                    let (cx, cy) = TilePos::new(pos.x as i32, pos.y as i32).chunk();
+                    let r = (*radius / 16.0).ceil() as i32;
+                    let map = game.0.current_map.clone();
+                    for dy in -r..=r {
+                        for dx in -r..=r {
+                            game.0.explored.insert(format!("{map}:{}:{}", cx + dx, cy + dy));
+                        }
+                    }
+                    *toast = crate::ui::Toast { text: "Your raven's-eye reveals the land around you.".into(), timer: 2.0 };
+                }
             }
-        }
         }
         game.0.players.swap(0, seat);
         rt.active = 0;

@@ -44,7 +44,19 @@ pub struct PadMap {
 impl Default for PadMap {
     fn default() -> Self {
         let s = |x: &str| x.to_string();
-        Self { interact: s("South"), attack: s("RightTrigger"), attack_alt: s("RightTrigger2"), roll: s("East"), reload: s("West"), inventory: s("North"), run: s("LeftTrigger"), pause: s("Start"), spell1: s("DPadLeft"), spell2: s("DPadUp"), spell3: s("DPadRight") }
+        Self {
+            interact: s("South"),
+            attack: s("RightTrigger"),
+            attack_alt: s("RightTrigger2"),
+            roll: s("East"),
+            reload: s("West"),
+            inventory: s("North"),
+            run: s("LeftTrigger"),
+            pause: s("Start"),
+            spell1: s("DPadLeft"),
+            spell2: s("DPadUp"),
+            spell3: s("DPadRight"),
+        }
     }
 }
 
@@ -101,7 +113,20 @@ impl Default for Settings {
             (Map, k(&["M"])),
             (Journal, k(&["J"])),
         ]);
-        Self { fullscreen: false, vsync: true, zoom: 3.0, master_volume: 0.8, music_volume: 0.5, sfx_volume: 0.8, gamepad_deadzone: 0.2, text_scale: 1.0, hot_reload: true, colorblind: false, pad: PadMap::default(), keys }
+        Self {
+            fullscreen: false,
+            vsync: true,
+            zoom: 3.0,
+            master_volume: 0.8,
+            music_volume: 0.5,
+            sfx_volume: 0.8,
+            gamepad_deadzone: 0.2,
+            text_scale: 1.0,
+            hot_reload: true,
+            colorblind: false,
+            pad: PadMap::default(),
+            keys,
+        }
     }
 }
 

@@ -56,27 +56,56 @@ const fn look(name: &'static str, skin: Col, hair: Col, top: Col, bottom: Col, a
 pub const HUMANOIDS: &[Look] = &[
     Look { helm: Helm::None, beard: true, hold: Gun::Rifle, ..look("player", SKIN, rgb(120, 70, 35), rgb(70, 95, 130), rgb(60, 55, 50), rgb(200, 170, 60)) },
     Look { helm: Helm::Winged, hold: Gun::Spear, ..look("valkyrie", SKIN, rgb(240, 215, 120), rgb(200, 205, 215), rgb(120, 40, 50), rgb(240, 240, 250)) },
-    Look { beard: true, short: 4, bulk: 1, hold: Gun::Axe, helm: Helm::None, ..look("dwarf", rgb(225, 165, 130), rgb(190, 80, 40), rgb(110, 70, 40), rgb(70, 60, 55), rgb(220, 160, 50)) },
+    Look {
+        beard: true,
+        short: 4,
+        bulk: 1,
+        hold: Gun::Axe,
+        helm: Helm::None,
+        ..look("dwarf", rgb(225, 165, 130), rgb(190, 80, 40), rgb(110, 70, 40), rgb(70, 60, 55), rgb(220, 160, 50))
+    },
     Look { helm: Helm::Band, skirt: true, hold: Gun::Staff, ..look("singer", SKIN, rgb(230, 225, 215), rgb(235, 235, 235), rgb(200, 50, 60), rgb(60, 90, 190)) },
     Look { helm: Helm::Hood, skirt: true, ..look("volva", SKIN, rgb(30, 25, 45), rgb(95, 55, 150), rgb(60, 35, 100), rgb(90, 240, 220)) },
-    Look { helm: Helm::Horned, beard: true, bulk: 2, hold: Gun::Axe, ..look("berserker", rgb(215, 160, 125), rgb(70, 40, 25), rgb(100, 70, 50), rgb(70, 50, 40), rgb(190, 190, 180)) },
+    Look {
+        helm: Helm::Horned,
+        beard: true,
+        bulk: 2,
+        hold: Gun::Axe,
+        ..look("berserker", rgb(215, 160, 125), rgb(70, 40, 25), rgb(100, 70, 50), rgb(70, 50, 40), rgb(190, 190, 180))
+    },
     Look { beard: false, ..look("villager_m", SKIN, rgb(140, 100, 60), rgb(150, 120, 80), rgb(90, 75, 60), rgb(190, 60, 50)) },
     Look { skirt: true, helm: Helm::Band, ..look("villager_f", SKIN, rgb(190, 130, 60), rgb(80, 130, 150), rgb(120, 80, 70), rgb(240, 220, 120)) },
     Look { helm: Helm::Visor, hold: Gun::Rifle, bulk: 1, ..look("merc", SKIN, rgb(30, 30, 30), rgb(35, 38, 45), rgb(30, 32, 38), rgb(220, 60, 50)) },
-    Look { glow_eyes: Some(rgb(110, 255, 230)), helm: Helm::Horned, hold: Gun::Axe, ..look("draugr", PALE, rgb(60, 70, 80), rgb(70, 90, 100), rgb(55, 65, 75), rgb(120, 190, 200)) },
+    Look {
+        glow_eyes: Some(rgb(110, 255, 230)),
+        helm: Helm::Horned,
+        hold: Gun::Axe,
+        ..look("draugr", PALE, rgb(60, 70, 80), rgb(70, 90, 100), rgb(55, 65, 75), rgb(120, 190, 200))
+    },
     Look { bulk: 3, glow_eyes: Some(rgb(255, 220, 60)), ..look("troll", rgb(110, 130, 100), rgb(60, 70, 50), rgb(100, 85, 60), rgb(80, 70, 55), rgb(150, 150, 120)) },
-    Look { helm: Helm::Antlers, skirt: true, glow_eyes: Some(rgb(80, 255, 255)), beard: false, hold: Gun::Staff, ..look("louhi", rgb(150, 190, 200), rgb(220, 240, 245), rgb(40, 70, 90), rgb(30, 50, 70), rgb(120, 230, 255)) },
-    Look { bulk: 4, glow_eyes: Some(rgb(255, 120, 60)), beard: true, helm: Helm::Horned, hold: Gun::Axe, ..look("jotun", rgb(170, 205, 235), rgb(230, 240, 250), rgb(90, 120, 160), rgb(70, 95, 130), rgb(230, 240, 255)) },
+    Look {
+        helm: Helm::Antlers,
+        skirt: true,
+        glow_eyes: Some(rgb(80, 255, 255)),
+        beard: false,
+        hold: Gun::Staff,
+        ..look("louhi", rgb(150, 190, 200), rgb(220, 240, 245), rgb(40, 70, 90), rgb(30, 50, 70), rgb(120, 230, 255))
+    },
+    Look {
+        bulk: 4,
+        glow_eyes: Some(rgb(255, 120, 60)),
+        beard: true,
+        helm: Helm::Horned,
+        hold: Gun::Axe,
+        ..look("jotun", rgb(170, 205, 235), rgb(230, 240, 250), rgb(90, 120, 160), rgb(70, 95, 130), rgb(230, 240, 255))
+    },
     Look { helm: Helm::Hat, beard: true, hold: Gun::Staff, ..look("skald", SKIN, rgb(220, 220, 220), rgb(70, 70, 110), rgb(60, 60, 80), rgb(200, 170, 60)) },
     Look { helm: Helm::Crown, beard: true, ..look("jarl", SKIN, rgb(180, 120, 50), rgb(130, 40, 40), rgb(70, 55, 45), rgb(235, 190, 70)) },
     Look { helm: Helm::Visor, hold: Gun::Rifle, ..look("warden_guard", SKIN, rgb(90, 60, 40), rgb(60, 85, 70), rgb(50, 55, 50), rgb(210, 170, 60)) },
 ];
 
-pub const CREATURES: &[(&str, Col, Col, i32)] = &[
-    ("wolf", rgb(120, 120, 130), rgb(210, 210, 215), 0),
-    ("fenrir", rgb(40, 40, 55), rgb(255, 60, 40), 3),
-    ("ice_wolf", rgb(210, 225, 240), rgb(120, 220, 255), 1),
-];
+pub const CREATURES: &[(&str, Col, Col, i32)] =
+    &[("wolf", rgb(120, 120, 130), rgb(210, 210, 215), 0), ("fenrir", rgb(40, 40, 55), rgb(255, 60, 40), 3), ("ice_wolf", rgb(210, 225, 240), rgb(120, 220, 255), 1)];
 
 pub fn names() -> Vec<&'static str> {
     HUMANOIDS.iter().map(|l| l.name).chain(CREATURES.iter().map(|c| c.0)).collect()

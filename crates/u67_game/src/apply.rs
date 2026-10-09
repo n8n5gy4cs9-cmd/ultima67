@@ -43,7 +43,24 @@ impl Outcome {
 }
 
 pub const SPAWNABLE: &[&str] = &[
-    "wolf", "ice_wolf", "fenrir", "draugr", "troll", "jotun", "merc", "louhi", "villager_m", "villager_f", "valkyrie", "dwarf", "singer", "volva", "berserker", "skald", "jarl", "warden_guard",
+    "wolf",
+    "ice_wolf",
+    "fenrir",
+    "draugr",
+    "troll",
+    "jotun",
+    "merc",
+    "louhi",
+    "villager_m",
+    "villager_f",
+    "valkyrie",
+    "dwarf",
+    "singer",
+    "volva",
+    "berserker",
+    "skald",
+    "jarl",
+    "warden_guard",
 ];
 
 fn list_wrapped(items: &[String], per_line: usize) -> Vec<String> {
@@ -177,7 +194,9 @@ pub fn apply(d: &mut GameData, world: &World, a: Action) -> Outcome {
             }
             _ => o.say("out of bounds"),
         },
-        Action::Pos => o.say(format!("{} {:.1},{:.1} t={:02}:{:02} day {}", d.current_map, p!().pos[0], p!().pos[1], d.clock.hour(), d.clock.minute(), d.clock.day() + 1)),
+        Action::Pos => {
+            o.say(format!("{} {:.1},{:.1} t={:02}:{:02} day {}", d.current_map, p!().pos[0], p!().pos[1], d.clock.hour(), d.clock.minute(), d.clock.day() + 1))
+        }
         Action::Planet(id) => match world.maps.get(&id) {
             Some(m) if u67_mapgen::planets::BODIES.iter().any(|b| b.id == id) || id == "midgard" => {
                 let land = m.places.get("landing").or_else(|| m.places.get("start")).copied().unwrap_or(TilePos::new(m.width / 2, m.height / 2));
@@ -195,7 +214,8 @@ pub fn apply(d: &mut GameData, world: &World, a: Action) -> Outcome {
             }
         }
         Action::Places(f) => {
-            let mut v: Vec<String> = world.maps.get(&cur_map).map(|m| m.places.keys().filter(|k| f.as_ref().is_none_or(|f| k.contains(f.as_str()))).cloned().collect()).unwrap_or_default();
+            let mut v: Vec<String> =
+                world.maps.get(&cur_map).map(|m| m.places.keys().filter(|k| f.as_ref().is_none_or(|f| k.contains(f.as_str()))).cloned().collect()).unwrap_or_default();
             let total = v.len();
             v.truncate(48);
             o.lines.extend(list_wrapped(&v, 4));

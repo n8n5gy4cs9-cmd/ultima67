@@ -5,17 +5,52 @@ use serde::{Deserialize, Serialize};
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum Effect {
     /// Projectile that damages.
-    Bolt { damage: i32, speed: f32, range: f32, #[serde(default)] splash: f32, #[serde(default)] element: String },
-    Heal { amount: i32 },
-    Light { seconds: f32 },
-    Haste { seconds: f32 },
-    Protect { amount: i32, seconds: f32 },
-    Blink { range: f32 },
-    Summon { creature: String, count: u32, seconds: f32 },
-    Fear { radius: f32, seconds: f32 },
-    Freeze { radius: f32, seconds: f32 },
-    Missiles { count: u32, damage: i32, range: f32 },
-    Reveal { radius: f32 },
+    Bolt {
+        damage: i32,
+        speed: f32,
+        range: f32,
+        #[serde(default)]
+        splash: f32,
+        #[serde(default)]
+        element: String,
+    },
+    Heal {
+        amount: i32,
+    },
+    Light {
+        seconds: f32,
+    },
+    Haste {
+        seconds: f32,
+    },
+    Protect {
+        amount: i32,
+        seconds: f32,
+    },
+    Blink {
+        range: f32,
+    },
+    Summon {
+        creature: String,
+        count: u32,
+        seconds: f32,
+    },
+    Fear {
+        radius: f32,
+        seconds: f32,
+    },
+    Freeze {
+        radius: f32,
+        seconds: f32,
+    },
+    Missiles {
+        count: u32,
+        damage: i32,
+        range: f32,
+    },
+    Reveal {
+        radius: f32,
+    },
     Cure,
 }
 

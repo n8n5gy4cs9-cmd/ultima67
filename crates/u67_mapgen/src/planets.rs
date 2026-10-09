@@ -15,22 +15,90 @@ pub struct Body {
 }
 
 pub const BODIES: &[Body] = &[
-    Body { id: "sol", name: "Sól", system: "sol", size: 160, hotspots: &[("solarsmidja", "bunker"), ("flare_altar", "ring"), ("molten_cache", "cache"), ("sun_wreck", "wreck")] },
-    Body { id: "dvalinn", name: "Dvalinn", system: "sol", size: 200, hotspots: &[("brokkr_forge", "bunker"), ("sindri_anvil", "ring"), ("magma_cache", "cache"), ("dwarf_wreck", "wreck"), ("smith_camp", "camp")] },
-    Body { id: "vanaheimr", name: "Vanaheimr", system: "sol", size: 220, hotspots: &[("freyja_grove", "ring"), ("njord_dock", "camp"), ("seidr_school", "bunker"), ("vanir_cache", "cache"), ("storm_wreck", "wreck")] },
-    Body { id: "maani", name: "Máni", system: "sol", size: 200, hotspots: &[("skoll_crater", "ring"), ("lunar_fort", "bunker"), ("hati_wreck", "wreck"), ("dust_cache", "cache"), ("silent_camp", "camp")] },
-    Body { id: "muspelheimr", name: "Múspelheimr", system: "sol", size: 240, hotspots: &[("surtr_bunker_7", "bunker"), ("ember_ring", "ring"), ("red_wreck", "wreck"), ("fire_cache", "cache"), ("giant_camp", "camp")] },
-    Body { id: "svartalfheimr", name: "Svartálfheimr", system: "sol", size: 160, hotspots: &[("smuggler_rock", "camp"), ("miner_wreck", "wreck"), ("black_cache", "cache"), ("dark_elf_bunker", "bunker")] },
-    Body { id: "asgard", name: "Ásgarðr", system: "sol", size: 240, hotspots: &[("valhalla_hall", "bunker"), ("odin_vault", "bunker"), ("gjallar_ring", "ring"), ("cloud_cache", "cache"), ("bilskirnir", "camp")] },
-    Body { id: "jotunheimr", name: "Jötunheimr", system: "sol", size: 240, hotspots: &[("thrymr_keep", "bunker"), ("ice_giant_ring", "ring"), ("frozen_wreck", "wreck"), ("glacier_cache", "cache"), ("rime_camp", "camp")] },
-    Body { id: "niflheimr", name: "Niflheimr", system: "sol", size: 200, hotspots: &[("hvergelmir", "ring"), ("mist_wreck", "wreck"), ("frost_cache", "cache"), ("nidhogg_roots", "bunker")] },
-    Body { id: "hel", name: "Hel", system: "sol", size: 220, hotspots: &[("naglfar_wreck", "wreck"), ("helheim_hall", "bunker"), ("garm_gate", "ring"), ("bone_cache", "cache"), ("nastrond", "camp")] },
+    Body {
+        id: "sol",
+        name: "Sól",
+        system: "sol",
+        size: 160,
+        hotspots: &[("solarsmidja", "bunker"), ("flare_altar", "ring"), ("molten_cache", "cache"), ("sun_wreck", "wreck")],
+    },
+    Body {
+        id: "dvalinn",
+        name: "Dvalinn",
+        system: "sol",
+        size: 200,
+        hotspots: &[("brokkr_forge", "bunker"), ("sindri_anvil", "ring"), ("magma_cache", "cache"), ("dwarf_wreck", "wreck"), ("smith_camp", "camp")],
+    },
+    Body {
+        id: "vanaheimr",
+        name: "Vanaheimr",
+        system: "sol",
+        size: 220,
+        hotspots: &[("freyja_grove", "ring"), ("njord_dock", "camp"), ("seidr_school", "bunker"), ("vanir_cache", "cache"), ("storm_wreck", "wreck")],
+    },
+    Body {
+        id: "maani",
+        name: "Máni",
+        system: "sol",
+        size: 200,
+        hotspots: &[("skoll_crater", "ring"), ("lunar_fort", "bunker"), ("hati_wreck", "wreck"), ("dust_cache", "cache"), ("silent_camp", "camp")],
+    },
+    Body {
+        id: "muspelheimr",
+        name: "Múspelheimr",
+        system: "sol",
+        size: 240,
+        hotspots: &[("surtr_bunker_7", "bunker"), ("ember_ring", "ring"), ("red_wreck", "wreck"), ("fire_cache", "cache"), ("giant_camp", "camp")],
+    },
+    Body {
+        id: "svartalfheimr",
+        name: "Svartálfheimr",
+        system: "sol",
+        size: 160,
+        hotspots: &[("smuggler_rock", "camp"), ("miner_wreck", "wreck"), ("black_cache", "cache"), ("dark_elf_bunker", "bunker")],
+    },
+    Body {
+        id: "asgard",
+        name: "Ásgarðr",
+        system: "sol",
+        size: 240,
+        hotspots: &[("valhalla_hall", "bunker"), ("odin_vault", "bunker"), ("gjallar_ring", "ring"), ("cloud_cache", "cache"), ("bilskirnir", "camp")],
+    },
+    Body {
+        id: "jotunheimr",
+        name: "Jötunheimr",
+        system: "sol",
+        size: 240,
+        hotspots: &[("thrymr_keep", "bunker"), ("ice_giant_ring", "ring"), ("frozen_wreck", "wreck"), ("glacier_cache", "cache"), ("rime_camp", "camp")],
+    },
+    Body {
+        id: "niflheimr",
+        name: "Niflheimr",
+        system: "sol",
+        size: 200,
+        hotspots: &[("hvergelmir", "ring"), ("mist_wreck", "wreck"), ("frost_cache", "cache"), ("nidhogg_roots", "bunker")],
+    },
+    Body {
+        id: "hel",
+        name: "Hel",
+        system: "sol",
+        size: 220,
+        hotspots: &[("naglfar_wreck", "wreck"), ("helheim_hall", "bunker"), ("garm_gate", "ring"), ("bone_cache", "cache"), ("nastrond", "camp")],
+    },
     Body { id: "ginnungagap", name: "Ginnungagap", system: "sol", size: 130, hotspots: &[("sampo_gate", "ring"), ("void_wreck", "wreck"), ("gate_cache", "cache")] },
-    Body { id: "vainola", name: "Väinölä", system: "kalevala", size: 220, hotspots: &[("kantele_temple", "bunker"), ("singing_grove", "ring"), ("hero_cache", "cache")] },
+    Body {
+        id: "vainola", name: "Väinölä", system: "kalevala", size: 220, hotspots: &[("kantele_temple", "bunker"), ("singing_grove", "ring"), ("hero_cache", "cache")]
+    },
     Body { id: "pohjola", name: "Pohjola", system: "kalevala", size: 220, hotspots: &[("iron_fortress", "bunker"), ("aurora_ring", "ring"), ("louhi_wreck", "wreck")] },
     Body { id: "tuonela", name: "Tuonela", system: "kalevala", size: 200, hotspots: &[("swan_river", "ring"), ("tuoni_hall", "bunker"), ("dead_cache", "cache")] },
     Body { id: "ilma", name: "Ilma", system: "kalevala", size: 200, hotspots: &[("sky_anvil", "ring"), ("ukko_peak", "bunker"), ("storm_cache", "cache")] },
-    Body { id: "sampola", name: "Sampola", system: "kalevala", size: 200, hotspots: &[("sampo_forge_ruin", "bunker"), ("shard_field", "ring"), ("broken_wreck", "wreck")] },
+    Body {
+        id: "sampola",
+        name: "Sampola",
+        system: "kalevala",
+        size: 200,
+        hotspots: &[("sampo_forge_ruin", "bunker"), ("shard_field", "ring"), ("broken_wreck", "wreck")],
+    },
 ];
 
 /// Terrain palette per body: (low, mid, high, accent, highest-wall).
@@ -83,13 +151,29 @@ pub fn generate(b: &Body, seed: u64) -> Map {
             let acc = fbm(x as f32 / 20.0, y as f32 / 20.0, s + 3, 3);
             let t = if free_space {
                 // asteroid islands in the void
-                if fbm(x as f32 / 14.0, y as f32 / 14.0, s, 3) > 0.52 { if acc > 0.6 { pal[2] } else { pal[1] } } else { pal[0] }
+                if fbm(x as f32 / 14.0, y as f32 / 14.0, s, 3) > 0.52 {
+                    if acc > 0.6 {
+                        pal[2]
+                    } else {
+                        pal[1]
+                    }
+                } else {
+                    pal[0]
+                }
             } else if hgt < 0.30 {
                 pal[0]
             } else if hgt < 0.50 {
-                if acc > 0.66 { pal[3] } else { pal[1] }
+                if acc > 0.66 {
+                    pal[3]
+                } else {
+                    pal[1]
+                }
             } else if hgt < 0.64 {
-                if acc > 0.7 { pal[3] } else { pal[2] }
+                if acc > 0.7 {
+                    pal[3]
+                } else {
+                    pal[2]
+                }
             } else {
                 pal[4]
             };

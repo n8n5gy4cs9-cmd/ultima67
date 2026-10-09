@@ -9,49 +9,128 @@ fn one() -> u32 {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Step {
-    Say { text: String },
-    Toast { text: String },
-    SetFlag { flag: String },
-    ClearFlag { flag: String },
-    Inc { counter: String },
-    Give { item: String, #[serde(default = "one")] count: u32 },
-    Take { item: String, #[serde(default = "one")] count: u32 },
-    Money { amount: i64 },
-    Xp { amount: u32 },
+    Say {
+        text: String,
+    },
+    Toast {
+        text: String,
+    },
+    SetFlag {
+        flag: String,
+    },
+    ClearFlag {
+        flag: String,
+    },
+    Inc {
+        counter: String,
+    },
+    Give {
+        item: String,
+        #[serde(default = "one")]
+        count: u32,
+    },
+    Take {
+        item: String,
+        #[serde(default = "one")]
+        count: u32,
+    },
+    Money {
+        amount: i64,
+    },
+    Xp {
+        amount: u32,
+    },
     Heal,
-    StartQuest { quest: String },
-    CompleteQuest { quest: String },
-    JoinParty { npc: String },
-    LeaveParty { npc: String },
-    Teleport { place: String },
-    Travel { body: String },
-    Sfx { id: String },
-    Spawn { id: String, #[serde(default = "one")] count: u32 },
-    Shop { shop: String },
-    Craft { station: String },
+    StartQuest {
+        quest: String,
+    },
+    CompleteQuest {
+        quest: String,
+    },
+    JoinParty {
+        npc: String,
+    },
+    LeaveParty {
+        npc: String,
+    },
+    Teleport {
+        place: String,
+    },
+    Travel {
+        body: String,
+    },
+    Sfx {
+        id: String,
+    },
+    Spawn {
+        id: String,
+        #[serde(default = "one")]
+        count: u32,
+    },
+    Shop {
+        shop: String,
+    },
+    Craft {
+        station: String,
+    },
     Sleep,
-    UnlockTravel { node: String },
-    Learn { spell: String },
-    If { cond: Cond, then: Vec<Step>, #[serde(default)] els: Vec<Step> },
+    UnlockTravel {
+        node: String,
+    },
+    Learn {
+        spell: String,
+    },
+    If {
+        cond: Cond,
+        then: Vec<Step>,
+        #[serde(default)]
+        els: Vec<Step>,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "is", rename_all = "snake_case")]
 pub enum Cond {
-    Flag { flag: String },
-    NotFlag { flag: String },
-    HasItem { item: String, #[serde(default = "one")] count: u32 },
-    Counter { counter: String, min: u32 },
+    Flag {
+        flag: String,
+    },
+    NotFlag {
+        flag: String,
+    },
+    HasItem {
+        item: String,
+        #[serde(default = "one")]
+        count: u32,
+    },
+    Counter {
+        counter: String,
+        min: u32,
+    },
     /// state: "none" | "active" | "done"
-    Quest { quest: String, state: String },
-    MinLevel { level: u32 },
-    InMap { map: String },
+    Quest {
+        quest: String,
+        state: String,
+    },
+    MinLevel {
+        level: u32,
+    },
+    InMap {
+        map: String,
+    },
     Night,
     Day,
-    InParty { npc: String },
-    And { all: Vec<Cond> },
-    Or { any: Vec<Cond> },
-    Not { cond: Box<Cond> },
+    InParty {
+        npc: String,
+    },
+    And {
+        all: Vec<Cond>,
+    },
+    Or {
+        any: Vec<Cond>,
+    },
+    Not {
+        cond: Box<Cond>,
+    },
 }
 
 #[cfg(test)]

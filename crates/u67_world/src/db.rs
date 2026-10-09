@@ -36,19 +36,17 @@ fn parse<T: DeserializeOwned>(name: &str, s: &str) -> Result<Vec<T>, String> {
 
 impl Db {
     fn from_sources(get: &dyn Fn(&str, &str) -> String) -> Result<Db, String> {
-        let mut db = Db::default();
-        db.quests = parse("quests.json", &get("quests.json", embedded!("quests.json")))?;
-        db.dialogues = parse::<DialogueDef>("dialogue.json", &get("dialogue.json", embedded!("dialogue.json")))?.into_iter().map(|d| (d.id.clone(), d)).collect();
-        db.npcs = parse("npcs.json", &get("npcs.json", embedded!("npcs.json")))?;
-        db.shops = parse::<ShopDef>("shops.json", &get("shops.json", embedded!("shops.json")))?.into_iter().map(|d| (d.id.clone(), d)).collect();
-        db.creatures = parse::<CreatureDef>("creatures.json", &get("creatures.json", embedded!("creatures.json")))?.into_iter().map(|d| (d.id.clone(), d)).collect();
-        db.spawns = parse("spawns.json", &get("spawns.json", embedded!("spawns.json")))?;
-        db.loot = parse::<LootTable>("loot.json", &get("loot.json", embedded!("loot.json")))?.into_iter().map(|d| (d.id.clone(), d)).collect();
-        db.spells = parse("spells.json", &get("spells.json", embedded!("spells.json")))?;
-        db.recipes = parse("recipes.json", &get("recipes.json", embedded!("recipes.json")))?;
+        let quests = parse("quests.json", &get("quests.json", embedded!("quests.json")))?;
+        let dialogues = parse::<DialogueDef>("dialogue.json", &get("dialogue.json", embedded!("dialogue.json")))?.into_iter().map(|d| (d.id.clone(), d)).collect();
+        let npcs = parse("npcs.json", &get("npcs.json", embedded!("npcs.json")))?;
+        let shops = parse::<ShopDef>("shops.json", &get("shops.json", embedded!("shops.json")))?.into_iter().map(|d| (d.id.clone(), d)).collect();
+        let creatures = parse::<CreatureDef>("creatures.json", &get("creatures.json", embedded!("creatures.json")))?.into_iter().map(|d| (d.id.clone(), d)).collect();
+        let spawns = parse("spawns.json", &get("spawns.json", embedded!("spawns.json")))?;
+        let loot = parse::<LootTable>("loot.json", &get("loot.json", embedded!("loot.json")))?.into_iter().map(|d| (d.id.clone(), d)).collect();
+        let spells = parse("spells.json", &get("spells.json", embedded!("spells.json")))?;
+        let recipes = parse("recipes.json", &get("recipes.json", embedded!("recipes.json")))?;
         let signs: Vec<(String, Vec<String>)> = serde_json::from_str(&get("lore.json", embedded!("lore.json"))).map_err(|e| format!("lore.json: {e}"))?;
-        db.signs = signs.into_iter().collect();
-        Ok(db)
+        Ok(Db { quests, dialogues, npcs, shops, creatures, spawns, loot, spells, recipes, signs: signs.into_iter().collect() })
     }
 
     /// Built-in content only.
@@ -193,7 +191,25 @@ impl Db {
 
 /// Character archetype names (kept here to avoid depending on the asset generator crate).
 pub const ARCHETYPES: &[&str] = &[
-    "player", "valkyrie", "dwarf", "singer", "volva", "berserker", "villager_m", "villager_f", "merc", "draugr", "troll", "louhi", "jotun", "skald", "jarl", "warden_guard", "wolf", "fenrir", "ice_wolf",
+    "player",
+    "valkyrie",
+    "dwarf",
+    "singer",
+    "volva",
+    "berserker",
+    "villager_m",
+    "villager_f",
+    "merc",
+    "draugr",
+    "troll",
+    "louhi",
+    "jotun",
+    "skald",
+    "jarl",
+    "warden_guard",
+    "wolf",
+    "fenrir",
+    "ice_wolf",
 ];
 fn u67_assetgen_names_contains(n: &str) -> bool {
     ARCHETYPES.contains(&n)

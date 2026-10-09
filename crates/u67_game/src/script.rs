@@ -26,12 +26,7 @@ pub fn check(d: &GameData, c: &Cond) -> bool {
         Cond::Counter { counter, min } => d.counters.get(counter).copied().unwrap_or(0) >= *min,
         Cond::Quest { quest, state } => {
             let s = d.quests.get(quest).map(|q| q.state);
-            match (state.as_str(), s) {
-                ("none", None) => true,
-                ("active", Some(QuestState::Active)) => true,
-                ("done", Some(QuestState::Done)) => true,
-                _ => false,
-            }
+            matches!((state.as_str(), s), ("none", None) | ("active", Some(QuestState::Active)) | ("done", Some(QuestState::Done)))
         }
         Cond::MinLevel { level } => d.players[0].stats.level >= *level,
         Cond::InMap { map } => &d.current_map == map,
@@ -304,9 +299,12 @@ mod tests {
     #[test]
     fn script_steps_and_conditions() {
         let (mut d, db, w) = setup();
-        let steps: Vec<Step> = serde_json::from_str(r#"[{"op":"give","item":"rope","count":2},{"op":"inc","counter":"x"},
+        let steps: Vec<Step> = serde_json::from_str(
+            r#"[{"op":"give","item":"rope","count":2},{"op":"inc","counter":"x"},
           {"op":"if","cond":{"is":"counter","counter":"x","min":1},"then":[{"op":"set_flag","flag":"yes"}],"els":[{"op":"set_flag","flag":"no"}]},
-          {"op":"join_party","npc":"sigrun"},{"op":"sleep"}]"#).unwrap();
+          {"op":"join_party","npc":"sigrun"},{"op":"sleep"}]"#,
+        )
+        .unwrap();
         d.clock.set_hm(22, 0);
         let day = d.clock.day();
         let o = run(&mut d, &db, &w, &steps);

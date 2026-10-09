@@ -201,7 +201,17 @@ struct ShotState {
     taken: bool,
 }
 
-fn run_cli_cmds(cli: Res<Cli>, state: Res<State<AppState>>, mut game: ResMut<Game>, world: Res<WorldRes>, mut fx: EventWriter<EffectEvent>, mut done: Local<u32>, mut ui: EventWriter<crate::interact::UiRequest>, mut next: ResMut<NextState<AppState>>, npcs: Res<crate::npc::Npcs>) {
+fn run_cli_cmds(
+    cli: Res<Cli>,
+    state: Res<State<AppState>>,
+    mut game: ResMut<Game>,
+    world: Res<WorldRes>,
+    mut fx: EventWriter<EffectEvent>,
+    mut done: Local<u32>,
+    mut ui: EventWriter<crate::interact::UiRequest>,
+    mut next: ResMut<NextState<AppState>>,
+    npcs: Res<crate::npc::Npcs>,
+) {
     if (cli.cmds.is_empty() && cli.ui.is_none()) || *state.get() != AppState::Playing {
         return;
     }
@@ -307,7 +317,11 @@ fn draw_colliders(time: Res<Time>, game: Res<Game>, world: Res<WorldRes>, mut co
             let t = TilePos::new(cx + dx, cy + dy);
             if map.in_bounds(t) && !map.walkable(t) {
                 let px = crate::render::tile_px(t.x as f32, t.y as f32);
-                commands.spawn((ColliderViz, Sprite { color: Color::srgba(1.0, 0.1, 0.1, 0.35), custom_size: Some(Vec2::splat(15.0)), anchor: bevy::sprite::Anchor::TopLeft, ..default() }, Transform::from_xyz(px.x, px.y, 50.0)));
+                commands.spawn((
+                    ColliderViz,
+                    Sprite { color: Color::srgba(1.0, 0.1, 0.1, 0.35), custom_size: Some(Vec2::splat(15.0)), anchor: bevy::sprite::Anchor::TopLeft, ..default() },
+                    Transform::from_xyz(px.x, px.y, 50.0),
+                ));
             }
         }
     }

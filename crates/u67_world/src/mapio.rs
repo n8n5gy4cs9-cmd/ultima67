@@ -19,7 +19,15 @@ struct Meta {
 }
 
 pub fn to_bytes(m: &Map) -> Vec<u8> {
-    let meta = Meta { name: m.name.clone(), width: m.width, height: m.height, objects: m.objects.clone(), portals: m.portals.clone(), buildings: m.buildings.clone(), places: m.places.clone() };
+    let meta = Meta {
+        name: m.name.clone(),
+        width: m.width,
+        height: m.height,
+        objects: m.objects.clone(),
+        portals: m.portals.clone(),
+        buildings: m.buildings.clone(),
+        places: m.places.clone(),
+    };
     let json = serde_json::to_vec(&meta).expect("serialize map meta");
     let mut o = b"U67M".to_vec();
     o.extend((json.len() as u32).to_le_bytes());

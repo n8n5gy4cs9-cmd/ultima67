@@ -90,10 +90,14 @@ fn classify(x: i32, y: i32, hh: f32, seed: u64) -> TileId {
     if fy > 0.72 && fbm(nx / 30.0, ny / 30.0, seed + 41, 2) > 0.58 {
         return tiles::FARMLAND;
     }
-    if moist > 0.5 { tiles::FOREST_FLOOR } else { tiles::GRASS }
+    if moist > 0.5 {
+        tiles::FOREST_FLOOR
+    } else {
+        tiles::GRASS
+    }
 }
 
-fn buildable(m: &Map, x: i32, y: i32, r: i32) -> bool {
+pub fn buildable(m: &Map, x: i32, y: i32, r: i32) -> bool {
     for j in (-r..=r).step_by(2) {
         for i in (-r..=r).step_by(2) {
             let t = m.tile(TilePos::new(x + i, y + j));
@@ -106,8 +110,8 @@ fn buildable(m: &Map, x: i32, y: i32, r: i32) -> bool {
     true
 }
 
-fn find_site(m: &Map, nx: f32, ny: f32, r: i32) -> Option<TilePos> {
-    let (cx, cy) = ((nx * SIZE as f32) as i32, (ny * SIZE as f32) as i32);
+pub fn find_site(m: &Map, nx: f32, ny: f32, r: i32) -> Option<TilePos> {
+    let (cx, cy) = ((nx * m.width as f32) as i32, (ny * m.height as f32) as i32);
     for rad in (0..120).step_by(3) {
         for k in 0..(8 + rad / 2) {
             let a = k as f32 / (8 + rad / 2) as f32 * std::f32::consts::TAU;
@@ -120,7 +124,7 @@ fn find_site(m: &Map, nx: f32, ny: f32, r: i32) -> Option<TilePos> {
     None
 }
 
-fn build_town(m: &mut Map, id: &str, c: TilePos, coastal: bool, seed: u64) {
+pub fn build_town(m: &mut Map, id: &str, c: TilePos, coastal: bool, seed: u64) {
     let mut rng = Rng::new(seed);
     let r = 11;
     for j in -r..=r {
@@ -163,7 +167,7 @@ fn build_town(m: &mut Map, id: &str, c: TilePos, coastal: bool, seed: u64) {
                         let w = TilePos::new(q.x + dx * k, q.y + dy * k);
                         m.set_tile(w, tiles::FLOOR_WOOD);
                     }
-                    m.add_object("longship", TilePos::new(q.x + dx * 7 + dy, q.y + dy * 7 + dx), );
+                    m.add_object("longship", TilePos::new(q.x + dx * 7 + dy, q.y + dy * 7 + dx));
                     m.places.insert(format!("{id}_dock"), q);
                     return;
                 }
@@ -201,6 +205,82 @@ fn lay_roads(m: &mut Map, towns: &[(String, TilePos)]) {
             }
         }
         connected.push(b);
+    }
+}
+
+/// Rune rings, camps, wolf dens, the Kaupang gate, the world-serpent's nest, and the cave
+/// dungeons with their portals. Works on any Midgard-shaped map (generated or imported).
+pub fn populate_extras(m: &mut Map, world: &mut World, seed: u64) {
+    // hotspots: rune rings, camps, caves
+    let spot = |m: &Map, rng: &mut Rng, nx: f32, ny: f32, r: i32| find_site(m, nx + (rng.f32() - 0.5) * 0.03, ny + (rng.f32() - 0.5) * 0.03, r);
+    let mut srng = Rng::new(seed + 99);
+    let mid = m.places.get("mimir").copied();
+    if let Some(mc) = mid {
+        sites::rune_ring(m, TilePos::new(mc.x, mc.y - 8), 5, 8);
+        m.places.insert("mimir_well".into(), mc);
+    }
+    for k in 0..10 {
+        let (nx, ny) = (0.2 + srng.f32() * 0.65, 0.15 + srng.f32() * 0.7);
+        if let Some(c) = spot(m, &mut srng, nx, ny, 6) {
+            sites::rune_ring(m, c, 4, 6);
+            m.places.insert(format!("rune_ring_{}", k + 1), c);
+        }
+    }
+    for k in 0..6 {
+        let (nx, ny) = (0.2 + srng.f32() * 0.65, 0.12 + srng.f32() * 0.75);
+        if let Some(c) = spot(m, &mut srng, nx, ny, 4) {
+            sites::camp(m, c, &mut srng);
+            m.places.insert(format!("camp_{}", k + 1), c);
+        }
+    }
+    for k in 0..4 {
+        let (nx, ny) = (0.25 + srng.f32() * 0.5, 0.12 + srng.f32() * 0.25);
+        if let Some(c) = spot(m, &mut srng, nx, ny, 3) {
+            m.places.insert(format!("spawn_wolf_{}", k + 1), c);
+        }
+    }
+    // the Kaupang gate (main quest) and the world-serpent's nest
+    if let Some(c) = find_site(m, 0.51, 0.69, 8) {
+        sites::rune_ring(m, c, 5, 8);
+        m.places.insert("kaupang_gate".into(), c);
+    }
+    'nest: for gy in (0..m.height - 12).step_by(6).rev() {
+        for gx in (m.width / 3..m.width * 2 / 3).step_by(6) {
+            let ok = (0..9).all(|k| m.tile(TilePos::new(gx + k, gy + k)) == tiles::WATER_DEEP && m.tile(TilePos::new(gx + k, gy)) == tiles::WATER_DEEP);
+            if ok {
+                m.places.insert("jormungandr_nest".into(), TilePos::new(gx + 4, gy + 4));
+                break 'nest;
+            }
+        }
+    }
+    // dungeon entrances (portals) -> cave maps
+    let caves = [
+        ("mimir_depths", 0.46f32, 0.46f32, tiles::ROCK, tiles::MOUNTAIN, 120),
+        ("barrow_1", 0.62, 0.70, tiles::ROCK, tiles::MOUNTAIN, 80),
+        ("barrow_2", 0.28, 0.62, tiles::ROCK, tiles::MOUNTAIN, 80),
+        ("fenrir_den", 0.40, 0.10, tiles::ICE, tiles::MOUNTAIN, 110),
+        ("troll_cave", 0.72, 0.28, tiles::ROCK, tiles::MOUNTAIN, 90),
+        ("hel_gate_crypt", 0.34, 0.24, tiles::ASH, tiles::MOUNTAIN, 100),
+    ];
+    for (i, (name, nx, ny, floor, wall, size)) in caves.iter().enumerate() {
+        if let Some(c) = find_site(m, *nx, *ny, 3) {
+            let cv = cave::cave(&cave::CaveSpec { name: name.to_string(), size: *size, floor: floor.0, wall: wall.0, seed: seed + 700 + i as u64, chests: 6 + i as i32 });
+            let door = TilePos::new(c.x, c.y);
+            m.set_tile(door, tiles::FLOOR_STONE);
+            m.add_object("boulder", TilePos::new(c.x - 1, c.y));
+            m.add_object("boulder", TilePos::new(c.x + 1, c.y));
+            let entrance = cv.places["entrance"];
+            m.portals.push(Portal { pos: door, target_map: name.to_string(), target_pos: entrance });
+            let mut cv = cv;
+            cv.portals.push(Portal { pos: TilePos::new(entrance.x, entrance.y + 1), target_map: "midgard".into(), target_pos: TilePos::new(door.x, door.y + 1) });
+            cv.set_tile(TilePos::new(entrance.x, entrance.y + 1), tiles::FLOOR_STONE);
+            m.places.insert(name.to_string(), TilePos::new(door.x, door.y + 1));
+            world.insert(cv);
+        }
+    }
+    // player start: south of Kaupang's market
+    if let Some(k) = m.places.get("kaupang").copied() {
+        m.places.insert("start".into(), k);
     }
 }
 
@@ -244,77 +324,7 @@ pub fn generate(seed: u64, world: &mut World) -> Map {
             }
         }
     }
-    // hotspots: rune rings, camps, caves
-    let spot = |m: &mut Map, rng: &mut Rng, nx: f32, ny: f32, r: i32| find_site(m, nx + (rng.f32() - 0.5) * 0.03, ny + (rng.f32() - 0.5) * 0.03, r);
-    let mut srng = Rng::new(seed + 99);
-    let mid = m.places.get("mimir").copied();
-    if let Some(mc) = mid {
-        sites::rune_ring(&mut m, TilePos::new(mc.x, mc.y - 8), 5, 8);
-        m.places.insert("mimir_well".into(), mc);
-    }
-    for k in 0..10 {
-        let (nx, ny) = (0.2 + srng.f32() * 0.65, 0.15 + srng.f32() * 0.7);
-        if let Some(c) = spot(&mut m, &mut srng, nx, ny, 6) {
-            sites::rune_ring(&mut m, c, 4, 6);
-            m.places.insert(format!("rune_ring_{}", k + 1), c);
-        }
-    }
-    for k in 0..6 {
-        let (nx, ny) = (0.2 + srng.f32() * 0.65, 0.12 + srng.f32() * 0.75);
-        if let Some(c) = spot(&mut m, &mut srng, nx, ny, 4) {
-            sites::camp(&mut m, c, &mut srng);
-            m.places.insert(format!("camp_{}", k + 1), c);
-        }
-    }
-    for k in 0..4 {
-        let (nx, ny) = (0.25 + srng.f32() * 0.5, 0.12 + srng.f32() * 0.25);
-        if let Some(c) = spot(&mut m, &mut srng, nx, ny, 3) {
-            m.places.insert(format!("spawn_wolf_{}", k + 1), c);
-        }
-    }
-    // the Kaupang gate (main quest) and the world-serpent's nest
-    if let Some(c) = find_site(&m, 0.51, 0.69, 8) {
-        sites::rune_ring(&mut m, c, 5, 8);
-        m.places.insert("kaupang_gate".into(), c);
-    }
-    'nest: for gy in (0..SIZE - 12).step_by(6).rev() {
-        for gx in (SIZE / 3..SIZE * 2 / 3).step_by(6) {
-            let ok = (0..9).all(|k| m.tile(TilePos::new(gx + k, gy + k)) == tiles::WATER_DEEP && m.tile(TilePos::new(gx + k, gy)) == tiles::WATER_DEEP);
-            if ok {
-                m.places.insert("jormungandr_nest".into(), TilePos::new(gx + 4, gy + 4));
-                break 'nest;
-            }
-        }
-    }
-    // dungeon entrances (portals) -> cave maps
-    let caves = [
-        ("mimir_depths", 0.46f32, 0.46f32, tiles::ROCK, tiles::MOUNTAIN, 120),
-        ("barrow_1", 0.62, 0.70, tiles::ROCK, tiles::MOUNTAIN, 80),
-        ("barrow_2", 0.28, 0.62, tiles::ROCK, tiles::MOUNTAIN, 80),
-        ("fenrir_den", 0.40, 0.10, tiles::ICE, tiles::MOUNTAIN, 110),
-        ("troll_cave", 0.72, 0.28, tiles::ROCK, tiles::MOUNTAIN, 90),
-        ("hel_gate_crypt", 0.34, 0.24, tiles::ASH, tiles::MOUNTAIN, 100),
-    ];
-    for (i, (name, nx, ny, floor, wall, size)) in caves.iter().enumerate() {
-        if let Some(c) = find_site(&m, *nx, *ny, 3) {
-            let cv = cave::cave(&cave::CaveSpec { name: name.to_string(), size: *size, floor: floor.0, wall: wall.0, seed: seed + 700 + i as u64, chests: 6 + i as i32 });
-            let door = TilePos::new(c.x, c.y);
-            m.set_tile(door, tiles::FLOOR_STONE);
-            m.add_object("boulder", TilePos::new(c.x - 1, c.y));
-            m.add_object("boulder", TilePos::new(c.x + 1, c.y));
-            let entrance = cv.places["entrance"];
-            m.portals.push(Portal { pos: door, target_map: name.to_string(), target_pos: entrance });
-            let mut cv = cv;
-            cv.portals.push(Portal { pos: TilePos::new(entrance.x, entrance.y + 1), target_map: "midgard".into(), target_pos: TilePos::new(door.x, door.y + 1) });
-            cv.set_tile(TilePos::new(entrance.x, entrance.y + 1), tiles::FLOOR_STONE);
-            m.places.insert(name.to_string(), TilePos::new(door.x, door.y + 1));
-            world.insert(cv);
-        }
-    }
-    // player start: south of Kaupang's market
-    if let Some(k) = m.places.get("kaupang").copied() {
-        m.places.insert("start".into(), k);
-    }
+    populate_extras(&mut m, world, seed);
     m
 }
 

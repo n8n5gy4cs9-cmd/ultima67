@@ -243,7 +243,10 @@ mod tests {
             assert!(p.inventory.equipped.contains_key(&u67_world::items::Slot::HandR), "seat {i}");
             assert!(p.stats.hp > 0);
         }
-        assert_ne!(PlayerData::for_seat(1, [0.0; 2]).inventory.equipped[&u67_world::items::Slot::HandR].id, PlayerData::for_seat(2, [0.0; 2]).inventory.equipped[&u67_world::items::Slot::HandR].id);
+        assert_ne!(
+            PlayerData::for_seat(1, [0.0; 2]).inventory.equipped[&u67_world::items::Slot::HandR].id,
+            PlayerData::for_seat(2, [0.0; 2]).inventory.equipped[&u67_world::items::Slot::HandR].id
+        );
     }
 
     #[test]

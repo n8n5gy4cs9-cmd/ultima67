@@ -42,6 +42,7 @@ Press `` ` `` for the console, F2 for the cheats menu. Commands are easy to reme
 | `crates/u67_console` | command registry/parser/autocomplete, generates `commands.txt` |
 | `crates/u67_assetgen` | generates every sprite / sound / music placeholder + `assets/manifest.json` + `ASSETS.md` |
 | `crates/u67_mapgen` | procedural Midgård (16 towns, caves, rune rings), 16 other worlds |
+| `crates/u67_import` | **Ultima 7 importer**: your own U7 files -> Midgård (`docs/formats/u7.md`) |
 | `crates/u67_game` | the Bevy game: rendering, input, seats, combat, AI, UI |
 | `assets/data/*.json` | **all content**: quests, dialogue, NPCs, shops, creatures, spawns, loot, spells, recipes, lore |
 | `docs/` | plan, lore bible, references/licensing |
@@ -59,4 +60,4 @@ powershell -File tools/package_windows.ps1
 Linux build deps: `libasound2-dev libudev-dev libwayland-dev libxkbcommon-dev libx11-dev`.
 
 ## Your Ultima 7 data
-Put your own legally-owned files in `assets/original/` (git-ignored; never committed). The generated Midgård works without them.
+Put the contents of your own legally-owned `STATIC` folder in `assets/original/u7/` (git-ignored; never committed) and run `cargo run --release -p u67_import --bin import_u7`: the U7 world map is converted into Midgård (see [`docs/formats/u7.md`](docs/formats/u7.md)). The generated Midgård works without them.

@@ -207,9 +207,7 @@ impl Registry {
             c("dev", "reload_data", "", "reload data files", |_| Ok(Action::ReloadData)),
             c("dev", "screenshot", "", "save screenshot", |_| Ok(Action::Screenshot)),
             c("dev", "seed", "<n>", "set rng seed", |a| Ok(Action::Seed(a.num(0, "n")?))),
-            c("dev", "set", "<cvar> <value>", "set config variable", |a| {
-                Ok(Action::SetVar { name: a.req(0, "cvar")?.into(), value: a.req(1, "value")?.into() })
-            }),
+            c("dev", "set", "<cvar> <value>", "set config variable", |a| Ok(Action::SetVar { name: a.req(0, "cvar")?.into(), value: a.req(1, "value")?.into() })),
             c("dev", "get", "<cvar>", "read config variable", |a| Ok(Action::GetVar(a.req(0, "cvar")?.into()))),
         ];
         v.shrink_to_fit();
@@ -229,7 +227,11 @@ impl Registry {
         let parts: Vec<&str> = line.split_whitespace().collect();
         let cmd = self.find(&parts[0].to_lowercase()).ok_or_else(|| {
             let near: Vec<_> = self.commands.iter().filter(|c| c.name.starts_with(&parts[0][..1.min(parts[0].len())])).take(4).map(|c| c.name).collect();
-            if near.is_empty() { format!("unknown command '{}' (try: help)", parts[0]) } else { format!("unknown command '{}'. Similar: {}", parts[0], near.join(", ")) }
+            if near.is_empty() {
+                format!("unknown command '{}' (try: help)", parts[0])
+            } else {
+                format!("unknown command '{}'. Similar: {}", parts[0], near.join(", "))
+            }
         })?;
         (cmd.parse)(&Args(&parts[1..])).map(Some).map_err(|e| format!("{e}\nusage: {} {}", cmd.name, cmd.usage))
     }

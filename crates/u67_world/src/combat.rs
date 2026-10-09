@@ -65,7 +65,11 @@ pub fn item_value(id: &str) -> u32 {
         Kind::Relic => 400,
         Kind::Misc => 1,
     };
-    if id == "silver" { 1 } else { base }
+    if id == "silver" {
+        1
+    } else {
+        base
+    }
 }
 
 pub fn heal_amount(id: &str) -> Option<i32> {

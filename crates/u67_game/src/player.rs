@@ -63,7 +63,11 @@ pub fn step(map: &Map, pos: Vec2, delta: Vec2, noclip: bool) -> Vec2 {
 
 fn dir_of(v: Vec2) -> Dir {
     if v.x.abs() > v.y.abs() {
-        if v.x > 0.0 { Dir::E } else { Dir::W }
+        if v.x > 0.0 {
+            Dir::E
+        } else {
+            Dir::W
+        }
     } else if v.y > 0.0 {
         Dir::S
     } else {
@@ -73,7 +77,11 @@ fn dir_of(v: Vec2) -> Dir {
 
 /// Effective zoom: split-screen viewports are smaller, so zoom out a little.
 pub fn effective_zoom(base: f32, seats: usize) -> f32 {
-    if seats >= 2 { (base * 0.67).max(1.5) } else { base }
+    if seats >= 2 {
+        (base * 0.67).max(1.5)
+    } else {
+        base
+    }
 }
 
 #[derive(Component)]
@@ -108,7 +116,11 @@ fn spawn_cameras_and_players(
             cam.insert(MainCamera);
         }
         cam.with_children(|c| {
-            c.spawn((Daylight(i), Sprite { color: Color::srgba(0.04, 0.06, 0.22, 0.0), custom_size: Some(Vec2::splat(6000.0)), ..default() }, Transform::from_xyz(0.0, 0.0, -900.0)));
+            c.spawn((
+                Daylight(i),
+                Sprite { color: Color::srgba(0.04, 0.06, 0.22, 0.0), custom_size: Some(Vec2::splat(6000.0)), ..default() },
+                Transform::from_xyz(0.0, 0.0, -900.0),
+            ));
         });
     }
     for (i, p) in game.0.players.iter().enumerate() {
@@ -118,7 +130,12 @@ fn spawn_cameras_and_players(
         commands.spawn((
             Player(i),
             Motion { prev: pos, cur: pos, moving: false },
-            Sprite { image: sheets.chars_img.clone(), texture_atlas: Some(TextureAtlas { layout: sheets.chars_layout.clone(), index: (row * render::CHAR_COLS) as usize }), anchor: Anchor::Custom(Vec2::new(0.0, -0.5 + 1.5 / 24.0)), ..default() },
+            Sprite {
+                image: sheets.chars_img.clone(),
+                texture_atlas: Some(TextureAtlas { layout: sheets.chars_layout.clone(), index: (row * render::CHAR_COLS) as usize }),
+                anchor: Anchor::Custom(Vec2::new(0.0, -0.5 + 1.5 / 24.0)),
+                ..default()
+            },
             Transform::from_xyz(0.0, 0.0, 2.0),
         ));
     }
@@ -264,7 +281,13 @@ fn render_players(time: Res<Time<Fixed>>, game: Res<Game>, rt: Res<PlayerRt>, mu
         let px = render::tile_px(p.x, p.y);
         tf.translation = Vec3::new(px.x.round(), px.y.round(), 2.0 + p.y * 0.001);
         let down = rt.list.get(pl.0).is_some_and(|r| r.downed);
-        let frame = if down { 10 } else if m.moving { 1 + ((wall.elapsed_secs() * 9.0) as u32 % 4) } else { 0 };
+        let frame = if down {
+            10
+        } else if m.moving {
+            1 + ((wall.elapsed_secs() * 9.0) as u32 % 4)
+        } else {
+            0
+        };
         let row = arch * 4 + pd.facing.index() as u32;
         sp.color = if down { Color::srgb(0.6, 0.6, 0.7) } else { Color::WHITE };
         if let Some(a) = &mut sp.texture_atlas {
@@ -274,7 +297,14 @@ fn render_players(time: Res<Time<Fixed>>, game: Res<Game>, rt: Res<PlayerRt>, mu
 }
 
 #[allow(clippy::too_many_arguments)]
-fn camera_follow(game: Res<Game>, rt: Res<PlayerRt>, time: Res<Time>, zoom: Res<Zoom>, players: Query<(&Player, &Transform), Without<SeatCam>>, mut cams: Query<(&SeatCam, &mut Transform, &mut Projection)>) {
+fn camera_follow(
+    game: Res<Game>,
+    rt: Res<PlayerRt>,
+    time: Res<Time>,
+    zoom: Res<Zoom>,
+    players: Query<(&Player, &Transform), Without<SeatCam>>,
+    mut cams: Query<(&SeatCam, &mut Transform, &mut Projection)>,
+) {
     let n = game.0.players.len();
     let z = effective_zoom(zoom.0, n);
     for (sc, mut c, mut proj) in &mut cams {
@@ -333,7 +363,10 @@ impl Plugin for PlayerPlugin {
             .init_resource::<seats::ActiveSeat>()
             .init_resource::<seats::SeatSwap>()
             .add_systems(Update, ui_camera_clear)
-            .add_systems(Update, (spawn_cameras_and_players, layout_viewports, sync_after_teleport, render_players, camera_follow, zoom_keys, daylight).chain().run_if(game_active))
+            .add_systems(
+                Update,
+                (spawn_cameras_and_players, layout_viewports, sync_after_teleport, render_players, camera_follow, zoom_keys, daylight).chain().run_if(game_active),
+            )
             .add_systems(FixedUpdate, move_players.run_if(game_active).run_if(resource_exists::<WorldRes>));
     }
 }

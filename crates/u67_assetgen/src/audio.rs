@@ -80,16 +80,38 @@ fn scale(mut a: Vec<f32>, g: f32) -> Vec<f32> {
 pub const SFX: &[Sfx] = &[
     Sfx { id: "footstep", use_: "walking", gen: |r| scale(noise_burst(r, 0.09, 40.0, 0.25), 0.6) },
     Sfx { id: "footstep_snow", use_: "walking on snow", gen: |r| scale(noise_burst(r, 0.14, 25.0, 0.12), 0.6) },
-    Sfx { id: "gun_pistol", use_: "pistol shot", gen: |r| scale(mixv(noise_burst(r, 0.25, 22.0, 0.7), tone(|t| 220.0 * (-t * 25.0).exp() + 50.0, 0.2, 18.0, false)), 0.8) },
+    Sfx {
+        id: "gun_pistol",
+        use_: "pistol shot",
+        gen: |r| scale(mixv(noise_burst(r, 0.25, 22.0, 0.7), tone(|t| 220.0 * (-t * 25.0).exp() + 50.0, 0.2, 18.0, false)), 0.8),
+    },
     Sfx { id: "gun_rifle", use_: "rifle shot", gen: |r| scale(mixv(noise_burst(r, 0.4, 14.0, 0.5), tone(|t| 140.0 * (-t * 18.0).exp() + 40.0, 0.3, 12.0, false)), 0.85) },
-    Sfx { id: "gun_shotgun", use_: "shotgun blast", gen: |r| scale(mixv(noise_burst(r, 0.5, 9.0, 0.35), tone(|t| 90.0 * (-t * 12.0).exp() + 30.0, 0.4, 8.0, false)), 0.9) },
-    Sfx { id: "reload", use_: "reloading a gun", gen: |r| mixv(scale(noise_burst(r, 0.05, 60.0, 0.9), 0.7), {
-        let mut v = vec![0.0; n(SFX_RATE, 0.18)];
-        v.extend(scale(noise_burst(r, 0.07, 50.0, 0.8), 0.8));
-        v
-    }) },
-    Sfx { id: "cannon_fire", use_: "cannon firing", gen: |r| scale(mixv(noise_burst(r, 1.0, 4.5, 0.18), tone(|t| 70.0 * (-t * 6.0).exp() + 28.0, 0.9, 4.0, false)), 1.0) },
-    Sfx { id: "explosion", use_: "explosions / cannonball impact", gen: |r| scale(mixv(noise_burst(r, 1.2, 3.5, 0.12), tone(|t| 55.0 * (-t * 4.0).exp() + 22.0, 1.0, 3.0, false)), 1.0) },
+    Sfx {
+        id: "gun_shotgun",
+        use_: "shotgun blast",
+        gen: |r| scale(mixv(noise_burst(r, 0.5, 9.0, 0.35), tone(|t| 90.0 * (-t * 12.0).exp() + 30.0, 0.4, 8.0, false)), 0.9),
+    },
+    Sfx {
+        id: "reload",
+        use_: "reloading a gun",
+        gen: |r| {
+            mixv(scale(noise_burst(r, 0.05, 60.0, 0.9), 0.7), {
+                let mut v = vec![0.0; n(SFX_RATE, 0.18)];
+                v.extend(scale(noise_burst(r, 0.07, 50.0, 0.8), 0.8));
+                v
+            })
+        },
+    },
+    Sfx {
+        id: "cannon_fire",
+        use_: "cannon firing",
+        gen: |r| scale(mixv(noise_burst(r, 1.0, 4.5, 0.18), tone(|t| 70.0 * (-t * 6.0).exp() + 28.0, 0.9, 4.0, false)), 1.0),
+    },
+    Sfx {
+        id: "explosion",
+        use_: "explosions / cannonball impact",
+        gen: |r| scale(mixv(noise_burst(r, 1.2, 3.5, 0.12), tone(|t| 55.0 * (-t * 4.0).exp() + 22.0, 1.0, 3.0, false)), 1.0),
+    },
     Sfx { id: "hit_flesh", use_: "melee hit on creature", gen: |r| scale(mixv(noise_burst(r, 0.12, 30.0, 0.3), tone(|t| 120.0 - t * 300.0, 0.1, 30.0, false)), 0.9) },
     Sfx { id: "hit_metal", use_: "weapon on armor", gen: |r| scale(mixv(noise_burst(r, 0.08, 50.0, 0.9), tone(|_| 1480.0, 0.4, 12.0, false)), 0.5) },
     Sfx { id: "swing", use_: "melee swing", gen: |r| scale(noise_burst(r, 0.2, 14.0, 0.4), 0.4) },
@@ -104,75 +126,111 @@ pub const SFX: &[Sfx] = &[
     Sfx { id: "ui_open", use_: "open inventory / menu", gen: |_| scale(tone(|t| 400.0 + t * 1500.0, 0.15, 12.0, false), 0.6) },
     Sfx { id: "ui_close", use_: "close menu", gen: |_| scale(tone(|t| 900.0 - t * 1500.0, 0.15, 12.0, false), 0.6) },
     Sfx { id: "ui_error", use_: "invalid action / console error", gen: |_| scale(tone(|_| 140.0, 0.25, 8.0, true), 0.7) },
-    Sfx { id: "spell_cast", use_: "casting a spell (seidr/laulu)", gen: |_| {
-        let a = tone(|t| 440.0 + (t * 30.0).sin() * 30.0 + t * 700.0, 0.7, 3.0, false);
-        let b = tone(|t| 660.0 + t * 1050.0, 0.7, 3.5, false);
-        mixv(scale(a, 0.5), scale(b, 0.3))
-    } },
+    Sfx {
+        id: "spell_cast",
+        use_: "casting a spell (seidr/laulu)",
+        gen: |_| {
+            let a = tone(|t| 440.0 + (t * 30.0).sin() * 30.0 + t * 700.0, 0.7, 3.0, false);
+            let b = tone(|t| 660.0 + t * 1050.0, 0.7, 3.5, false);
+            mixv(scale(a, 0.5), scale(b, 0.3))
+        },
+    },
     Sfx { id: "spell_fizzle", use_: "failed spell", gen: |r| scale(noise_burst(r, 0.4, 7.0, 0.3), 0.5) },
-    Sfx { id: "level_up", use_: "level up / quest done", gen: |_| {
-        let mut v = vec![];
-        for f in [523.0, 659.0, 784.0, 1047.0] {
-            v.extend(tone(move |_| f, 0.18, 6.0, false));
-        }
-        v
-    } },
-    Sfx { id: "quest_start", use_: "new quest", gen: |_| {
-        let mut v = tone(|_| 392.0, 0.2, 6.0, false);
-        v.extend(tone(|_| 587.0, 0.3, 5.0, false));
-        v
-    } },
+    Sfx {
+        id: "level_up",
+        use_: "level up / quest done",
+        gen: |_| {
+            let mut v = vec![];
+            for f in [523.0, 659.0, 784.0, 1047.0] {
+                v.extend(tone(move |_| f, 0.18, 6.0, false));
+            }
+            v
+        },
+    },
+    Sfx {
+        id: "quest_start",
+        use_: "new quest",
+        gen: |_| {
+            let mut v = tone(|_| 392.0, 0.2, 6.0, false);
+            v.extend(tone(|_| 587.0, 0.3, 5.0, false));
+            v
+        },
+    },
     Sfx { id: "bifrost", use_: "bifrost travel", gen: |r| mixv(scale(noise_burst(r, 1.5, 2.0, 0.05), 0.3), tone(|t| 200.0 + t * 900.0, 1.5, 1.5, false)) },
     Sfx { id: "ship_creak", use_: "ship movement", gen: |_| scale(tone(|t| 110.0 + (t * 12.0).sin() * 8.0, 0.6, 3.0, true), 0.4) },
     Sfx { id: "splash", use_: "water splash", gen: |r| scale(noise_burst(r, 0.5, 6.0, 0.2), 0.6) },
-    Sfx { id: "ambient_wind", use_: "wind loop (snow, mountains, space-planets)", gen: |r| {
-        let mut f = Lp::new(0.03);
-        let len = n(SFX_RATE, 4.0);
-        let v: Vec<f32> = (0..len).map(|i| f.p(r.f32() * 2.0 - 1.0) * (0.6 + 0.4 * (i as f32 / len as f32 * tau()).sin()) * 3.0).collect();
-        loopfade(v)
-    } },
-    Sfx { id: "ambient_forest", use_: "forest loop (birds + rustle)", gen: |r| {
-        let mut f = Lp::new(0.06);
-        let len = n(SFX_RATE, 4.0);
-        let mut v: Vec<f32> = (0..len).map(|_| f.p(r.f32() * 2.0 - 1.0) * 0.8).collect();
-        for _ in 0..5 {
-            let st = r.range(0, len as i32 - 4000) as usize;
-            let fr = 2000.0 + r.f32() * 1500.0;
-            for (i, s) in tone(move |t| fr + (t * 40.0).sin() * 300.0, 0.12, 20.0, false).into_iter().enumerate() {
-                v[st + i] += s * 0.3;
+    Sfx {
+        id: "ambient_wind",
+        use_: "wind loop (snow, mountains, space-planets)",
+        gen: |r| {
+            let mut f = Lp::new(0.03);
+            let len = n(SFX_RATE, 4.0);
+            let v: Vec<f32> = (0..len).map(|i| f.p(r.f32() * 2.0 - 1.0) * (0.6 + 0.4 * (i as f32 / len as f32 * tau()).sin()) * 3.0).collect();
+            loopfade(v)
+        },
+    },
+    Sfx {
+        id: "ambient_forest",
+        use_: "forest loop (birds + rustle)",
+        gen: |r| {
+            let mut f = Lp::new(0.06);
+            let len = n(SFX_RATE, 4.0);
+            let mut v: Vec<f32> = (0..len).map(|_| f.p(r.f32() * 2.0 - 1.0) * 0.8).collect();
+            for _ in 0..5 {
+                let st = r.range(0, len as i32 - 4000) as usize;
+                let fr = 2000.0 + r.f32() * 1500.0;
+                for (i, s) in tone(move |t| fr + (t * 40.0).sin() * 300.0, 0.12, 20.0, false).into_iter().enumerate() {
+                    v[st + i] += s * 0.3;
+                }
             }
-        }
-        loopfade(v)
-    } },
-    Sfx { id: "ambient_sea", use_: "waves loop", gen: |r| {
-        let mut f = Lp::new(0.05);
-        let len = n(SFX_RATE, 5.0);
-        let v: Vec<f32> = (0..len).map(|i| f.p(r.f32() * 2.0 - 1.0) * (0.5 + 0.5 * (i as f32 / SFX_RATE as f32 * tau() / 5.0).sin().abs()) * 2.5).collect();
-        loopfade(v)
-    } },
-    Sfx { id: "ambient_cave", use_: "dungeon/cave loop (drips + drone)", gen: |r| {
-        let len = n(SFX_RATE, 4.0);
-        let mut v: Vec<f32> = (0..len).map(|i| (i as f32 * tau() * 55.0 / SFX_RATE as f32).sin() * 0.15).collect();
-        for _ in 0..3 {
-            let st = r.range(0, len as i32 - 6000) as usize;
-            for (i, s) in tone(|t| 1200.0 - t * 2000.0, 0.1, 30.0, false).into_iter().enumerate() {
-                v[st + i] += s * 0.4;
+            loopfade(v)
+        },
+    },
+    Sfx {
+        id: "ambient_sea",
+        use_: "waves loop",
+        gen: |r| {
+            let mut f = Lp::new(0.05);
+            let len = n(SFX_RATE, 5.0);
+            let v: Vec<f32> = (0..len).map(|i| f.p(r.f32() * 2.0 - 1.0) * (0.5 + 0.5 * (i as f32 / SFX_RATE as f32 * tau() / 5.0).sin().abs()) * 2.5).collect();
+            loopfade(v)
+        },
+    },
+    Sfx {
+        id: "ambient_cave",
+        use_: "dungeon/cave loop (drips + drone)",
+        gen: |r| {
+            let len = n(SFX_RATE, 4.0);
+            let mut v: Vec<f32> = (0..len).map(|i| (i as f32 * tau() * 55.0 / SFX_RATE as f32).sin() * 0.15).collect();
+            for _ in 0..3 {
+                let st = r.range(0, len as i32 - 6000) as usize;
+                for (i, s) in tone(|t| 1200.0 - t * 2000.0, 0.1, 30.0, false).into_iter().enumerate() {
+                    v[st + i] += s * 0.4;
+                }
             }
-        }
-        loopfade(v)
-    } },
-    Sfx { id: "ambient_space", use_: "ship / space station hum loop", gen: |_| {
-        let len = n(SFX_RATE, 4.0);
-        loopfade((0..len).map(|i| ((i as f32 * tau() * 60.0 / SFX_RATE as f32).sin() * 0.3) + ((i as f32 * tau() * 90.0 / SFX_RATE as f32).sin() * 0.15)).collect())
-    } },
+            loopfade(v)
+        },
+    },
+    Sfx {
+        id: "ambient_space",
+        use_: "ship / space station hum loop",
+        gen: |_| {
+            let len = n(SFX_RATE, 4.0);
+            loopfade((0..len).map(|i| ((i as f32 * tau() * 60.0 / SFX_RATE as f32).sin() * 0.3) + ((i as f32 * tau() * 90.0 / SFX_RATE as f32).sin() * 0.15)).collect())
+        },
+    },
     Sfx { id: "wolf_howl", use_: "wolf / Fenrir", gen: |_| scale(tone(|t| 300.0 + 250.0 * (t * 1.8).min(1.0) - 150.0 * (t - 1.0).max(0.0), 1.6, 1.5, false), 0.6) },
-    Sfx { id: "kantele", use_: "kantele pluck (Väinämöinen's gun, singing magic)", gen: |_| {
-        let mut v = vec![];
-        for f in [392.0, 494.0, 587.0] {
-            v.extend(mixv(tone(move |_| f, 0.5, 6.0, false), scale(tone(move |_| f * 2.0, 0.5, 9.0, false), 0.4)));
-        }
-        v
-    } },
+    Sfx {
+        id: "kantele",
+        use_: "kantele pluck (Väinämöinen's gun, singing magic)",
+        gen: |_| {
+            let mut v = vec![];
+            for f in [392.0, 494.0, 587.0] {
+                v.extend(mixv(tone(move |_| f, 0.5, 6.0, false), scale(tone(move |_| f * 2.0, 0.5, 9.0, false), 0.4)));
+            }
+            v
+        },
+    },
 ];
 
 fn loopfade(mut v: Vec<f32>) -> Vec<f32> {
